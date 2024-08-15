@@ -41,38 +41,38 @@ const _nav = [
       {
         component: CNavGroup,
         name: 'Danh Sách Đoàn Sinh',
-        to: '/doan-sinh',
+        to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
         items: [
           {
             component: CNavItem,
             name: 'Oanh Vũ Nam',
-            to: '/doan-sinh/oanh-vu-nam',
+            to: '/doan-sinh/ds-doan-sinh/oanh-vu-nam',
           },
           {
             component: CNavItem,
             name: 'Oanh Vũ Nữ',
-            to: '/doan-sinh/oanh-vu-nu',
+            to: '/doan-sinh/ds-doan-sinh/oanh-vu-nu',
           },
           {
             component: CNavItem,
             name: 'Thiếu Nam',
-            to: '/doan-sinh/thieu-nam',
+            to: '/doan-sinh/ds-doan-sinh/thieu-nam',
           },
           {
             component: CNavItem,
             name: 'Thiếu Nữ',
-            to: '/doan-sinh/thieu-nu',
+            to: '/doan-sinh/ds-doan-sinh/thieu-nu',
           },
           {
             component: CNavItem,
             name: 'Ngành Thanh',
-            to: '/doan-sinh/nganh-thanh',
+            to: '/doan-sinh/ds-doan-sinh/nganh-thanh',
           },
           {
             component: CNavItem,
             name: 'Tất Cả',
-            to: '/doan-sinh/tat-ca',
+            to: '/doan-sinh/ds-doan-sinh/tat-ca',
           },
         ],
       },
