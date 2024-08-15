@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 // const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 // const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
@@ -51,25 +51,45 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 // const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
-// Đoàn Sinh
-const OanhVuNam = React.lazy(() => import('./views/doan-sinh/OanhVuNam'))
-const OanhVuNu = React.lazy(() => import('./views/doan-sinh/OanhVuNu.js'))
-const ThieuNam = React.lazy(() => import('./views/doan-sinh/ThieuNam.js'))
-const ThieuNu = React.lazy(() => import('./views/doan-sinh/ThieuNu.js'))
-const NganhThanh = React.lazy(() => import('./views/doan-sinh/NganhThanh.js'))
+//Oanh Nam
+const DSOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DanhSach'))
+const DDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DiemDanh'))
+const QDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/QuyDoan'))
+
+//Oanh Nữ
+const DSOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DanhSach'))
+const DDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DiemDanh'))
+const QDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/QuyDoan'))
+
+//Thiếu  Nam
+const DSThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DanhSach'))
+const DDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DiemDanh'))
+const QDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/QuyDoan'))
+
+//Thiếu  Nữ
+const DSThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DanhSach'))
+const DDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DiemDanh'))
+const QDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/QuyDoan'))
+
+//Ngành Thanh
+const DSNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DanhSach'))
+const DDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DiemDanh'))
+const QDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/QuyDoan'))
+
+//Tất Cả
 const TatCa = React.lazy(() => import('./views/doan-sinh/TatCa.js'))
-const DiemDanh = React.lazy(() => import('./views/doan-sinh/DiemDanh.js'))
-const QuyDoan = React.lazy(() => import('./views/doan-sinh/QuyDoan.js'))
 
 // Huynh Trưởng
-const DanhSach = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
+const DanhSachHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
 
 // File Lưu Trữ
 const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js'))
 
+const QuyGD = React.lazy(() => import('./views/huynh-truong/QuyGd.js'))
+
 const routes = [
-  // { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/', exact: true, name: 'Trang Chủ' },
+  { path: '/', name: 'Trang Chủ', element: HomeDashboard },
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', element: Colors },
   // { path: '/theme/typography', name: 'Typography', element: Typography },
@@ -113,19 +133,41 @@ const routes = [
   // { path: '/notifications/modals', name: 'Modals', element: Modals },
   // { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   // { path: '/widgets', name: 'Widgets', element: Widgets },
-  { path: '/doan-sinh', name: 'Đoàn Sinh', exact: true },
-  { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
-  { path: '/doan-sinh/ds-doan-sinh/oanh-vu-nam', name: 'Oanh Vũ Nam', element: OanhVuNam },
-  { path: '/doan-sinh/ds-doan-sinh/oanh-vu-nu', name: 'Oanh Vũ Nữ', element: OanhVuNu },
-  { path: '/doan-sinh/ds-doan-sinh/thieu-nam', name: 'Thiếu Nam', element: ThieuNam },
-  { path: '/doan-sinh/ds-doan-sinh/thieu-nu', name: 'Thiếu Nữ', element: ThieuNu },
-  { path: '/doan-sinh/ds-doan-sinh/nganh-thanh', name: 'Ngành Thanh', element: NganhThanh },
+
+
+  // { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
+
+  
+  { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam },
+  { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ ĐoànOanh Vũ Nam', element: QDOanhNam },
+  { path: '/doan-sinh/dd-oanh-vu-nam', name: 'Điểm Danh Oanh Vũ Nam', element: DDOanhNam },
+  
+  { path: '/doan-sinh/ds-oanh-vu-nu', name: 'Danh SáchOanh Vũ Nữ', element: DSOanhNu },
+  { path: '/doan-sinh/qd-oanh-vu-nu', name: 'Quỹ Đoàn Oanh Vũ Nữ', element: QDOanhNu },
+  { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DSOanhNu },
+
+  { path: '/doan-sinh/ds-thieu-nam', name: 'Danh Sách Thiếu Nam', element: DSThieuNam },
+  { path: '/doan-sinh/qd-thieu-nam', name: 'Quỹ Đoàn Thiếu Nam', element: QDThieuNam },
+  { path: '/doan-sinh/dd-thieu-nam', name: 'Điểm Danh Thiếu Nam', element: DDThieuNam },
+
+  { path: '/doan-sinh/ds-thieu-nu', name: 'Danh Sách Thiếu Nữ', element: DSThieuNu },
+  { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu },
+  { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu },
+
+  { path: '/doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh},
+  { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh},
+  { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh},
+
+
+
+
   { path: '/doan-sinh/ds-doan-sinh/tat-ca', name: 'Tất Cả', element: TatCa },
-  { path: '/doan-sinh/diem-danh', name: 'Điểm Danh', element: DiemDanh },
-  { path: '/doan-sinh/quy-doan', name: 'Quỹ Đoàn', element: QuyDoan },
-  { path: '/huynh-truong', name: 'Huynh Trưởng', exact: true },
-  { path: '/huynh-truong/danh-sach', name: 'Danh Sách', element: DanhSach },
+  // { path: '/doan-sinh/diem-danh', name: 'Điểm Danh', element: DiemDanh },
+  // { path: '/doan-sinh/quy-doan', name: 'Quỹ Đoàn', element: QuyDoan },
+  // { path: '/huynh-truong', name: 'Huynh Trưởng', exact: true },
+  { path: '/huynh-truong/danh-sach', name: 'Danh Sách Huynh Trưởng', element: DanhSachHuynhTruong },
   { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru },
+  { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD }
 ]
 
 export default routes

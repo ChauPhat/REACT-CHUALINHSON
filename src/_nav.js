@@ -1,100 +1,156 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
-  cilBell,
-  cilCalculator,
-  cilChartPie,
-  cilCursor,
-  cilDescription,
-  cilDrop,
   cilFile,
-  cilNotes,
-  cilPencil,
+  cilGroup,
   cilPlus,
-  cilPuzzle,
-  cilSpeedometer,
-  cilStar,
+  cilMoney,
+  cilUserPlus,
+  cilHouse,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
 const _nav = [
   {
     component: CNavItem,
-    name: 'Dashboard',
-    to: '/dashboard',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
+    name: 'Trang Chủ',
+    to: '/',
+    icon: <CIcon icon={cilHouse} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    name: 'Danh Mục',
+    name: 'Quản Lý',
   },
   {
     component: CNavGroup,
-    name: 'Đoàn Sinh',
+    name: 'Danh Sách Đoàn Sinh',
     to: '/doan-sinh',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
     items: [
       {
         component: CNavGroup,
-        name: 'Danh Sách Đoàn Sinh',
+        name: 'Đoàn Thiếu Nam',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
         items: [
           {
             component: CNavItem,
-            name: 'Oanh Vũ Nam',
-            to: '/doan-sinh/ds-doan-sinh/oanh-vu-nam',
+            name: 'Danh Sách',
+            to: '/doan-sinh/ds-thieu-nam',
           },
           {
             component: CNavItem,
-            name: 'Oanh Vũ Nữ',
-            to: '/doan-sinh/ds-doan-sinh/oanh-vu-nu',
+            name: 'Điểm Danh',
+            to: '/doan-sinh/dd-thieu-nam',
           },
           {
             component: CNavItem,
-            name: 'Thiếu Nam',
-            to: '/doan-sinh/ds-doan-sinh/thieu-nam',
-          },
-          {
-            component: CNavItem,
-            name: 'Thiếu Nữ',
-            to: '/doan-sinh/ds-doan-sinh/thieu-nu',
-          },
-          {
-            component: CNavItem,
-            name: 'Ngành Thanh',
-            to: '/doan-sinh/ds-doan-sinh/nganh-thanh',
-          },
-          {
-            component: CNavItem,
-            name: 'Tất Cả',
-            to: '/doan-sinh/ds-doan-sinh/tat-ca',
-          },
+            name: 'Quỹ Đoàn',
+            to: '/doan-sinh/qd-thieu-nam',
+          }
         ],
       },
       {
-        component: CNavItem,
-        name: 'Điểm Danh',
+        component: CNavGroup,
+        name: 'Đoàn Thiếu Nữ',
+        to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
-        to: '/doan-sinh/diem-danh',
+        items: [
+          {
+            component: CNavItem,
+            name: 'Danh Sách',
+            to: '/doan-sinh/ds-thieu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Điểm Danh',
+            to: '/doan-sinh/dd-thieu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Quỹ Đoàn',
+            to: '/doan-sinh/qd-thieu-nu',
+          }
+        ],
       },
       {
-        component: CNavItem,
-        name: 'Quỹ Đoàn',
+        component: CNavGroup,
+        name: 'Đoàn Oanh Vũ Nữ',
+        to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
-        to: '/doan-sinh/quy-doan',
+        items: [
+          {
+            component: CNavItem,
+            name: 'Danh Sách',
+            to: '/doan-sinh/ds-oanh-vu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Điểm Danh',
+            to: '/doan-sinh/dd-oanh-vu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Quỹ Đoàn',
+            to: '/doan-sinh/qd-oanh-vu-nu',
+          }
+        ],
+      },
+      {
+        component: CNavGroup,
+        name: 'Đoàn Oanh Vũ Nam',
+        to: '/ds-doan-sinh',
+        icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        items: [
+          {
+            component: CNavItem,
+            name: 'Danh Sách',
+            to: '/doan-sinh/ds-oanh-vu-nam',
+          },
+          {
+            component: CNavItem,
+            name: 'Điểm Danh',
+            to: '/doan-sinh/dd-oanh-vu-nam',
+          },
+          {
+            component: CNavItem,
+            name: 'Quỹ Đoàn',
+            to: '/doan-sinh/qd-oanh-vu-nam',
+          }
+        ],
+      },
+      {
+        component: CNavGroup,
+        name: 'Ngành Thanh',
+        to: '/ds-doan-sinh',
+        icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        items: [
+          {
+            component: CNavItem,
+            name: 'Danh Sách',
+            to: '/doan-sinh/ds-nganh-thanh',
+          },
+          {
+            component: CNavItem,
+            name: 'Điểm Danh',
+            to: '/doan-sinh/dd-nganh-thanh',
+          },
+          {
+            component: CNavItem,
+            name: 'Quỹ Đoàn',
+            to: '/doan-sinh/qd-nganh-thanh',
+          }
+        ],
       },
     ],
   },
+
+
   {
     component: CNavGroup,
     name: 'Huynh Trưởng',
     to: '/huynh-truong',
-    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -105,10 +161,21 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Quỹ Gia Đình',
+    to: '/quygd',
+    icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Tài Liệu',
+  },
+  {
+    component: CNavItem,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
     icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
-  },
+  }
+
   // {
   //   component: CNavTitle,
   //   name: 'Theme',
