@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import sweetalert from 'sweetalert2'
 import {
   CButton,
   CCard,
@@ -18,6 +20,15 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const sessionId = sessionStorage.getItem('sessionId')
+    if (sessionId) {
+      navigate('/')
+    }
+  }, [navigate])
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -32,7 +43,17 @@ const Login = () => {
         sessionStorage.setItem('sessionId', response.data.sessionId)
         let sessionId = sessionStorage.getItem('sessionId')
         if (sessionId) {
-          window.location.href = '/trang-chu'
+          sweetalert.fire({
+            icon: "success",
+            title: "Đăng nhập thành công",
+            showConfirmButton: false,
+            timer: 2000
+          }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === sweetalert.DismissReason.timer) {
+              window.location.href = '/'
+            }
+          });
         }
       }
     } catch (error) {

@@ -24,6 +24,11 @@ import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
+const logOut = () => {
+  sessionStorage.removeItem('sessionId')
+  window.location.href = '/login'
+}
+
 const AppHeaderDropdown = () => {
   return (
     <CDropdown variant="nav-item">
@@ -37,7 +42,7 @@ const AppHeaderDropdown = () => {
           Profile
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem href="#" onClick={logOut}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Log Out
         </CDropdownItem>
