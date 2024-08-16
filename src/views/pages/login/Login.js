@@ -25,13 +25,26 @@ const Login = () => {
     try {
       const response = await axios.post('http://103.15.222.65:8080/api/auth/login', {
         username: username,
-        password: password,
+        password: password
       })
-
       console.log('Login successful:', response.data)
-      // Bạn có thể lưu token hoặc chuyển hướng người dùng tại đây
+      if (response.data.sessionId) {
+        sessionStorage.setItem('sessionId', response.data.sessionId)
+        let sessionId = sessionStorage.getItem('sessionId')
+        if (sessionId) {
+          window.location.href = '/trang-chu'
+        }
+      }
     } catch (error) {
-      console.error('Login failed:', error.response ? error.response.data : error.message)
+      if (error.response) {
+        console.error('Login failed:', error.response.data)
+        if (error.response.status === 401) {
+          alert('Unauthorized: Please check your username and password.')
+        }
+      } else {
+        console.error('Login failed:', error.message)
+        alert('Network error: Please try again later.')
+      }
     }
   }
 
@@ -50,9 +63,9 @@ const Login = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput 
-                        placeholder="Username" 
-                        autoComplete="username" 
+                      <CFormInput
+                        placeholder="Username"
+                        autoComplete="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                       />
@@ -71,8 +84,8 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton 
-                          color="primary" 
+                        <CButton
+                          color="primary"
                           className="px-4"
                           onClick={handleLogin} // Gọi handleLogin khi nhấn nút
                         >
