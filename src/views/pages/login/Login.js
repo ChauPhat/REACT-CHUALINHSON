@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import sweetalert from 'sweetalert2'
+import env from '../../../env'
+
 import {
   CButton,
   CCard,
@@ -32,7 +34,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://103.15.222.65:8080/api/auth/login', {
+      const response = await axios.post(`${env.apiUrl}/api/auth/login`, {
         username: username,
         password: password
       })
