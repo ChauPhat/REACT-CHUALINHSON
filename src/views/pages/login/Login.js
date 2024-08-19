@@ -23,8 +23,8 @@ const Login = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const sessionId = sessionStorage.getItem('sessionId')
-    if (sessionId) {
+    const token = sessionStorage.getItem('token')
+    if (token) {
       navigate('/')
     }
   }, [navigate])
@@ -39,19 +39,11 @@ const Login = () => {
         password: password
       })
       console.log(response.data)
-      if (response.data === 'Invalid username or password') {
-        sweetalert.fire({
-          icon: "error",
-          title: "Sai tên đăng nhập hoặc mật khẩu",
-          showConfirmButton: false,
-          timer: 2000
-        })
-        return
-      }
-      if (response.data.sessionId) {
-        sessionStorage.setItem('sessionId', response.data.sessionId)
-        let sessionId = sessionStorage.getItem('sessionId')
-        if (sessionId) {
+      let data = response.data.data
+      if (data.token) {
+        sessionStorage.setItem('token', data.token)
+        let token = sessionStorage.getItem('token')
+        if (token) {
           sweetalert.fire({
             icon: "success",
             title: "Đăng nhập thành công",
@@ -65,6 +57,15 @@ const Login = () => {
         }
       }
     } catch (error) {
+      if (error.response.status === 403) {
+        sweetalert.fire({
+          icon: "error",
+          title: "Sai tên đăng nhập hoặc mật khẩu",
+          showConfirmButton: false,
+          timer: 2000
+        })
+        return
+      }
       if (error.response) {
         console.error('Login failed:', error.response.data)
         if (error.response.status === 401) {

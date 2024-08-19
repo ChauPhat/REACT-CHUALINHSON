@@ -5,14 +5,14 @@ import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/inde
 
 
 const DefaultLayout = () => {
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   const sessionId = sessionStorage.getItem('sessionId')
-  //   if (!sessionId) {
-  //     navigate('/login')
-  //   }
-  // }, [navigate])
+  useEffect(() => {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      navigate('/login')
+    }
+  }, [navigate])
 
   return (
     <div>
