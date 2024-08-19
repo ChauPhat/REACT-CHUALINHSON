@@ -19,6 +19,7 @@ import {
   CCol,
 } from '@coreui/react'
 import '../nganh-thanh/DanhSach.css'
+import Table from '../../table/Table'
 
 const usersData = [
   {
@@ -152,7 +153,7 @@ const DSNganhThanh = () => {
   const filteredData = usersData.filter((user) => {
     const registeredDate = formatDate(user.registered);
     const searchDate = searchRegistered ? searchRegistered.split('-') : [];
-  
+
     // Nếu chỉ nhập năm
     if (searchDate.length === 1 && searchDate[0].length === 4) {
       const searchYear = parseInt(searchDate[0], 10);
@@ -163,7 +164,7 @@ const DSNganhThanh = () => {
         registeredDate.getFullYear() === searchYear
       );
     }
-  
+
     // Nếu nhập đầy đủ ngày-tháng-năm
     if (searchDate.length === 3) {
       const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
@@ -176,7 +177,7 @@ const DSNganhThanh = () => {
         registeredDate.getFullYear() === searchYear
       );
     }
-  
+
     // Mặc định trả về khi không nhập ngày đăng ký
     return (
       (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
@@ -184,7 +185,7 @@ const DSNganhThanh = () => {
       (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
     );
   });
-  
+
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen)
@@ -206,6 +207,63 @@ const DSNganhThanh = () => {
     }
   }
 
+  const headers = [
+    'Ảnh',
+    'Tên',
+    'Ngày đăng ký',
+    'Vai trò',
+    'Trạng thái',
+    'Thao tác',
+  ];
+  const headerCells = [
+    '',
+    <CFormInput
+      type="search"
+      placeholder="Tìm theo tên"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+    />,
+    <CFormInput
+      type="search"
+      placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
+      value={searchRegistered}
+      onChange={(e) => setSearchRegistered(e.target.value)}
+    />,
+    <CFormInput
+      type="search"
+      placeholder="Tìm theo vai trò"
+      value={searchRole}
+      onChange={(e) => setSearchRole(e.target.value)}
+    />,
+    <CFormInput
+      type="search"
+      placeholder="Tìm theo trạng thái"
+      value={searchStatus}
+      onChange={(e) => setSearchStatus(e.target.value)}
+    />,
+    '',
+  ];
+
+  const renderRow = (user) => (
+    <>
+      <CTableDataCell>
+        <CAvatar src={user.avatar} />
+      </CTableDataCell>
+      <CTableDataCell>{user.name}</CTableDataCell>
+      <CTableDataCell>{user.registered}</CTableDataCell>
+      <CTableDataCell>{user.role}</CTableDataCell>
+      <CTableDataCell>
+        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
+          {user.status}
+        </CBadge>
+      </CTableDataCell>
+      <CTableDataCell>
+        <CButton color="info" variant="outline">Show</CButton>
+      </CTableDataCell>
+    </>
+  );
+
+
   return (
     <div className="container-fluid">
       <CRow className="mb-3 d-flex">
@@ -217,88 +275,13 @@ const DSNganhThanh = () => {
         </CCol>
       </CRow>
 
-      <CTable hover responsive>
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell scope="col">Ảnh</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Tên</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Ngày đăng ký</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Vai trò</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Trạng thái</CTableHeaderCell>
-            <CTableHeaderCell scope="col"></CTableHeaderCell>
-          </CTableRow>
+      <Table
+        headers={headers}
+        headerCells={headerCells}
+        items={currentItems}
+        renderRow={renderRow}
+      />
 
-          <CTableRow>
-            <CTableHeaderCell scope="row"></CTableHeaderCell>
-            <CTableDataCell>
-              <CFormInput
-                type="search"
-                placeholder="Tìm theo tên"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-              />
-            </CTableDataCell>
-            <CTableDataCell>
-              <CFormInput
-                type="search"
-                placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
-                value={searchRegistered}
-                onChange={(e) => setSearchRegistered(e.target.value)}
-              />
-            </CTableDataCell>
-            <CTableDataCell>
-              <CFormInput
-                type="search"
-                placeholder="Tìm theo vai trò"
-                value={searchRole}
-                onChange={(e) => setSearchRole(e.target.value)}
-              />
-            </CTableDataCell>
-            <CTableDataCell>
-              <CFormInput
-                type="search"
-                placeholder="Tìm theo trạng thái"
-                value={searchStatus}
-                onChange={(e) => setSearchStatus(e.target.value)}
-              />
-            </CTableDataCell>
-            <CTableDataCell></CTableDataCell>
-          </CTableRow>
-        </CTableHead>
-
-        <CTableBody>
-          {currentItems.length > 0 ? (
-            currentItems.map((user, index) => (
-              <CTableRow key={index}>
-                <CTableDataCell className="text-center">
-                  <CAvatar src={`/images/${user.avatar}`} color="primary" textColor="white">
-                    {user.name.charAt(0)}
-                  </CAvatar>
-                </CTableDataCell>
-                <CTableDataCell>{user.name}</CTableDataCell>
-                <CTableDataCell>{user.registered}</CTableDataCell>
-                <CTableDataCell>{user.role}</CTableDataCell>
-                <CTableDataCell>
-                <CBadge id="custom-badge" className={getBadgeClass(user.status)}>
-                  {user.status}
-                </CBadge>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <CButton color="info" variant="outline">
-                    Show
-                  </CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))
-          ) : (
-            <CTableRow>
-              <CTableDataCell colSpan="6" className="text-center">
-                Không tìm thấy dữ liệu
-              </CTableDataCell>
-            </CTableRow>
-          )}
-        </CTableBody>
-      </CTable>
 
       <div className='card-footer align-items-center'>
         <div className='row d-flex'>
@@ -342,41 +325,41 @@ const DSNganhThanh = () => {
             </nav>
           </div>
           <div className='col-6 d-flex justify-content-end'>
-      <span className='me-2 mt-1'>Dòng:</span>
-      <div className="dropdown">
-        <button
-          className="btn btn-outline-secondary dropdown-toggle"
-          type="button"
-          onClick={toggleDropdown}
-        >
-          {itemsPerPage}
-        </button>
-        {dropdownOpen && (
-          <ul className="dropdown-menu show">
-            <li>
-              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(5)}>
-                5
+            <span className='me-2 mt-1'>Dòng:</span>
+            <div className="dropdown">
+              <button
+                className="btn btn-outline-secondary dropdown-toggle"
+                type="button"
+                onClick={toggleDropdown}
+              >
+                {itemsPerPage}
               </button>
-            </li>
-            <li>
-              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(10)}>
-                10
-              </button>
-            </li>
-            <li>
-              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(15)}>
-                15
-              </button>
-            </li>
-            <li>
-              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(20)}>
-                20
-              </button>
-            </li>
-          </ul>
-        )}
-      </div>
-    </div>
+              {dropdownOpen && (
+                <ul className="dropdown-menu show">
+                  <li>
+                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(5)}>
+                      5
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(10)}>
+                      10
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(15)}>
+                      15
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(20)}>
+                      20
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
