@@ -1,347 +1,384 @@
 import React, { useState } from 'react'
 import {
-    CFormSelect,
-    CAvatar,
-    CTable,
-    CTableBody,
-    CTableDataCell,
-    CTableHead,
-    CTableHeaderCell,
-    CTableRow,
-    CContainer,
-    CRow,
-    CPagination,
-    CPaginationItem,
-    CForm,
-    CFormInput,
-    CButton,
-    CCol,
-  } from '@coreui/react'
+  CBadge,
+  CFormSelect,
+  CAvatar,
+  CTable,
+  CTableBody,
+  CTableDataCell,
+  CTableHead,
+  CTableHeaderCell,
+  CTableRow,
+  CContainer,
+  CRow,
+  CPagination,
+  CPaginationItem,
+  CForm,
+  CFormInput,
+  CButton,
+  CCol,
+} from '@coreui/react'
+import '../nganh-thanh/DanhSach.css'
+
+const usersData = [
+  {
+    id: 1,
+    name: 'Samppa Nori',
+    avatar: '1.jpg',
+    registered: '02-11-2024',
+    role: 'Member',
+    status: 'Active',
+  },
+  {
+    id: 2,
+    name: 'Estavan Lykos',
+    avatar: '2.jpg',
+    registered: '10-05-2023',
+    role: 'Staff',
+    status: 'Banned',
+  },
+  {
+    id: 3,
+    name: 'Samppa Nori9',
+    avatar: '1.jpg',
+    registered: '20-08-2024',
+    role: 'Member',
+    status: 'Inactive',
+  },
+  {
+    id: 4,
+    name: 'Estavan Lykos4',
+    avatar: '2.jpg',
+    registered: '22-02-2024',
+    role: 'Staff',
+    status: 'Pending',
+  },
+  {
+    id: 5,
+    name: 'Nguyễn Văn A',
+    avatar: '1.jpg',
+    registered: '02-11-2024',
+    role: 'Member',
+    status: 'Active',
+  },
+  {
+    id: 6,
+    name: 'Trần Văn B',
+    avatar: '2.jpg',
+    registered: '10-05-2023',
+    role: 'Staff',
+    status: 'Banned',
+  },
+  {
+    id: 7,
+    name: 'Nguyễn Thị C',
+    avatar: '1.jpg',
+    registered: '20-08-2024',
+    role: 'Member',
+    status: 'Inactive',
+  },
+  {
+    id: 8,
+    name: 'Huỳnh Văn E',
+    avatar: '2.jpg',
+    registered: '22-02-2024',
+    role: 'Staff',
+    status: 'Pending',
+  },
+  {
+    id: 9,
+    name: 'Cao Văn L',
+    avatar: '1.jpg',
+    registered: '05-11-2004',
+    role: 'Member',
+    status: 'Active',
+  },
+  {
+    id: 10,
+    name: 'Phùng Châu P',
+    avatar: '2.jpg',
+    registered: '10-05-2003',
+    role: 'Staff',
+    status: 'Banned',
+  },
+  {
+    id: 11,
+    name: 'Hồ Thanh T',
+    avatar: '1.jpg',
+    registered: '20-08-2004',
+    role: 'Member',
+    status: 'Inactive',
+  },
+  {
+    id: 12,
+    name: 'Nguyễn Tấn L',
+    avatar: '2.jpg',
+    registered: '26-02-2005',
+    role: 'Staff',
+    status: 'Pending',
+  },
+  //... thêm dữ liệu khác
+]
+// Hàm format date từ dd-mm-yyyy sang đối tượng Date
+const formatDate = (dateString) => {
+  const [day, month, year] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+const getBadgeClass = (status) => {
+  switch (status) {
+    case 'Active':
+      return 'custom-badge-success';
+    case 'Inactive':
+      return 'custom-badge-secondary';
+    case 'Pending':
+      return 'custom-badge-warning'
+    case 'Banned':
+      return 'custom-badge-danger';
+    default:
+      return 'primary'
+  }
+}
+
+const DSNganhThanh = () => {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(5)
+  const [searchName, setSearchName] = useState('')
+  const [searchRegistered, setSearchRegistered] = useState('')
+  const [searchRole, setSearchRole] = useState('')
+  const [searchStatus, setSearchStatus] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
+  const filteredData = usersData.filter((user) => {
+    const registeredDate = formatDate(user.registered);
+    const searchDate = searchRegistered ? searchRegistered.split('-') : [];
   
-  const usersData = [
-    {
-      id: 1,
-      name: 'Samppa Nori',
-      avatar: '1.jpg',
-      registered: '2022/01/01',
-      role: 'Member',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      name: 'Estavan Lykos',
-      avatar: '2.jpg',
-      registered: '2022/02/07',
-      role: 'Staff',
-      status: 'Banned',
-    },
-    {
-      id: 3,
-      name: 'Chetan Mohamed',
-      avatar: '3.jpg',
-      registered: '2022/02/07',
-      role: 'Admin',
-      status: 'Inactive',
-      _selected: true,
-    },
-    {
-      id: 4,
-      name: 'Derick Maximinus',
-      avatar: '4.jpg',
-      registered: '2022/03/19',
-      role: 'Member',
-      status: 'Pending',
-    },
-    {
-      id: 5,
-      name: 'Friderik Dávid',
-      avatar: '5.jpg',
-      registered: '2022/01/21',
-      role: 'Staff',
-      status: 'Active'
-    },
-    { 
-      id: 6,
-      name: 'Yiorgos Avraamu',
-      avatar: '6.jpg',
-      registered: '2022/01/01',
-      role: 'Member',
-      status: 'Active'
-    },
-    {
-      id: 7,
-      name: 'Avram Tarasios',
-      avatar: '7.jpg',
-      registered: '2022/02/07',
-      role: 'Staff',
-      status: 'Banned',
-      _selected: true,
-    },
-    {
-      id: 8,
-      name: 'Quintin Ed',
-      avatar: '8.jpg',
-      registered: '2022/02/07',
-      role: 'Admin',
-      status: 'Inactive'
-    },
-    { 
-      id: 9,
-      name: 'Enéas Kwadwo',
-      avatar: '9.jpg',
-      registered: '2022/03/19',
-      role: 'Member',
-      status: 'Pending'
-    },
-    { 
-      id: 10,
-      name: 'Agapetus Tadeáš',
-      avatar: '10.jpg',
-      registered: '2022/01/21',
-      role: 'Staff',
-      status: 'Active'
-    },
-    { 
-      id: 11,
-      name: 'Carwyn Fachtna',
-      avatar: '11.jpg',
-      registered: '2022/01/01',
-      role: 'Member',
-      status: 'Active'
-    },
-    {
-      id: 12,
-      name: 'Nehemiah Tatius',
-      avatar: '12.jpg',
-      registered: '2022/02/07',
-      role: 'Staff',
-      status: 'Banned',
-      _selected: true,
-    },
-    {
-      id: 13,
-      name: 'Ebbe Gemariah',
-      avatar: '13.jpg',
-      registered: '2022/02/07',
-      role: 'Admin',
-      status: 'Inactive'
-    },
-    {
-      id: 14,
-      name: 'Eustorgios Amulius',
-      avatar: '14.jpg',
-      registered: '2022/03/19',
-      role: 'Member',
-      status: 'Pending',
-    },
-    {
-      id: 15,
-      name: 'Leopold Gáspár',
-      avatar: '15.jpg',
-      registered: '2022/01/21',
-      role: 'Staff',
-      status: 'Active'
-    },
-  ]
-  const getBadge = (status) => {
-    switch (status) {
-      case 'Active':
-        return 'success'
-      case 'Inactive':
-        return 'secondary'
-case 'Pending':
-        return 'warning'
-      case 'Banned':
-        return 'danger'
-      default:
-        return 'primary'
+    // Nếu chỉ nhập năm
+    if (searchDate.length === 1 && searchDate[0].length === 4) {
+      const searchYear = parseInt(searchDate[0], 10);
+      return (
+        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
+        registeredDate.getFullYear() === searchYear
+      );
+    }
+  
+    // Nếu nhập đầy đủ ngày-tháng-năm
+    if (searchDate.length === 3) {
+      const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
+      return (
+        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
+        registeredDate.getDate() === searchDay &&
+        registeredDate.getMonth() + 1 === searchMonth &&
+        registeredDate.getFullYear() === searchYear
+      );
+    }
+  
+    // Mặc định trả về khi không nhập ngày đăng ký
+    return (
+      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+      (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
+    );
+  });
+  
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen)
+  }
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value)
+    setDropdownOpen(false) // Đóng dropdown sau khi chọn
+  }
+
+  const indexOfLastItem = currentPage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
     }
   }
-  
-  const DSNganhThanh = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage] = useState(5)
-    const [searchName, setSearchName] = useState('')
-    const [searchRegistered, setSearchRegistered] = useState('')
-    const [searchRole, setSearchRole] = useState('')
-    const [searchStatus, setSearchStatus] = useState('')
-  
-    const formatDate = (dateStr) => {
-      const [day, month, year] = dateStr.split('/');
-      return new Date(year, month - 1, day);
-    }
-  
-    const filteredData = usersData.filter((user) => {
-        const userDate = new Date(user.registered); // Đảm bảo userDate là đối tượng Date
-        const searchDate = searchRegistered ? new Date(searchRegistered) : null;
-      
-        return (
-          user.name.toLowerCase().includes(searchName.toLowerCase()) &&
-          (!searchDate || (
-            userDate.getFullYear() === searchDate.getFullYear() &&
-            userDate.getMonth() === searchDate.getMonth() &&
-            userDate.getDate() >= searchDate.getDate()
-          )) &&
-          user.role.toLowerCase().includes(searchRole.toLowerCase()) &&
-          user.status.toLowerCase().includes(searchStatus.toLowerCase())
-        );
-      });
-      
-    const indexOfLastItem = currentPage * itemsPerPage
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-  
-    const paginate = (pageNumber) => setCurrentPage(pageNumber)
-  
-    return (
-      <div className="container-fluid">
-        <CRow className="mb-3">
-          <CCol md={6}>
-            <h2>Danh sách Đoàn Sinh</h2>
-          </CCol>
-          <CCol md={6} className="d-flex justify-content-end">
-            <CButton color="success">Thêm dữ liệu</CButton>
-          </CCol>
-        </CRow>
-  
-        <CTable hover>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell scope="col">Ảnh</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Tên</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Ngày đăng ký</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Vai trò</CTableHeaderCell>
-              <CTableHeaderCell scope="col">Trạng thái</CTableHeaderCell>
-              <CTableHeaderCell scope="col"></CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {/* Dòng tìm kiếm */}
-            <CTableRow>
-              <CTableHeaderCell scope="row"></CTableHeaderCell>
-              <CTableDataCell>
-                <CFormInput
-                  type="search"
-                  placeholder="Tìm theo tên"
-                  aria-label="Search by Name"
-                  value={searchName}
-onChange={(e) => setSearchName(e.target.value)}
-                />
-              </CTableDataCell>
-              <CTableDataCell>
-                <CFormInput
-                  type="search"
-                  placeholder="Tìm theo ngày đăng ký (dd/mm/yyyy)"
-                  aria-label="Search by Registered Date"
-                  value={searchRegistered}
-                  onChange={(e) => setSearchRegistered(e.target.value)}
-                />
-              </CTableDataCell>
-              <CTableDataCell>
-                <CFormInput
-                  type="search"
-                  placeholder="Tìm theo vai trò"
-                  aria-label="Search by Role"
-                  value={searchRole}
-                  onChange={(e) => setSearchRole(e.target.value)}
-                />
-              </CTableDataCell>
-              <CTableDataCell>
-                <CFormInput
-                  type="search"
-                  placeholder="Tìm theo trạng thái"
-                  aria-label="Search by Status"
-                  value={searchStatus}
-                  onChange={(e) => setSearchStatus(e.target.value)}
-                />
-              </CTableDataCell>
-              <CTableDataCell></CTableDataCell>
-            </CTableRow>
-  
-            {/* Dữ liệu người dùng đã được lọc và phân trang */}
-            {currentItems.length > 0 ? (
-              currentItems.map((user, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell className="text-center">
-                    <CAvatar src={`/images/${user.avatar}`} color="primary" textColor="white">
-                      {user.name.charAt(0)}
-                    </CAvatar>
-                  </CTableDataCell>
-                  <CTableDataCell>{user.name}</CTableDataCell>
-                  <CTableDataCell>{user.registered}</CTableDataCell>
-                  <CTableDataCell>{user.role}</CTableDataCell>
-                  <CTableDataCell>
-                    <CButton color={getBadge(user.status)}>{user.status}</CButton>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <CButton color="secondary" variant="outline">
-                      Show
-                    </CButton>
-                  </CTableDataCell>
-                </CTableRow>
-              ))
-            ) : (
-              <CTableRow>
-                <CTableDataCell colSpan="6" className="text-center">
-                  Không tìm thấy dữ liệu
+
+  return (
+    <div className="container-fluid">
+      <CRow className="mb-3 d-flex">
+        <CCol className="d-flex align-items-center flex-grow-1">
+          <h3>Danh sách Đoàn Sinh</h3>
+        </CCol>
+        <CCol className="d-flex justify-content-end">
+          <CButton color="secondary">Thêm</CButton>
+        </CCol>
+      </CRow>
+
+      <CTable hover responsive>
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell scope="col">Ảnh</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Tên</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Ngày đăng ký</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Vai trò</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Trạng thái</CTableHeaderCell>
+            <CTableHeaderCell scope="col"></CTableHeaderCell>
+          </CTableRow>
+
+          <CTableRow>
+            <CTableHeaderCell scope="row"></CTableHeaderCell>
+            <CTableDataCell>
+              <CFormInput
+                type="search"
+                placeholder="Tìm theo tên"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+              />
+            </CTableDataCell>
+            <CTableDataCell>
+              <CFormInput
+                type="search"
+                placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
+                value={searchRegistered}
+                onChange={(e) => setSearchRegistered(e.target.value)}
+              />
+            </CTableDataCell>
+            <CTableDataCell>
+              <CFormInput
+                type="search"
+                placeholder="Tìm theo vai trò"
+                value={searchRole}
+                onChange={(e) => setSearchRole(e.target.value)}
+              />
+            </CTableDataCell>
+            <CTableDataCell>
+              <CFormInput
+                type="search"
+                placeholder="Tìm theo trạng thái"
+                value={searchStatus}
+                onChange={(e) => setSearchStatus(e.target.value)}
+              />
+            </CTableDataCell>
+            <CTableDataCell></CTableDataCell>
+          </CTableRow>
+        </CTableHead>
+
+        <CTableBody>
+          {currentItems.length > 0 ? (
+            currentItems.map((user, index) => (
+              <CTableRow key={index}>
+                <CTableDataCell className="text-center">
+                  <CAvatar src={`/images/${user.avatar}`} color="primary" textColor="white">
+                    {user.name.charAt(0)}
+                  </CAvatar>
+                </CTableDataCell>
+                <CTableDataCell>{user.name}</CTableDataCell>
+                <CTableDataCell>{user.registered}</CTableDataCell>
+                <CTableDataCell>{user.role}</CTableDataCell>
+                <CTableDataCell>
+                <CBadge id="custom-badge" className={getBadgeClass(user.status)}>
+                  {user.status}
+                </CBadge>
+                </CTableDataCell>
+                <CTableDataCell>
+                  <CButton color="info" variant="outline">
+                    Show
+                  </CButton>
                 </CTableDataCell>
               </CTableRow>
-            )}
-          </CTableBody>
-        </CTable>
-  
-      {/* Điều hướng phân trang */}
-      <CContainer>
-        <CRow className="justify-content-between align-items-center">
-          <CCol md={8}>
-            <CPagination aria-label="Page navigation example">
-              <CPaginationItem
-                disabled={currentPage === 1}
-                onClick={() => paginate(currentPage - 1)}
-              >
-                Previous
-</CPaginationItem>
-              {Array.from({ length: totalPages }, (_, index) => (
-                <CPaginationItem
-                  key={index}
-                  active={index + 1 === currentPage}
-                  onClick={() => paginate(index + 1)}
-                >
-                  {index + 1}
-                </CPaginationItem>
-              ))}
-              <CPaginationItem
-                disabled={currentPage === totalPages}
-                onClick={() => paginate(currentPage + 1)}
-              >
-                Next
-              </CPaginationItem>
-            </CPagination>
-          </CCol>
-          <CCol md={2} className="text-end">
-            <CRow>
-              <CCol md={6} className="text-end">
-                Trang
-              </CCol>
-              <CCol md={6} className="text-end">
-                <CFormSelect
-                  size="sm"
-                  aria-label="Default select example"
-                  onChange={(e) => setCurrentPage(Number(e.target.value))}
-                  value={currentPage}
-                >
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <option key={index + 1} value={index + 1}>
-                      {index + 1}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-            </CRow>
-          </CCol>
-        </CRow>
-      </CContainer>
+            ))
+          ) : (
+            <CTableRow>
+              <CTableDataCell colSpan="6" className="text-center">
+                Không tìm thấy dữ liệu
+              </CTableDataCell>
+            </CTableRow>
+          )}
+        </CTableBody>
+      </CTable>
+
+      <div className='card-footer align-items-center'>
+        <div className='row d-flex'>
+          <div className='col-6 mb-3'>
+            <nav aria-label="Page navigation example">
+              <ul className="pagination">
+                <li className="page-item">
+                  <a
+                    className="page-link"
+                    href="#"
+                    aria-label="Previous"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                {[...Array(totalPages).keys()].map(page => (
+                  <li className={`page-item ${currentPage === page + 1 ? 'active' : ''}`} key={page}>
+                    <a
+                      className="page-link"
+                      href="#"
+                      onClick={() => handlePageChange(page + 1)}
+                    >
+                      {page + 1}
+                    </a>
+                  </li>
+                ))}
+                <li className="page-item">
+                  <a
+                    className="page-link"
+                    href="#"
+                    aria-label="Next"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div className='col-6 d-flex justify-content-end'>
+      <span className='me-2 mt-1'>Dòng:</span>
+      <div className="dropdown">
+        <button
+          className="btn btn-outline-secondary dropdown-toggle"
+          type="button"
+          onClick={toggleDropdown}
+        >
+          {itemsPerPage}
+        </button>
+        {dropdownOpen && (
+          <ul className="dropdown-menu show">
+            <li>
+              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(5)}>
+                5
+              </button>
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(10)}>
+                10
+              </button>
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(15)}>
+                15
+              </button>
+            </li>
+            <li>
+              <button className="dropdown-item" onClick={() => handleItemsPerPageChange(20)}>
+                20
+              </button>
+            </li>
+          </ul>
+        )}
+      </div>
+    </div>
+        </div>
+      </div>
     </div>
   )
 }
