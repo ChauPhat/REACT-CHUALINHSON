@@ -26,6 +26,8 @@ import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const logOut = () => {
   sessionStorage.removeItem('sessionId')
+  sessionStorage.removeItem('token')
+  sessionStorage.removeItem('tokenExpiry')
   window.location.href = '/login'
 }
 
