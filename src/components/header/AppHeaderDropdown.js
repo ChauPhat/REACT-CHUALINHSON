@@ -14,7 +14,8 @@ import {
   CModalHeader,
   CModalTitle,
   CButton,
-  CFormInput
+  CFormInput,
+  CFormCheck
 } from '@coreui/react'
 import {
   cilLockLocked,
@@ -43,11 +44,11 @@ const AppHeaderDropdown = () => {
 
   const user = {
     name: 'Nguyễn Văn A',
-    birthdate: '01/01/1990',
+    phapdanh: 'Pháp Danh',
     gender: 'Nam',
     email: 'nguyenvana@example.com',
     phone: '0123456789',
-    address: '123 Đường ABC, Quận 1, TP. HCM'
+    chucvu: '123 Đường ABC, Quận 1, TP. HCM'
   }
 
   return (
@@ -87,8 +88,8 @@ const AppHeaderDropdown = () => {
           />
           <CFormInput
             type="text"
-            label="Ngày sinh"
-            value={user.birthdate}
+            label="Pháp Danh"
+            value={user.phapdanh}
             disabled
             className="mb-3"
           />
@@ -113,10 +114,16 @@ const AppHeaderDropdown = () => {
             disabled
             className="mb-3"
           />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="Default radio" defaultChecked />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="Second default radio" />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios3" value="option3" label="Disabled radio" disabled />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="Default radio" defaultChecked />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="Second default radio" />
+          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios3" value="option3" label="Disabled radio" disabled />
           <CFormInput
             type="text"
-            label="Địa chỉ"
-            value={user.address}
+            label="Chúc vụ"
+            value={user.chucvu}
             disabled
             className="mb-3"
           />
