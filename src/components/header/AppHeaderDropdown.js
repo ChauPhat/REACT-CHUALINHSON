@@ -78,6 +78,9 @@ const AppHeaderDropdown = () => {
           <CModalTitle>User Profile</CModalTitle>
         </CModalHeader>
         <CModalBody>
+          <div className="text-center mb-3">
+            <img src='https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png' alt="User Avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+          </div>
           <CFormInput
             type="text"
             label="Họ tên"
