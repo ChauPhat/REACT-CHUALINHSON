@@ -44,6 +44,8 @@
     "recharts": "^2.12.7",
     "redux": "5.0.1",
     "simplebar-react": "^3.2.5",
+    "sweetalert2": "^11.12.4",
+    "sweetalert2-react-content": "^5.0.7",
     "slick-carousel": "^1.8.1",
     "sweetalert2": "^11.12.4"
   },
