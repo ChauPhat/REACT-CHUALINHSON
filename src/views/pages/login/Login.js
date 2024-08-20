@@ -24,8 +24,13 @@ const Login = () => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token')
-    if (token) {
+    const expiryTime = sessionStorage.getItem('tokenExpiry')
+    const now = new Date().getTime()
+    if (token && expiryTime && now < expiryTime) {
       navigate('/')
+    } else {
+      sessionStorage.removeItem('token')
+      sessionStorage.removeItem('tokenExpiry')
     }
   }, [navigate])
 
@@ -41,7 +46,12 @@ const Login = () => {
       console.log(response.data)
       let data = response.data.data
       if (data.token) {
+        const halfDay = 12 * 60 * 60 * 1000
+        const expiryTime = new Date().getTime() + halfDay
+
         sessionStorage.setItem('token', data.token)
+        sessionStorage.setItem('tokenExpiry', expiryTime)
+
         let token = sessionStorage.getItem('token')
         if (token) {
           sweetalert.fire({
@@ -115,7 +125,7 @@ const Login = () => {
                       <CButton
                         color="primary"
                         className="px-5 py-2"
-                        onClick={handleLogin} // Gọi handleLogin khi nhấn nút
+                        onClick={handleLogin}
                       >
                         Đăng nhập
                       </CButton>
