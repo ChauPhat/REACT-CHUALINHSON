@@ -91,9 +91,9 @@ const FiltersBarChart = () => {
     <h3>Điểm Danh Theo:</h3>
     <br/>
     <select value={filter} onChange={handleFilterChange} id="quarter-select" class="form-select" aria-label="Default select example">
-        <option value="quarter1">Tuần 1  -> 10</option>
-        <option value="quarter2">Tuần 10 -> 20</option>
-        <option value="quarter3">Tuần 20 -> 30</option>
+        <option value="quarter1">Tuần 1  &#8594; 10</option>
+        <option value="quarter2">Tuần 10 &#8594; 20</option>
+        <option value="quarter3">Tuần 20 &#8594; 30</option>
     </select>
   </div>
 
