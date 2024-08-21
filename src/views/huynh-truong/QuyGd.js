@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
 import {
-    CFormSelect,
-    CTableDataCell,
-    CRow,
     CButton,
     CCol,
     CFormInput,
     CModal,
-    CModalHeader,
-    CModalTitle,
     CModalBody,
     CModalFooter,
-} from '@coreui/react'
-import Table from '../table/Table'
+    CModalHeader,
+    CModalTitle,
+    CRow,
+    CTableDataCell
+} from '@coreui/react';
+import React, { useState } from 'react';
+import Table from '../table/Table';
 
 const fundData = [
     {
@@ -120,11 +119,114 @@ const fundData = [
         description: '-40000',
         amount: -40000,
     },
+    {
+        id: 13,
+        fundName: 'Quỹ Văn Hóa',
+        transactionName: 'Chi phí mua sách',
+        description: '-30000',
+        amount: -30000,
+    },
+    {
+        id: 14,
+        fundName: 'Quỹ Dự Phòng Bão Lụt',
+        transactionName: 'Thu tiền quyên góp bão lụt',
+        description: '+100000',
+        amount: 100000,
+    },
+    {
+        id: 15,
+        fundName: 'Quỹ Tiêu Dùng Cá Nhân',
+        transactionName: 'Chi mua đồ dùng cá nhân',
+        description: '-40000',
+        amount: -40000,
+    },
+    {
+        id: 13,
+        fundName: 'Quỹ Văn Hóa',
+        transactionName: 'Chi phí mua sách',
+        description: '-30000',
+        amount: -30000,
+    },
+    {
+        id: 14,
+        fundName: 'Quỹ Dự Phòng Bão Lụt',
+        transactionName: 'Thu tiền quyên góp bão lụt',
+        description: '+100000',
+        amount: 100000,
+    },
+    {
+        id: 15,
+        fundName: 'Quỹ Tiêu Dùng Cá Nhân',
+        transactionName: 'Chi mua đồ dùng cá nhân',
+        description: '-40000',
+        amount: -40000,
+    },
+    {
+        id: 13,
+        fundName: 'Quỹ Văn Hóa',
+        transactionName: 'Chi phí mua sách',
+        description: '-30000',
+        amount: -30000,
+    },
+    {
+        id: 14,
+        fundName: 'Quỹ Dự Phòng Bão Lụt',
+        transactionName: 'Thu tiền quyên góp bão lụt',
+        description: '+100000',
+        amount: 100000,
+    },
+    {
+        id: 15,
+        fundName: 'Quỹ Tiêu Dùng Cá Nhân',
+        transactionName: 'Chi mua đồ dùng cá nhân',
+        description: '-40000',
+        amount: -40000,
+    },
+    {
+        id: 13,
+        fundName: 'Quỹ Văn Hóa',
+        transactionName: 'Chi phí mua sách',
+        description: '-30000',
+        amount: -30000,
+    },
+    {
+        id: 14,
+        fundName: 'Quỹ Dự Phòng Bão Lụt',
+        transactionName: 'Thu tiền quyên góp bão lụt',
+        description: '+100000',
+        amount: 100000,
+    },
+    {
+        id: 15,
+        fundName: 'Quỹ Tiêu Dùng Cá Nhân',
+        transactionName: 'Chi mua đồ dùng cá nhân',
+        description: '-40000',
+        amount: -40000,
+    },
+    {
+        id: 13,
+        fundName: 'Quỹ Văn Hóa',
+        transactionName: 'Chi phí mua sách',
+        description: '-30000',
+        amount: -30000,
+    },
+    {
+        id: 14,
+        fundName: 'Quỹ Dự Phòng Bão Lụt',
+        transactionName: 'Thu tiền quyên góp bão lụt',
+        description: '+100000',
+        amount: 100000,
+    },
+    {
+        id: 15,
+        fundName: 'Quỹ Tiêu Dùng Cá Nhân',
+        transactionName: 'Chi mua đồ dùng cá nhân',
+        description: '-40000',
+        amount: -40000,
+    },
 ];
 
 const QuyGD = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage, setItemsPerPage] = useState(5)
     const [searchName, setSearchName] = useState('')
     const [modalVisible, setModalVisible] = useState(false)
     const [newFund, setNewFund] = useState({
@@ -138,22 +240,6 @@ const QuyGD = () => {
         searchName === '' || fund.fundName.toLowerCase().includes(searchName.toLowerCase())
     );
 
-    const indexOfLastItem = currentPage * itemsPerPage
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-
-    const handlePageChange = (page) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page)
-        }
-    }
-
-    const handleItemsPerPageChange = (e) => {
-        setItemsPerPage(parseInt(e.target.value));
-        setCurrentPage(1);
-    };
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setNewFund(prev => ({
@@ -163,17 +249,21 @@ const QuyGD = () => {
     };
 
     const handleAddFund = () => {
-        // Thêm quỹ mới vào danh sách (có thể thêm logic để thêm vào server sau)
         fundData.push({
             id: fundData.length + 1,
             ...newFund,
             amount: parseFloat(newFund.amount),
         });
-        setModalVisible(false); // Ẩn modal sau khi thêm
-        setNewFund({ fundName: '', transactionName: '', description: '', amount: 0 }); // Reset form
+        setModalVisible(false);
+        setNewFund({ fundName: '', transactionName: '', description: '', amount: 0 });
     };
 
-    const headers = ['Tên quỹ', 'Tên thu chi', 'Mô tả'];
+    const headers = [
+        <CTableDataCell width={30}>Tên Thu Chi</CTableDataCell>,
+        <CTableDataCell width={30}>Tên Quỹ</CTableDataCell>,
+        <CTableDataCell width={40}>Mô tả</CTableDataCell>
+    ];
+
     const headerCells = [
         <CFormInput
             type="search"
@@ -213,66 +303,10 @@ const QuyGD = () => {
             <Table
                 headers={headers}
                 headerCells={headerCells}
-                items={currentItems}
+                items={filteredData}
                 renderRow={renderRow}
+                searchCriteria={{ searchName }} // truyền nhiều giá trị tìm kiếm vào Table nếu mày thích
             />
-
-            <div className='card-footer align-items-center'>
-                <div className='row d-flex'>
-                    <div className='col-6 mb-3'>
-                        <nav aria-label="Page navigation example">
-                            <ul className="pagination">
-                                <li className="page-item">
-                                    <a
-                                        className="page-link"
-                                        href="#"
-                                        aria-label="Previous"
-                                        onClick={() => handlePageChange(currentPage - 1)}
-                                        disabled={currentPage === 1}
-                                    >
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                {[...Array(totalPages).keys()].map(page => (
-                                    <li className={`page-item ${currentPage === page + 1 ? 'active' : ''}`} key={page}>
-                                        <a
-                                            className="page-link"
-                                            href="#"
-                                            onClick={() => handlePageChange(page + 1)}
-                                        >
-                                            {page + 1}
-                                        </a>
-                                    </li>
-                                ))}
-                                <li className="page-item">
-                                    <a
-                                        className="page-link"
-                                        href="#"
-                                        aria-label="Next"
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    <div className="col-6 d-flex justify-content-end">
-                        <span className="me-2">Dòng:</span>
-                        <CFormSelect
-                            style={{ width: 'auto', height: '50%' }}
-                            value={itemsPerPage}
-                            onChange={handleItemsPerPageChange}
-                        >
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                        </CFormSelect>
-                    </div>
-                </div>
-            </div>
 
             {/* Modal thêm quỹ mới */}
             <CModal visible={modalVisible} onClose={() => setModalVisible(false)}>
