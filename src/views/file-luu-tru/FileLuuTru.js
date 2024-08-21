@@ -25,6 +25,7 @@ import {
 } from '@coreui/react'
 import '../doan-sinh/nganh-thanh/DanhSach.css'
 import Table from '../table/Table'
+import env from '../../env'
 
 // Hàm format date từ dd-mm-yyyy sang đối tượng Date
 const formatDate = (dateString) => {
@@ -54,7 +55,7 @@ const FileLuuTru = () => {
 
     const fetchFiles = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/api/file/getAllFile");
+            const response = await axios.get(`${env.apiUrl}/api/file/getAllFile`);
             setFileData(response.data.data);
         } catch (error) {
             console.error("Error fetching files:", error);
@@ -128,7 +129,7 @@ const FileLuuTru = () => {
         }).then((result) => {
             if (result.dismiss === MySwal.DismissReason.timer) {
                 try {
-                    axios.get(`http://localhost:8080/api/file/downloadFile?fileName=${name}`, {
+                    axios.get(`${env.apiUrl}/api/file/downloadFile?fileName=${name}`, {
                         responseType: 'blob', // Nhận dữ liệu dưới dạng Blob
                     })
                         .then(response => {
@@ -172,7 +173,7 @@ const FileLuuTru = () => {
                 try {
                     const formData = new FormData();
                     formData.append('file', selectedFile);
-                    axios.post(`http://localhost:8080/api/file/upload-file`, formData ,{
+                    axios.post(`${env.apiUrl}/api/file/upload-file`, formData ,{
                         headers: {
                         'Content-Type': 'multipart/form-data' // Đảm bảo rằng nội dung là form-data
                         }
