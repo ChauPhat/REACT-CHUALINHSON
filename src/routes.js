@@ -80,9 +80,9 @@ const QDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/QuyD
 const TatCa = React.lazy(() => import('./views/doan-sinh/TatCa.js'))
 
 // Huynh Trưởng
-const DanhSachHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
+const DanhSachHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach/DanhSach.js'))
 //Tài Khoản
-const TaiKhoanHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
+const TaiKhoanHuynhTruong = React.lazy(() => import('./views/huynh-truong/TaiKhoan/TaiKhoan.js'))
 
 // File Lưu Trữ
 const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js'))
@@ -168,6 +168,7 @@ const routes = [
   // { path: '/doan-sinh/quy-doan', name: 'Quỹ Đoàn', element: QuyDoan },
   // { path: '/huynh-truong', name: 'Huynh Trưởng', exact: true },
   { path: '/huynh-truong/danh-sach', name: 'Danh Sách Huynh Trưởng', element: DanhSachHuynhTruong },
+  { path: '/huynh-truong/tai-khoan', name: 'Danh Sách Tài Khoản', element: TaiKhoanHuynhTruong },
   { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru },
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD }
 ]
