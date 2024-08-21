@@ -2,16 +2,9 @@ import React from "react";
 import Slider from "react-slick";
 import "./CategoryCarousel.css"; // Import CSS tùy chỉnh
 
-const categories = [
-  { name: "John Doe", role: "Developer", image: "https://via.placeholder.com/150" },
-  { name: "Jane Smith", role: "Designer", image: "https://via.placeholder.com/150" },
-  { name: "Alice Johnson", role: "Manager", image: "https://via.placeholder.com/150" },
-  { name: "Mike Brown", role: "Analyst", image: "https://via.placeholder.com/150" },
-  { name: "Emily White", role: "HR", image: "https://via.placeholder.com/150" },
-  { name: "David Wilson", role: "CEO", image: "https://via.placeholder.com/150" },
-];
 
-const CategoryCarousel = () => {
+
+const CategoryCarousel = ({ categories }) => {
   const settings = {
     dots: false,
     infinite: true,
@@ -52,10 +45,10 @@ const CategoryCarousel = () => {
         {categories.map((category, index) => (
           <div key={index} className="category-item">
             <div className="profile-card">
-              <img src={category.image} alt={category.name} className="profile-image" />
+              <img src={category.avatar} alt={category.name} className="profile-image" />
               <div className="profile-info">
                 <h3>{category.name}</h3>
-                <p>{category.role}</p>
+                <p>{category.role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</p>
               </div>
             </div>
           </div>

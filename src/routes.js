@@ -81,6 +81,8 @@ const TatCa = React.lazy(() => import('./views/doan-sinh/TatCa.js'))
 
 // Huynh Trưởng
 const DanhSachHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
+//Tài Khoản
+const TaiKhoanHuynhTruong = React.lazy(() => import('./views/huynh-truong/DanhSach.js'))
 
 // File Lưu Trữ
 const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js'))
