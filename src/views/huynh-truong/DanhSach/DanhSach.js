@@ -8,9 +8,10 @@ import {
   CButton,
   CCol,
 } from '@coreui/react'
-import '../huynh-truong/DanhSach.css'
-import Table from '../table/Table'
-import CategoryCarousel from "./CategoryCarousel";
+
+import '../DanhSach/DanhSach.css'
+import Table from '../../table/Table'
+import CategoryCarousel from "../CategoryCarousel";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
@@ -23,7 +24,8 @@ const usersData = [
     phapdanh: 'Active',
     avatar: avatar1,
     registered: '2024-02-11',
-    role: 'false',
+    role: 'Đoàn Trưởng Thiếu Nam',
+    role2: '',
     status: 'Active', 
     phone: '0123456789',
     email: 'voanduy1802@gmail.com',
@@ -150,17 +152,18 @@ const handleGenderChange = (newGender) => {
 };
 
 const DSNganhThanh = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
+
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+
 
   const filteredData = usersData.filter((user) => {
-    const registeredDate = formatDate(user.registered);
-    const searchDate = searchRegistered ? searchRegistered.split('-') : [];
+  const registeredDate = formatDate(user.registered);
+  const searchDate = searchRegistered ? searchRegistered.split('-') : [];
+
+
 
     // Nếu chỉ nhập năm
     if (searchDate.length === 1 && searchDate[0].length === 4) {
@@ -195,19 +198,6 @@ const DSNganhThanh = () => {
   });
 
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen)
-  }
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value)
-    setDropdownOpen(false) // Đóng dropdown sau khi chọn
-  }
-
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -222,20 +212,15 @@ const DSNganhThanh = () => {
   };
 
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page)
-    }
-  }
-  
 
   const headers = [
-    'Ảnh',
-    'Tên',
-    'Ngày đăng ký',
-    'Vai trò',
-    'Trạng thái',
-    'Thao tác',
+    <CTableDataCell width={'10%'}>Ảnh</CTableDataCell>,
+    <CTableDataCell width={'20%'}>Họ Và Tên</CTableDataCell>,
+    <CTableDataCell width={'20%'}>Ngày Tạo</CTableDataCell>,
+    <CTableDataCell width={'10%'}>Vai trò 1</CTableDataCell>,
+    <CTableDataCell width={'10%'}>Vai trò 2</CTableDataCell>,
+    <CTableDataCell width={'20%'}>Trạng thái</CTableDataCell>,
+    <CTableDataCell width={'10%'}>Thao tác</CTableDataCell>
   ];
   const headerCells = [
     '',
@@ -257,23 +242,26 @@ const DSNganhThanh = () => {
       value={searchRole}
       onChange={(e) => setSearchRole(e.target.value)}
     />,
+    '',
     <CFormInput
       type="search"
       placeholder="Tìm theo trạng thái"
       value={searchStatus}
       onChange={(e) => setSearchStatus(e.target.value)}
     />,
+    
     '',
   ];
 
   const renderRow = (user) => (
     <>
-      <CTableDataCell>
+      <CTableDataCell>  
         <CAvatar src={user.avatar} />
       </CTableDataCell>
-      <CTableDataCell>{user.name}</CTableDataCell>
-      <CTableDataCell>{user.registered}</CTableDataCell>
-      <CTableDataCell>{user.role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</CTableDataCell>
+        <CTableDataCell>{user.name}</CTableDataCell>
+        <CTableDataCell>{user.registered}</CTableDataCell>
+        <CTableDataCell>{user.role}</CTableDataCell>
+        <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
@@ -301,12 +289,13 @@ const DSNganhThanh = () => {
         </CCol>
       </CRow>
 
-      <Table
-        headers={headers}
-        headerCells={headerCells}
-        items={currentItems}
-        renderRow={renderRow}
-      />
+            <Table
+                headers={headers}
+                headerCells={headerCells}
+                items={filteredData}
+                renderRow={renderRow}
+                searchCriteria={{ searchName }} // truyền nhiều giá trị tìm kiếm vào Table nếu mày thích
+            />
    
 
    {selectedUser && (
@@ -319,86 +308,7 @@ const DSNganhThanh = () => {
       )}
 
 
-      <div className='card-footer align-items-center'>
-        <div className='row d-flex'>
-          <div className='col-6 mb-3'>
-            <nav aria-label="Page navigation example">
-              <ul className="pagination">
-                <li className="page-item">
-                  <a className="page-link" href="#" aria-label="Previous"
-                    onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} >
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                {[...Array(totalPages).keys()].map(page => (
-                  <li className={`page-item ${currentPage === page + 1 ? 'active' : ''}`} key={page}>
-                    <a
-                      className="page-link"
-                      href="#"
-                      onClick={() => handlePageChange(page + 1)}
-                    >
-                      {page + 1}
-                    </a>
-                  </li>
-                ))}
-                <li className="page-item">
-                  <a
-                    className="page-link"
-                    href="#"
-                    aria-label="Next"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div className='col-6 d-flex justify-content-end'>
-            <span className='me-2 mt-1'>Dòng:</span>
-            <div className="dropdown">
-              <button
-                className="btn btn-outline-secondary dropdown-toggle"
-                type="button"
-                onClick={toggleDropdown}
-              >
-                {itemsPerPage}
-              </button>
-              {dropdownOpen && (
-                <ul className="dropdown-menu show">
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(5)}>
-                      5
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(10)}>
-                      10
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(15)}>
-                      15
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(20)}>
-                      20
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-           
-
-
-
-
-        
-      </div>
+   
     </div>
   )
 }

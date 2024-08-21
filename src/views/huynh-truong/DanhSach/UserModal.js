@@ -19,7 +19,11 @@ function UserModal({ show, handleClose, user , handleRoleChange, handleGenderCha
    
         <div class="form-group">
         <label for="exampleFormControlInput1">Họ Và Tên</label>
+
+        <div class="input-group ">
         <input class="form-control" type="text" value={user.name} readonly disabled/>
+        <span class="input-group-text " id="basic-addon2">{user.id}</span>
+        </div>
 
         <label for="exampleFormControlInput1">Pháp Danh</label>
         <input class="form-control" type="text" value={user.phapdanh} readonly disabled />
