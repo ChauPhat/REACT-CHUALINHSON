@@ -52,8 +52,17 @@ const FileLuuTru = () => {
 
     const fetchFiles = async () => {
         try {
-            const response = await axios.get(`${env.apiUrl}/api/file/getAllFile`);
-            setFileData(response.data.data);
+            axios.get(`${env.apiUrl}/api/file/getAllFile`, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                }
+            })
+                .then(response => {
+                    setFileData(response.data.data);
+                })
+                .catch(error => {
+                    console.error('Error downloading file:', error);
+                });
         } catch (error) {
             console.error("Error fetching files:", error);
         }
@@ -123,10 +132,18 @@ const FileLuuTru = () => {
                 try {
                     axios.get(`${env.apiUrl}/api/file/downloadFile?fileName=${name}`, {
                         responseType: 'blob', // Nhận dữ liệu dưới dạng Blob
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                        }
                     })
                         .then(response => {
                             // Dữ liệu Blob từ phản hồi
                             const blob = response.data;
+                            console.log(blob);
+                            
+
+                            console.log(`Content-Length: ${response.headers['content-length']}`);
+                            console.log(`Content-Type: ${response.headers['content-type']}`);
 
                             // Tạo URL tạm thời cho file và tải xuống
                             const url = window.URL.createObjectURL(blob);
@@ -167,6 +184,7 @@ const FileLuuTru = () => {
                     formData.append('file', selectedFile);
                     axios.post(`${env.apiUrl}/api/file/upload-file`, formData, {
                         headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
                             'Content-Type': 'multipart/form-data' // Đảm bảo rằng nội dung là form-data
                         }
                     })
