@@ -1,7 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import {
   CAvatar,
-  CBadge,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -14,8 +13,7 @@ import {
   CModalHeader,
   CModalTitle,
   CButton,
-  CFormInput,
-  CFormCheck
+  CFormInput
 } from '@coreui/react'
 import {
   cilLockLocked,
@@ -33,6 +31,8 @@ const logOut = () => {
 
 const AppHeaderDropdown = () => {
   const [modalVisible, setModalVisible] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState('https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png')
+  const fileInputRef = useRef(null)
 
   const handleProfileClick = () => {
     setModalVisible(true)
@@ -42,13 +42,28 @@ const AppHeaderDropdown = () => {
     setModalVisible(false)
   }
 
+  const handleAvatarClick = () => {
+    fileInputRef.current.click()
+  }
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const user = {
     name: 'Nguyễn Văn A',
     phapdanh: 'Pháp Danh',
     gender: 'Nam',
     email: 'nguyenvana@example.com',
     phone: '0123456789',
-    chucvu: '123 Đường ABC, Quận 1, TP. HCM'
+    diachi: '123 Đường ABC, Quận 1, TP. HCM'
   }
 
   return (
@@ -58,15 +73,15 @@ const AppHeaderDropdown = () => {
           <CAvatar src={avatar8} size="md" />
         </CDropdownToggle>
         <CDropdownMenu className="pt-0" placement="bottom-end">
-          <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
+          <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Tài khoản</CDropdownHeader>
           <CDropdownItem href="#" onClick={handleProfileClick}>
             <CIcon icon={cilUser} className="me-2" />
-            Profile
+            Hồ sơ của bạn
           </CDropdownItem>
           <CDropdownDivider />
           <CDropdownItem href="#" onClick={logOut}>
             <CIcon icon={cilLockLocked} className="me-2" />
-            Log Out
+            Đăng xuất
           </CDropdownItem>
         </CDropdownMenu>
       </CDropdown>
@@ -76,11 +91,23 @@ const AppHeaderDropdown = () => {
         onClose={handleCloseModal}
       >
         <CModalHeader>
-          <CModalTitle>User Profile</CModalTitle>
+          <CModalTitle>Hồ sơ người dùng</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <div className="text-center mb-3">
-            <img src='https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png' alt="User Avatar" style={{ width: '100px', height: '100px', borderRadius: '50%' }} />
+            <img
+              src={avatarUrl}
+              alt="User Avatar"
+              style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
+              onClick={handleAvatarClick}
+            />
+            <CFormInput
+              type="file"
+              className="mb-3"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+            />
           </div>
           <CFormInput
             type="text"
@@ -117,16 +144,10 @@ const AppHeaderDropdown = () => {
             disabled
             className="mb-3"
           />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="Default radio" defaultChecked />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="Second default radio" />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios3" value="option3" label="Disabled radio" disabled />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios1" value="option1" label="Default radio" defaultChecked />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios2" value="option2" label="Second default radio" />
-          <CFormCheck type="radio" name="exampleRadios" id="exampleRadios3" value="option3" label="Disabled radio" disabled />
           <CFormInput
             type="text"
-            label="Chúc vụ"
-            value={user.chucvu}
+            label="Địa chỉ"
+            value={user.diachi}
             disabled
             className="mb-3"
           />
