@@ -210,9 +210,9 @@ const FileLuuTru = () => {
     }
 
     const headers = [
-        <CTableDataCell width={50}>Tên</CTableDataCell>,
-        <CTableDataCell width={50} >Ngày</CTableDataCell>,
-        <CTableDataCell width={0} ></CTableDataCell>,
+        <CTableDataCell width={'50%'}>Tên</CTableDataCell>,
+        <CTableDataCell width={'40%'} >Ngày</CTableDataCell>,
+        <CTableDataCell width={'10%'} ></CTableDataCell>,
 
     ];
     const headerCells = [

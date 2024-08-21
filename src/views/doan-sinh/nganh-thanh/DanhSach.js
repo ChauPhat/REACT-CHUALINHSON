@@ -142,8 +142,6 @@ const getBadgeClass = (status) => {
 }
 
 const DSNganhThanh = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -191,29 +189,13 @@ const DSNganhThanh = () => {
     setDropdownOpen(!dropdownOpen)
   }
 
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value)
-    setDropdownOpen(false) // Đóng dropdown sau khi chọn
-  }
-
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem)
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage)
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page)
-    }
-  }
-
   const headers = [
-    'Ảnh',
-    'Tên',
-    'Ngày đăng ký',
-    'Vai trò',
-    'Trạng thái',
-    'Thao tác',
+    <CTableDataCell width={'30%'}>Ảnh</CTableDataCell>,
+    <CTableDataCell width={30}>Tên</CTableDataCell>,
+    <CTableDataCell width={20}>Ngày đăng ký</CTableDataCell>,
+    <CTableDataCell width={10}>Vai trò</CTableDataCell>,
+    <CTableDataCell width={5}>Trạng thái</CTableDataCell>,
+    <CTableDataCell width={5}>Thao tác</CTableDataCell>,
   ];
   const headerCells = [
     '',
@@ -278,90 +260,11 @@ const DSNganhThanh = () => {
       <Table
         headers={headers}
         headerCells={headerCells}
-        items={currentItems}
+        items={filteredData}
         renderRow={renderRow}
+        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
       />
 
-
-      <div className='card-footer align-items-center'>
-        <div className='row d-flex'>
-          <div className='col-6 mb-3'>
-            <nav aria-label="Page navigation example">
-              <ul className="pagination">
-                <li className="page-item">
-                  <a
-                    className="page-link"
-                    href="#"
-                    aria-label="Previous"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                {[...Array(totalPages).keys()].map(page => (
-                  <li className={`page-item ${currentPage === page + 1 ? 'active' : ''}`} key={page}>
-                    <a
-                      className="page-link"
-                      href="#"
-                      onClick={() => handlePageChange(page + 1)}
-                    >
-                      {page + 1}
-                    </a>
-                  </li>
-                ))}
-                <li className="page-item">
-                  <a
-                    className="page-link"
-                    href="#"
-                    aria-label="Next"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div className='col-6 d-flex justify-content-end'>
-            <span className='me-2 mt-1'>Dòng:</span>
-            <div className="dropdown">
-              <button
-                className="btn btn-outline-secondary dropdown-toggle"
-                type="button"
-                onClick={toggleDropdown}
-              >
-                {itemsPerPage}
-              </button>
-              {dropdownOpen && (
-                <ul className="dropdown-menu show">
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(5)}>
-                      5
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(10)}>
-                      10
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(15)}>
-                      15
-                    </button>
-                  </li>
-                  <li>
-                    <button className="dropdown-item" onClick={() => handleItemsPerPageChange(20)}>
-                      20
-                    </button>
-                  </li>
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
