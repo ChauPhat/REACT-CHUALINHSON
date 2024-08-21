@@ -18,12 +18,18 @@ import avatar1 from 'src/assets/images/avatars/1.jpg'
 
 const usersData = [
   {
-    id: 1,
+    id: 'LS_000001',
     name: 'Samppa Nori',
+    phapdanh: 'Active',
     avatar: avatar1,
-    registered: '02-11-2024',
-    role: 'Member',
-    status: 'Active',
+    registered: '2024-02-11',
+    role: 'false',
+    status: 'Active', 
+    phone: '0123456789',
+    email: 'voanduy1802@gmail.com',
+    gender: 'true',
+    address : '18/1d Ấp 4B, Vĩnh Lộc B, Bình Chánh, Hồ Chí Minh 700000 ',
+    sdtgd: '0123456789'
   },
   {
     id: 2,
@@ -135,6 +141,13 @@ const getBadgeClass = (status) => {
       return 'primary'
   }
 }
+
+const handleGenderChange = (newGender) => {
+  setUser(prevUser => ({
+    ...prevUser,
+    gender: newGender
+  }));
+};
 
 const DSNganhThanh = () => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -260,7 +273,7 @@ const DSNganhThanh = () => {
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
       <CTableDataCell>{user.registered}</CTableDataCell>
-      <CTableDataCell>{user.role}</CTableDataCell>
+      <CTableDataCell>{user.role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
@@ -277,7 +290,7 @@ const DSNganhThanh = () => {
   return (
     
     <div className="container-fluid">
-    <CategoryCarousel />
+    <CategoryCarousel categories={usersData} />
     <br/>
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
@@ -301,12 +314,9 @@ const DSNganhThanh = () => {
           show={showModal}
           handleClose={handleCloseModal}
           user={selectedUser}
+          handleGenderChange={handleGenderChange}
         />
       )}
-
-
-
-
 
 
       <div className='card-footer align-items-center'>
