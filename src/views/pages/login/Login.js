@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import sweetalert from 'sweetalert2'
+import Swal from 'sweetalert2'
 import env from '../../../env'
+import { jwtDecode } from "jwt-decode";  // Import jwt-decode
 
 import {
   CButton,
@@ -36,55 +37,75 @@ const Login = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu',
+        showConfirmButton: true,
+      })
+      return
+    }
+
+    setLoading(true)
     try {
       const response = await axios.post(`${env.apiUrl}/api/auth/login`, {
-        username: username,
-        password: password
+        username,
+        password,
       })
-      console.log(response.data)
-      let data = response.data.data
-      if (data.token) {
-        const halfDay = 12 * 60 * 60 * 1000
-        const expiryTime = new Date().getTime() + halfDay
+
+      const data = response.data.data
+
+      if (data) {
+        const decodedToken = jwtDecode(data.token)
+        console.log('Decoded Token:', decodedToken)
+
+        const expiryTime = decodedToken.exp * 1000
 
         sessionStorage.setItem('token', data.token)
         sessionStorage.setItem('tokenExpiry', expiryTime)
+        sessionStorage.setItem('user', JSON.stringify(decodedToken))
 
-        let token = sessionStorage.getItem('token')
-        if (token) {
-          sweetalert.fire({
-            icon: "success",
-            title: "Đăng nhập thành công",
-            showConfirmButton: false,
-            timer: 2000
-          }).then((result) => {
-            if (result.dismiss === sweetalert.DismissReason.timer || result.dismiss === sweetalert.DismissReason.backdrop) {
-              window.location.href = '/'
-            }
-          });
-        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Đăng nhập thành công',
+          showConfirmButton: false,
+          timer: 2000,
+        }).then(() => {
+          navigate('/')  
+        })
       }
     } catch (error) {
-      if (error.response.status === 403) {
-        sweetalert.fire({
-          icon: "error",
-          title: "Sai tên đăng nhập hoặc mật khẩu",
-          showConfirmButton: false,
-          timer: 2000
-        })
-        return
-      }
+      console.error('Login failed:', error)
       if (error.response) {
-        console.error('Login failed:', error.response.data)
-        if (error.response.status === 401) {
-          alert('Unauthorized: Please check your username and password.')
+        const { status, data } = error.response
+        if (status === 401 || status === 403) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Sai tên đăng nhập hoặc mật khẩu',
+            text: data.message || 'Vui lòng kiểm tra lại thông tin đăng nhập.',
+            showConfirmButton: true,
+          })
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Đã xảy ra lỗi',
+            text: data.message || 'Vui lòng thử lại sau.',
+            showConfirmButton: true,
+          })
         }
       } else {
-        console.error('Login failed:', error.message)
-        alert('Network error: Please try again later.')
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi mạng',
+          text: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.',
+          showConfirmButton: true,
+        })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -126,8 +147,9 @@ const Login = () => {
                         color="primary"
                         className="px-5 py-2"
                         onClick={handleLogin}
+                        disabled={loading}
                       >
-                        Đăng nhập
+                        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                       </CButton>
                     </CCol>
                   </CRow>
