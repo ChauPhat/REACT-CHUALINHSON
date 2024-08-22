@@ -126,6 +126,7 @@ const DDNganhThanh = () => {
                             <table className='table table-border table-striped table-hover'>
                                 <thead>
                                     <tr className='text-center align-items-center'>
+                                        <th>Ảnh</th>
                                         <th>Tên</th>
                                         <th>Ngày sinh hoạt</th>
                                         <th>Đoàn</th>
@@ -134,6 +135,35 @@ const DDNganhThanh = () => {
                                 </thead>
                                 <tbody>
                                     <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
                                         <td>Người Cộng sản Việt Nam</td>
@@ -144,6 +174,15 @@ const DDNganhThanh = () => {
                                         </td>
                                     </tr>
                                     <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
                                         <td>Người Cộng sản Việt Nam</td>
@@ -154,6 +193,148 @@ const DDNganhThanh = () => {
                                         </td>
                                     </tr>
                                     <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
+                                        <td>Tui tên Tài</td>
+                                        <td>27-08-2004</td>
+                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td className='justify-content-end '>
+                                            <div className="checkbox-con">
+                                                <input id="checkbox" type="checkbox"></input>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr className=' justify-content-center align-items-center'>
+                                        <td>
+                                            <img
+                                                src="/src/assets/images/avatars/8.jpg"
+                                                alt="Ảnh"
+                                                className="rounded-image"
+                                                width="50"
+                                                height="50"
+                                            />
+                                        </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
                                         <td>Người Cộng sản Việt Nam</td>
