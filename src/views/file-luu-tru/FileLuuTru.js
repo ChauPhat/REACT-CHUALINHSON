@@ -1,30 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import {
-    CBadge,
-    CFormSelect,
-    CAvatar,
-    CTable,
-    CTableBody,
-    CTableDataCell,
-    CTableHead,
-    CTableHeaderCell,
-    CTableRow,
-    CContainer,
-    CRow,
-    CPagination,
-    CPaginationItem,
-    CForm,
-    CFormInput,
     CButton,
     CCol,
-    CInputGroup
+    CFormInput,
+    CInputGroup,
+    CRow,
+    CTableDataCell
 } from '@coreui/react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import env from '../../env';
+import { authorize, Role } from '../../GlobalVariable';
+import { useRole } from '../../RoleContext';
 import '../doan-sinh/nganh-thanh/DanhSach.css';
 import Table from '../table/Table';
-import env from '../../env';
 
 // Hàm format date từ dd-mm-yyyy sang đối tượng Date
 const formatDate = (dateString) => {
@@ -36,6 +26,7 @@ const formatDate = (dateString) => {
 
 const FileLuuTru = () => {
     const MySwal = withReactContent(Swal);
+    const { role } = useRole();
 
     const [searchName, setSearchName] = useState('')
     const [searchRegistered, setSearchRegistered] = useState('')
@@ -139,11 +130,6 @@ const FileLuuTru = () => {
                         .then(response => {
                             // Dữ liệu Blob từ phản hồi
                             const blob = response.data;
-                            console.log(blob);
-                            
-
-                            console.log(`Content-Length: ${response.headers['content-length']}`);
-                            console.log(`Content-Type: ${response.headers['content-type']}`);
 
                             // Tạo URL tạm thời cho file và tải xuống
                             const url = window.URL.createObjectURL(blob);
@@ -264,6 +250,7 @@ const FileLuuTru = () => {
         </>
     );
 
+    const isAllowed = authorize([Role.ROLE_ADMIN, Role.ROLE_THUKY], role);
 
     return (
         <div>
@@ -273,7 +260,7 @@ const FileLuuTru = () => {
                         <h3>File lưu trưu</h3>
                     </CCol>
                     <CCol className="d-flex justify-content-end">
-                        <CButton color="secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>
+                        {isAllowed && <CButton color="secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
                     </CCol>
                 </CRow>
 
