@@ -41,6 +41,22 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const updateSessionStorage = (token) => {
+    // Cập nhật sessionStorage với dữ liệu mới
+    const decodedToken = jwtDecode(token);
+
+    const expiryTime = decodedToken.exp * 1000
+
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('tokenExpiry', expiryTime);
+    sessionStorage.setItem('user', JSON.stringify(decodedToken));
+
+    // Tạo và phát sự kiện tùy chỉnh để thông báo rằng sessionStorage đã được cập nhật
+    const event = new Event('sessionUpdated');
+    window.dispatchEvent(event);
+  };
+
+
   const handleLogin = async () => {
     if (!username || !password) {
       Swal.fire({
@@ -61,13 +77,7 @@ const Login = () => {
       const data = response.data.data
 
       if (data) {
-        const decodedToken = jwtDecode(data.token);
-
-        const expiryTime = decodedToken.exp * 1000
-
-        sessionStorage.setItem('token', data.token);
-        sessionStorage.setItem('tokenExpiry', expiryTime);
-        sessionStorage.setItem('user', JSON.stringify(decodedToken));
+        updateSessionStorage(data?.token);
 
         Swal.fire({
           icon: 'success',

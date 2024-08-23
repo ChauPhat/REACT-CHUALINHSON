@@ -1,4 +1,3 @@
-import { jwtDecode } from 'jwt-decode';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { replaceRole, Role } from './GlobalVariable';
 
@@ -6,20 +5,24 @@ const RoleContext = createContext();
 
 export const RoleProvider = ({ children }) => {
     const [role, setRole] = useState(() => {
-        const token = sessionStorage.getItem('token');
-        const decodedToken = token && jwtDecode(token);
-        return decodedToken && replaceRole(Role, decodedToken?.roles?.split(','));
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        return user && replaceRole(Role, user?.roles?.split(','));
     });
 
     useEffect(() => {
-        const handleTokenChange = () => {
-            const token = sessionStorage.getItem('token');
-            const decodedToken = token ? jwtDecode(token) : null;
-            setRole(decodedToken && replaceRole(Role, decodedToken?.roles?.split(',')));
+        // Hàm xử lý sự kiện khi sessionStorage được cập nhật
+        const handleSessionUpdate = () => {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            setRole(user && replaceRole(Role, user?.roles?.split(',')));
         };
 
-        window.addEventListener('storage', handleTokenChange);
-        return () => window.removeEventListener('storage', handleTokenChange); 
+        // Lắng nghe sự kiện 'sessionUpdated'
+        window.addEventListener('sessionUpdated', handleSessionUpdate);
+
+        // Hủy lắng nghe sự kiện khi component bị unmount
+        return () => {
+            window.removeEventListener('sessionUpdated', handleSessionUpdate);
+        };
     }, []);
 
     return (
