@@ -23,6 +23,5 @@ export const authorize = (require, state) => {
   for (let role of state) {
     if (role === Role.ROLE_ADMIN) return true;
   }
-  const set1 = new Set(state);
-  return require.some(item => set1.has(item));
+  return state.some(element => require.includes(element));
 }
