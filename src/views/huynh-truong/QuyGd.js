@@ -12,6 +12,7 @@ import {
 } from '@coreui/react';
 import React, { useState } from 'react';
 import Table from '../table/Table';
+import WidgetsDropdown from './WidgetsDropdown';
 
 const fundData = [
     {
@@ -120,105 +121,105 @@ const fundData = [
         amount: -40000,
     },
     {
-        id: 13,
+        id: 16,
         fundName: 'Quỹ Văn Hóa',
         transactionName: 'Chi phí mua sách',
         description: '-30000',
         amount: -30000,
     },
     {
-        id: 14,
+        id: 17,
         fundName: 'Quỹ Dự Phòng Bão Lụt',
         transactionName: 'Thu tiền quyên góp bão lụt',
         description: '+100000',
         amount: 100000,
     },
     {
-        id: 15,
+        id: 18,
         fundName: 'Quỹ Tiêu Dùng Cá Nhân',
         transactionName: 'Chi mua đồ dùng cá nhân',
         description: '-40000',
         amount: -40000,
     },
     {
-        id: 13,
+        id: 19,
         fundName: 'Quỹ Văn Hóa',
         transactionName: 'Chi phí mua sách',
         description: '-30000',
         amount: -30000,
     },
     {
-        id: 14,
+        id: 20,
         fundName: 'Quỹ Dự Phòng Bão Lụt',
         transactionName: 'Thu tiền quyên góp bão lụt',
         description: '+100000',
         amount: 100000,
     },
     {
-        id: 15,
+        id: 21,
         fundName: 'Quỹ Tiêu Dùng Cá Nhân',
         transactionName: 'Chi mua đồ dùng cá nhân',
         description: '-40000',
         amount: -40000,
     },
     {
-        id: 13,
+        id: 22,
         fundName: 'Quỹ Văn Hóa',
         transactionName: 'Chi phí mua sách',
         description: '-30000',
         amount: -30000,
     },
     {
-        id: 14,
+        id: 23,
         fundName: 'Quỹ Dự Phòng Bão Lụt',
         transactionName: 'Thu tiền quyên góp bão lụt',
         description: '+100000',
         amount: 100000,
     },
     {
-        id: 15,
+        id: 24,
         fundName: 'Quỹ Tiêu Dùng Cá Nhân',
         transactionName: 'Chi mua đồ dùng cá nhân',
         description: '-40000',
         amount: -40000,
     },
     {
-        id: 13,
+        id: 25,
         fundName: 'Quỹ Văn Hóa',
         transactionName: 'Chi phí mua sách',
         description: '-30000',
         amount: -30000,
     },
     {
-        id: 14,
+        id: 26,
         fundName: 'Quỹ Dự Phòng Bão Lụt',
         transactionName: 'Thu tiền quyên góp bão lụt',
         description: '+100000',
         amount: 100000,
     },
     {
-        id: 15,
+        id: 27,
         fundName: 'Quỹ Tiêu Dùng Cá Nhân',
         transactionName: 'Chi mua đồ dùng cá nhân',
         description: '-40000',
         amount: -40000,
     },
     {
-        id: 13,
+        id: 28,
         fundName: 'Quỹ Văn Hóa',
         transactionName: 'Chi phí mua sách',
         description: '-30000',
         amount: -30000,
     },
     {
-        id: 14,
+        id: 29,
         fundName: 'Quỹ Dự Phòng Bão Lụt',
         transactionName: 'Thu tiền quyên góp bão lụt',
         description: '+100000',
         amount: 100000,
     },
     {
-        id: 15,
+        id: 30,
         fundName: 'Quỹ Tiêu Dùng Cá Nhân',
         transactionName: 'Chi mua đồ dùng cá nhân',
         description: '-40000',
@@ -259,9 +260,9 @@ const QuyGD = () => {
     };
 
     const headers = [
-        <CTableDataCell width={30}>Tên Thu Chi</CTableDataCell>,
-        <CTableDataCell width={30}>Tên Quỹ</CTableDataCell>,
-        <CTableDataCell width={40}>Mô tả</CTableDataCell>
+        <CTableDataCell width={'30%'}>Tên Thu Chi</CTableDataCell>,
+        <CTableDataCell width={'30%'}>Số tiền</CTableDataCell>,
+        <CTableDataCell width={'40%'}>Mô tả</CTableDataCell>
     ];
 
     const headerCells = [
@@ -278,18 +279,20 @@ const QuyGD = () => {
     const renderRow = (fund) => (
         <>
             <CTableDataCell>{fund.fundName}</CTableDataCell>
-            <CTableDataCell>{fund.transactionName}</CTableDataCell>
             <CTableDataCell
                 style={{ color: fund.amount < 0 ? 'red' : 'green' }}
             >
                 {fund.description}
             </CTableDataCell>
+            <CTableDataCell>{fund.transactionName}</CTableDataCell>
         </>
     );
 
     return (
         <div className="container-fluid">
-            <CRow className="mb-3 d-flex">
+            <WidgetsDropdown />
+
+            <CRow className="my-3 d-flex">
                 <CCol className="d-flex align-items-center flex-grow-1">
                     <h3>Quỹ Gia Đình</h3>
                 </CCol>
@@ -315,23 +318,9 @@ const QuyGD = () => {
                 </CModalHeader>
                 <CModalBody>
                     <CFormInput
-                        label="Tên Quỹ"
-                        name="fundName"
-                        value={newFund.fundName}
-                        onChange={handleInputChange}
-                        className="mb-3"
-                    />
-                    <CFormInput
                         label="Tên Thu Chi"
                         name="transactionName"
                         value={newFund.transactionName}
-                        onChange={handleInputChange}
-                        className="mb-3"
-                    />
-                    <CFormInput
-                        label="Mô tả"
-                        name="description"
-                        value={newFund.description}
                         onChange={handleInputChange}
                         className="mb-3"
                     />
@@ -340,6 +329,13 @@ const QuyGD = () => {
                         name="amount"
                         value={newFund.amount}
                         type="number"
+                        onChange={handleInputChange}
+                        className="mb-3"
+                    />
+                    <CFormInput
+                        label="Mô tả"
+                        name="description"
+                        value={newFund.description}
                         onChange={handleInputChange}
                         className="mb-3"
                     />
