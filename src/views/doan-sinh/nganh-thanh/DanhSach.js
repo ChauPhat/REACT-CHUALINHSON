@@ -190,34 +190,34 @@ const DSNganhThanh = () => {
   }
 
   const headers = [
-    <CTableDataCell width={'30%'}>Ảnh</CTableDataCell>,
-    <CTableDataCell width={30}>Tên</CTableDataCell>,
-    <CTableDataCell width={20}>Ngày đăng ký</CTableDataCell>,
-    <CTableDataCell width={10}>Vai trò</CTableDataCell>,
-    <CTableDataCell width={5}>Trạng thái</CTableDataCell>,
-    <CTableDataCell width={5}>Thao tác</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'5%'}>Ảnh</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'40%'}>Tên</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'30%'}>Ngày đăng ký</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'10%'}>Vai trò</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'10%'}>Trạng thái</CTableDataCell>,
+    <CTableDataCell className="fixed-width-column" width={'5%'}>Thao tác</CTableDataCell>,
   ];
   const headerCells = [
     '',
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo tên"
       value={searchName}
       onChange={(e) => setSearchName(e.target.value)}
     />,
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
       value={searchRegistered}
       onChange={(e) => setSearchRegistered(e.target.value)}
     />,
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo vai trò"
       value={searchRole}
       onChange={(e) => setSearchRole(e.target.value)}
     />,
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo trạng thái"
       value={searchStatus}
