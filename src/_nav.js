@@ -1,14 +1,15 @@
-import React from 'react'
-import CIcon from '@coreui/icons-react'
 import {
   cilFile,
   cilGroup,
-  cilPlus,
-  cilMoney,
-  cilUserPlus,
   cilHouse,
+  cilMoney,
+  cilPlus,
+  cilUserPlus,
 } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
+import React from 'react'
+import { Role } from './GlobalVariable'
 
 const _nav = [
   {
@@ -20,18 +21,21 @@ const _nav = [
   {
     component: CNavTitle,
     name: 'Quản Lý',
+    role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU]
   },
   {
     component: CNavGroup,
     name: 'Danh Sách Đoàn Sinh',
     to: '/doan-sinh',
     icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+    role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU],
     items: [
       {
         component: CNavGroup,
         name: 'Đoàn Thiếu Nam',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        role: [Role.ROLE_DOANTRUONG_THIEUNAM],
         items: [
           {
             component: CNavItem,
@@ -55,6 +59,7 @@ const _nav = [
         name: 'Đoàn Thiếu Nữ',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        role: [Role.ROLE_DOANTRUONG_THIEUNU],
         items: [
           {
             component: CNavItem,
@@ -78,6 +83,7 @@ const _nav = [
         name: 'Đoàn Oanh Vũ Nữ',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        role: [Role.ROLE_DOANTRUONG_OANHVUNU],
         items: [
           {
             component: CNavItem,
@@ -101,6 +107,7 @@ const _nav = [
         name: 'Đoàn Oanh Vũ Nam',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        role: [Role.ROLE_DOANTRUONG_OANHVUNAM],
         items: [
           {
             component: CNavItem,
@@ -124,6 +131,7 @@ const _nav = [
         name: 'Ngành Thanh',
         to: '/ds-doan-sinh',
         icon: <CIcon icon={cilPlus} customClassName="nav-icon" />,
+        role: [Role.ROLE_DOANTRUONG_NGANHTHANH],
         items: [
           {
             component: CNavItem,
@@ -151,6 +159,7 @@ const _nav = [
     name: 'Huynh Trưởng',
     to: '/huynh-truong',
     icon: <CIcon icon={cilUserPlus} customClassName="nav-icon" />,
+    role: [Role.ROLE_ADMIN],
     items: [
       {
         component: CNavItem,
@@ -169,16 +178,18 @@ const _nav = [
     name: 'Quỹ Gia Đình',
     to: '/quygd',
     icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+    role: [Role.ROLE_THUQUY]
   },
   {
     component: CNavTitle,
     name: 'Tài Liệu',
+    role: [Role.ROLE_THUKY]
   },
   {
     component: CNavItem,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilFile} customClassName="nav-icon" />
   }
 
 ]
