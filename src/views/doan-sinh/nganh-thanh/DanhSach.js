@@ -1,202 +1,106 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   CBadge,
-  CFormSelect,
   CAvatar,
-  CTable,
-  CTableBody,
   CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-  CContainer,
   CRow,
-  CPagination,
-  CPaginationItem,
-  CForm,
   CFormInput,
   CButton,
   CCol,
-} from '@coreui/react'
-import '../nganh-thanh/DanhSach.css'
-import Table from '../../table/Table'
-
-const usersData = [
-  {
-    id: 1,
-    name: 'Samppa Nori',
-    avatar: '1.jpg',
-    registered: '02-11-2024',
-    role: 'Member',
-    status: 'Active',
-  },
-  {
-    id: 2,
-    name: 'Estavan Lykos',
-    avatar: '2.jpg',
-    registered: '10-05-2023',
-    role: 'Staff',
-    status: 'Banned',
-  },
-  {
-    id: 3,
-    name: 'Samppa Nori9',
-    avatar: '1.jpg',
-    registered: '20-08-2024',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 4,
-    name: 'Estavan Lykos4',
-    avatar: '2.jpg',
-    registered: '22-02-2024',
-    role: 'Staff',
-    status: 'Pending',
-  },
-  {
-    id: 5,
-    name: 'Nguyễn Văn A',
-    avatar: '1.jpg',
-    registered: '02-11-2024',
-    role: 'Member',
-    status: 'Active',
-  },
-  {
-    id: 6,
-    name: 'Trần Văn B',
-    avatar: '2.jpg',
-    registered: '10-05-2023',
-    role: 'Staff',
-    status: 'Banned',
-  },
-  {
-    id: 7,
-    name: 'Nguyễn Thị C',
-    avatar: '1.jpg',
-    registered: '20-08-2024',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 8,
-    name: 'Huỳnh Văn E',
-    avatar: '2.jpg',
-    registered: '22-02-2024',
-    role: 'Staff',
-    status: 'Pending',
-  },
-  {
-    id: 9,
-    name: 'Cao Văn L',
-    avatar: '1.jpg',
-    registered: '05-11-2004',
-    role: 'Member',
-    status: 'Active',
-  },
-  {
-    id: 10,
-    name: 'Phùng Châu P',
-    avatar: '2.jpg',
-    registered: '10-05-2003',
-    role: 'Staff',
-    status: 'Banned',
-  },
-  {
-    id: 11,
-    name: 'Hồ Thanh T',
-    avatar: '1.jpg',
-    registered: '20-08-2004',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 12,
-    name: 'Nguyễn Tấn L',
-    avatar: '2.jpg',
-    registered: '26-02-2005',
-    role: 'Staff',
-    status: 'Pending',
-  },
-  //... thêm dữ liệu khác
-]
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-const formatDate = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
-
-const getBadgeClass = (status) => {
-  switch (status) {
-    case 'Active':
-      return 'custom-badge-success';
-    case 'Inactive':
-      return 'custom-badge-secondary';
-    case 'Pending':
-      return 'custom-badge-warning'
-    case 'Banned':
-      return 'custom-badge-danger';
-    default:
-      return 'primary'
-  }
-}
+} from '@coreui/react';
+import axios from 'axios';
+import '../DoanSinhCss/DanhSach.css';
+import Table from '../../table/Table';
+import UserModal from './modalDoanSinh/UserModal';
 
 const DSNganhThanh = () => {
-  const [searchName, setSearchName] = useState('')
-  const [searchRegistered, setSearchRegistered] = useState('')
-  const [searchRole, setSearchRole] = useState('')
-  const [searchStatus, setSearchStatus] = useState('')
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [searchName, setSearchName] = useState('');
+  const [searchRegistered, setSearchRegistered] = useState('');
+  const [searchRole, setSearchRole] = useState('');
+  const [searchStatus, setSearchStatus] = useState('');
+  // const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [usersData, setUsersData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('http://103.15.222.65:8888/api/users/getListUserWithIDoan?doanId=2')
+      .then((response) => {
+        if (response.data.status === 'OK') {
+          const fetchedData = response.data.data.map(item => ({
+            id: item.user.userId,
+            name: item.user.hoTen,
+            avatar: item.user.avatar,
+            registered: item.user.createDate,
+            phapDanh: item.user.phapDanh,
+            ngaysinh: item.user.ngaySinh,
+            phone: item.user.sdt,
+            role: item.role,
+            status: item.isActive ? 'Active' : 'Inactive',
+            email: item.user.email,
+            gender: item.user.gioiTinh,
+            address: item.user.diaChi,
+            sdtgd: item.user.sdtNguoiGiamHo,
+            ngayGiaNhapDoan: item.joinDate,
+            ngayRoiDoan: item.leftDate,
+            mota: item.moTa,
+            doan: item.doan.tenDoan,
+          }));
+          setUsersData(fetchedData);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  const formatDateToDDMMYYYY = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleShowModal = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
+
+  const getBadgeClass = (status) => {
+    switch (status) {
+      case 'Active':
+        return 'bg-success';
+      case 'Inactive':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
+    }
+  };
 
   const filteredData = usersData.filter((user) => {
-    const registeredDate = formatDate(user.registered);
-    const searchDate = searchRegistered ? searchRegistered.split('-') : [];
-
-    // Nếu chỉ nhập năm
-    if (searchDate.length === 1 && searchDate[0].length === 4) {
-      const searchYear = parseInt(searchDate[0], 10);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Nếu nhập đầy đủ ngày-tháng-năm
-    if (searchDate.length === 3) {
-      const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getDate() === searchDay &&
-        registeredDate.getMonth() + 1 === searchMonth &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Mặc định trả về khi không nhập ngày đăng ký
-    return (
-      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-      (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-      (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
-    );
+    const nameMatch = user.name.toLowerCase().includes(searchName.toLowerCase());
+    const registeredMatch = formatDateToDDMMYYYY(user.registered).includes(searchRegistered);
+    const roleMatch = user.role.toLowerCase().includes(searchRole.toLowerCase());
+    const statusMatch = user.status.toLowerCase().includes(searchStatus.toLowerCase());
+    return nameMatch && registeredMatch && roleMatch && statusMatch;
   });
 
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen)
-  }
-
   const headers = [
-    <CTableDataCell width={'30%'}>Ảnh</CTableDataCell>,
-    <CTableDataCell width={30}>Tên</CTableDataCell>,
-    <CTableDataCell width={20}>Ngày đăng ký</CTableDataCell>,
-    <CTableDataCell width={10}>Vai trò</CTableDataCell>,
-    <CTableDataCell width={5}>Trạng thái</CTableDataCell>,
-    <CTableDataCell width={5}>Thao tác</CTableDataCell>,
+    <CTableDataCell width={'5%'}>Ảnh</CTableDataCell>,
+    <CTableDataCell width={'25%'}>Tên</CTableDataCell>,
+    <CTableDataCell width={'25%'}>Ngày đăng ký</CTableDataCell>,
+    <CTableDataCell width={'20%'}>Vai trò</CTableDataCell>,
+    <CTableDataCell width={'15%'}>Trạng thái</CTableDataCell>,
+    <CTableDataCell width={'10%'}>Thao tác</CTableDataCell>,
   ];
+
   const headerCells = [
     '',
     <CFormInput
@@ -232,7 +136,7 @@ const DSNganhThanh = () => {
         <CAvatar src={user.avatar} />
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
-      <CTableDataCell>{user.registered}</CTableDataCell>
+      <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
       <CTableDataCell>{user.role}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
@@ -240,11 +144,10 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline">Show</CButton>
+        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}>Show</CButton>
       </CTableDataCell>
     </>
   );
-
 
   return (
     <div className="container-fluid">
@@ -265,8 +168,15 @@ const DSNganhThanh = () => {
         searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
       />
 
+      {selectedUser && (
+        <UserModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          user={selectedUser}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default DSNganhThanh
+export default DSNganhThanh;

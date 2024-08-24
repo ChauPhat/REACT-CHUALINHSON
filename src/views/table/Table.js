@@ -81,7 +81,7 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                         ))
                     ) : (
                         <CTableRow>
-                            <CTableDataCell colSpan={headers.length} className="text-center">
+                            <CTableDataCell colSpan={headers.length}>
                                 Không tìm thấy dữ liệu
                             </CTableDataCell>
                         </CTableRow>
@@ -121,7 +121,7 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                         </nav>
                     </div>
                     <div className="col-6 d-flex justify-content-end">
-                        <span className="me-2">Dòng:</span>
+                        <span className="me-2 mt-1">Dòng:</span>
                         <CFormSelect
                             style={{ width: 'auto', height: '50%' }}
                             value={itemsPerPage}
