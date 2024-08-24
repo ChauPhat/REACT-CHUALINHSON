@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './UserModal.css';  
 
 
 
-function UserModal({ show, handleClose, user , handleRoleChange, handleGenderChange}) {
+function UserModal({ show, handleClose, user , handleRoleChange}) {
   
   const [checkedCount, setCheckedCount] = useState(0);
-  const [isEditing, setIsEditing] = useState(false); // State for edit mode
-  const [formData, setFormData] = useState(user); // Local state for form data
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    // Update formData when user data changes
+    setFormData({ ...user, gender: user.gender ? "Male" : "Female" });
+    const initialRoles = formData.roleOfDoanTruong ? [formData.roleOfDoanTruong] : [];
+    setRoles(initialRoles);
+    setCheckedCount(initialRoles.length);
+  }, [user]);
+
 
   const handleCheck = (event) => {
-    const newCheckedCount = event.target.checked ? checkedCount + 1 : checkedCount - 1;
+    const { id, checked } = event.target;
+    const roleId = parseInt(id.replace('check', ''), 10);
+
+    let newCheckedCount = checkedCount;
+
+    if (checked) {
+      newCheckedCount += 1;
+      setRoles([...roles, roleId]);
+    } else {
+      newCheckedCount -= 1;
+      setRoles(roles.filter(role => role !== roleId));
+    }
+
     setCheckedCount(newCheckedCount);
   };
 
@@ -33,10 +55,30 @@ function UserModal({ show, handleClose, user , handleRoleChange, handleGenderCha
     // You might want to call handleRoleChange or other handlers here to save changes
   };
 
+  const rolesMapping = {
+    ROLE_ADMIN: "Admin",
+    ROLE_THUKY: "Thư ký",
+    ROLE_THUQUY: "Thủ quỹ",
+    ROLE_DOANTRUONG: "Đoàn trưởng",
+    ROLE_DOANTRUONG_OANHVUNAM: "Đoàn trưởng Oanh Vũ Nam",
+    ROLE_DOANTRUONG_OANHVUNU: "Đoàn trưởng Oanh Vũ Nữ",
+    ROLE_DOANTRUONG_THIEUNAM: "Đoàn trưởng Thiếu Nam",
+    ROLE_DOANTRUONG_THIEUNU: "Đoàn trưởng Thiếu Nữ",
+    ROLE_DOANTRUONG_NGANHTHANH: "Đoàn trưởng Ngành Thanh"
+  };
+
+
+  const handleGenderChange = (value) => {
+    setFormData({
+      ...formData,
+      gender: value ? "Male" : "Female",
+    });
+  };
+
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title className="modal-title">User Profile</Modal.Title>
+        <Modal.Title className="modal-title">Thông Tin Tài Khoản</Modal.Title>
       </Modal.Header>
     <Modal.Body>
       <div className="avatar-container">
@@ -64,51 +106,42 @@ function UserModal({ show, handleClose, user , handleRoleChange, handleGenderCha
     onChange={handleInputChange}  readonly={!isEditing} disabled={!isEditing}/>
 
 
-    <label for="exampleFormControlInput1">Chức Vụ</label>
-    <div className="checkbox-container">
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check1" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check1').checked} />
-        <label className="form-check-label" htmlFor="check1">
-          Admin
-        </label>
+    <label>Giới Tính</label>
+      <div className="radio-group">
+        <label className="radio-inline">
+              <input type="radio" name="gender" value="Male"
+                checked={formData.gender === "Male"}
+                onChange={() => handleGenderChange(true)}
+                disabled={!isEditing} />
+              Nam
+            </label>
+        <label className="radio-inline">
+              <input type="radio" name="gender" value="Female"
+                checked={formData.gender === "Female"} 
+                onChange={() => handleGenderChange(false)}
+                disabled={!isEditing} />
+              Nữ
+          </label>
       </div>
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check2" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check2').checked} />
-      <label className="form-check-label" htmlFor="check2">
-        Thư Ký
-      </label>
-      </div>
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check3" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check3').checked} />
-      <label className="form-check-label" htmlFor="check3">
-        Thủ Quỹ
-      </label>
-    </div>
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check4" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check4').checked} />
-      <label className="form-check-label" htmlFor="check4">
-          Đoàn Trưởng Thiếu Nam
-      </label>
-    </div>
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check5" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check5').checked} />
-      <label className="form-check-label" htmlFor="check4">
-        Đoàn Trưởng Thiếu Nam
-      </label>
-    </div>
-    <div className="form-check">
-    <input className="form-check-input" type="checkbox" id="check6" onChange={handleCheck} 
-    disabled={checkedCount >= 2 && !document.getElementById('check6').checked} />
-        <label className="form-check-label" htmlFor="check4">
-        Đoàn Trưởng Thiếu Nữ
-        </label>
-      </div>
-      </div>
+
+      <label htmlFor="roles">Chức Vụ</label>
+          <div className="checkbox-container">
+            {Object.keys(rolesMapping).map(key => (
+              <div className="form-check" key={key}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id={`check${key}`}
+                  checked={roles.includes(key)}
+                  onChange={handleCheck}
+                  disabled={!isEditing || (checkedCount >= 2 && !roles.includes(key))}
+                />
+                <label className="form-check-label" htmlFor={`check${key}`}>
+                  {rolesMapping[key]}
+                </label>
+              </div>
+            ))}
+          </div>
 
       <label for="exampleFormControlInput1">Ngày Tạo</label>
       <input  id="registered"name="registered"class="form-control" type="date" value={formData.registered}  
