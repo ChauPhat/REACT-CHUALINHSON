@@ -257,7 +257,7 @@ const FileLuuTru = () => {
             <div className="container-fluid">
                 <CRow className="mb-3 d-flex">
                     <CCol className="d-flex align-items-center flex-grow-1">
-                        <h3>File lưu trưu</h3>
+                        <h3>File lưu trữ</h3>
                     </CCol>
                     <CCol className="d-flex justify-content-end">
                         {isAllowed && <CButton color="secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
