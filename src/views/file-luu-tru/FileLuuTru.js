@@ -13,7 +13,7 @@ import withReactContent from "sweetalert2-react-content";
 import env from '../../env';
 import { authorize, Role } from '../../GlobalVariable';
 import { useRole } from '../../RoleContext';
-import '../doan-sinh/nganh-thanh/DanhSach.css';
+import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../table/Table';
 
 // Hàm format date từ dd-mm-yyyy sang đối tượng Date

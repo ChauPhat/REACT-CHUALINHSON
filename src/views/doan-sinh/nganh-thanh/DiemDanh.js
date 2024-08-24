@@ -50,9 +50,11 @@ const DDNganhThanh = () => {
 
     // Hàm lọc dữ liệu dựa trên tìm kiếm
     const filteredData = data.filter(item => {
+        const formattedDate = formatDate(item.ngay_sinh_hoat); 
+
         return (
             (searchTerm.tuan === '' || item.stt_tuan.toString().includes(searchTerm.tuan)) &&
-            (searchTerm.ngaySinhHoat === '' || item.ngay_sinh_hoat.includes(searchTerm.ngaySinhHoat)) &&
+            (searchTerm.ngaySinhHoat === '' || formattedDate.includes(searchTerm.ngaySinhHoat)) &&
             (searchTerm.nam === '' || item.nam.toString().includes(searchTerm.nam))
         );
     });
