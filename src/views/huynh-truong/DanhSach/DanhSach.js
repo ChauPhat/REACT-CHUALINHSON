@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import {
   CBadge,
   CAvatar,
@@ -16,113 +16,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import avatar1 from 'src/assets/images/avatars/1.jpg'
+import axios from 'axios'
+import env from '../../../env'
 
-const usersData = [
-  {
-    id: 'LS_000001',
-    name: 'Samppa Nori',
-    phapdanh: 'Active',
-    avatar: avatar1,
-    registered: '2024-02-11',
-    role: 'Đoàn Trưởng Thiếu Nam',
-    role2: '',
-    status: 'Active', 
-    phone: '0123456789',
-    email: 'voanduy1802@gmail.com',
-    gender: 'true',
-    address : '18/1d Ấp 4B, Vĩnh Lộc B, Bình Chánh, Hồ Chí Minh 700000 ',
-    sdtgd: '0123456789'
-  },
-  {
-    id: 2,
-    name: 'Estavan Lykos',
-    avatar: '2.jpg',
-    registered: '10-05-2023',
-    role: 'Staff',
-    status: 'Active',
-  },
-  {
-    id: 3,
-    name: 'Samppa Nori9',
-    avatar: '1.jpg',
-    registered: '20-08-2024',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 4,
-    name: 'Estavan Lykos4',
-    avatar: '2.jpg',
-    registered: '22-02-2024',
-    role: 'Staff',
-    status: 'Active',
-  },
-  {
-    id: 5,
-    name: 'Nguyễn Văn A',
-    avatar: '1.jpg',
-    registered: '02-11-2024',
-    role: 'Member',
-    status: 'Active',
-  },
-  {
-    id: 6,
-    name: 'Trần Văn B',
-    avatar: '2.jpg',
-    registered: '10-05-2023',
-    role: 'Staff',
-    status: 'Active',
-  },
-  {
-    id: 7,
-    name: 'Nguyễn Thị C',
-    avatar: '1.jpg',
-    registered: '20-08-2024',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 8,
-    name: 'Huỳnh Văn E',
-    avatar: '2.jpg',
-    registered: '22-02-2024',
-    role: 'Staff',
-    status: 'Inactive',
-  },
-  {
-    id: 9,
-    name: 'Cao Văn L',
-    avatar: '1.jpg',
-    registered: '05-11-2004',
-    role: 'Member',
-    status: 'Active',
-  },
-  {
-    id: 10,
-    name: 'Phùng Châu P',
-    avatar: '2.jpg',
-    registered: '10-05-2003',
-    role: 'Staff',
-    status: 'Inactive',
-  },
-  {
-    id: 11,
-    name: 'Hồ Thanh T',
-    avatar: '1.jpg',
-    registered: '20-08-2004',
-    role: 'Member',
-    status: 'Inactive',
-  },
-  {
-    id: 12,
-    name: 'Nguyễn Tấn L',
-    avatar: '2.jpg',
-    registered: '26-02-2005',
-    role: 'Staff',
-    status: 'Inactive',
-  },
-  //... thêm dữ liệu khác
-]
+
+
+
 // Hàm format date từ dd-mm-yyyy sang đối tượng Date
 const formatDate = (dateString) => {
   const [day, month, year] = dateString.split('-').map(Number)
@@ -146,11 +45,65 @@ const handleGenderChange = (newGender) => {
 };
 
 const DSNganhThanh = () => {
-
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
+  const [usersData, setUsersData] = useState([]);
+
+  const roleMapping = {
+    'ROLE_DOANTRUONG': 'Đoàn Trưởng',
+    'ROLE_THUKY': 'Thư Ký',
+    'ROLE_THUQUY': 'Thủ Quỹ',
+    'ROLE_ADMIN': 'Liên Đoàn Trưởng',
+  };
+
+  useEffect(() => {
+    const layDuLieu = async () => {
+      try {
+        const response = await axios.get(`${env.apiUrl}/api/users/getListHuyTruong?is_huy_truonng=1`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          }
+        });
+
+          const fetchedData = response.data.data.map(item => {
+          const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
+          const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
+          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
+ 
+          return {
+            id: item.userIdUx,
+            name: item.hoTen,
+            avatar: item.avatar,
+            registered: item.createDate,
+            role1, 
+            role2, 
+            status: item.isActive ? 'Active' : 'Inactive',
+            email: item.email,
+            gender: item.gioiTinh ,
+            address: item.diaChi,
+            phone: item.sdt,
+            birthDate: item.ngaySinh,
+            admissionDate: item.ngayGiaNhapDoan, 
+            group: item.doan ? item.doan.tenDoan : 'N/A', 
+            phapdanh: item.phapDanh,
+            roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
+          };
+        });
+
+        setUsersData(fetchedData);
+
+      } catch (error) {
+
+        console.error('Lỗi khi gọi API:', error);
+      }
+    };
+    layDuLieu();
+  }, []);
+
+
+
 
 
   const filteredData = usersData.filter((user) => {
@@ -254,7 +207,7 @@ const DSNganhThanh = () => {
       </CTableDataCell>
         <CTableDataCell>{user.name}</CTableDataCell>
         <CTableDataCell>{user.registered}</CTableDataCell>
-        <CTableDataCell>{user.role}</CTableDataCell>
+        <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
         <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
@@ -262,12 +215,11 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}>Show</CButton>
+      <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
+       >Show</CButton>
       </CTableDataCell>
     </>
   );
-    
- 
 
   return (
     
@@ -279,7 +231,8 @@ const DSNganhThanh = () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" >Thêm</CButton>
+        <CButton color="secondary" >Thêm</CButton>
+        
         </CCol>
       </CRow>
 
