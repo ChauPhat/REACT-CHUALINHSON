@@ -9,7 +9,7 @@ import {
   CCol,
 } from '@coreui/react'
 
-import '../DanhSach/DanhSach.css'
+import './DanhSach.css'
 import Table from '../../table/Table'
 import CategoryCarousel from "../CategoryCarousel";
 import "slick-carousel/slick/slick.css"; 
@@ -39,7 +39,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '10-05-2023',
     role: 'Staff',
-    status: 'Banned',
+    status: 'Active',
   },
   {
     id: 3,
@@ -55,7 +55,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '22-02-2024',
     role: 'Staff',
-    status: 'Pending',
+    status: 'Active',
   },
   {
     id: 5,
@@ -71,7 +71,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '10-05-2023',
     role: 'Staff',
-    status: 'Banned',
+    status: 'Active',
   },
   {
     id: 7,
@@ -87,7 +87,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '22-02-2024',
     role: 'Staff',
-    status: 'Pending',
+    status: 'Inactive',
   },
   {
     id: 9,
@@ -103,7 +103,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '10-05-2003',
     role: 'Staff',
-    status: 'Banned',
+    status: 'Inactive',
   },
   {
     id: 11,
@@ -119,7 +119,7 @@ const usersData = [
     avatar: '2.jpg',
     registered: '26-02-2005',
     role: 'Staff',
-    status: 'Pending',
+    status: 'Inactive',
   },
   //... thêm dữ liệu khác
 ]
@@ -134,13 +134,7 @@ const getBadgeClass = (status) => {
     case 'Active':
       return 'custom-badge-success';
     case 'Inactive':
-      return 'custom-badge-secondary';
-    case 'Pending':
-      return 'custom-badge-warning'
-    case 'Banned':
       return 'custom-badge-danger';
-    default:
-      return 'primary'
   }
 }
 
