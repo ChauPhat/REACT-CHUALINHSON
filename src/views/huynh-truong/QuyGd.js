@@ -23,8 +23,9 @@ const QuyGD = () => {
     const [fundData, setFundData] = useState([]);
     const [fundData2, setFundData2] = useState([]);
     const [newFund, setNewFund] = useState({
-        tenQuy: '',
+        tenThuChi: '',
         description: '',
+        thu_hoac_chi: false,
         amount: 0,
     })
 
@@ -34,11 +35,15 @@ const QuyGD = () => {
                 const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`);
                 const apiData = response.data.data;
 
+                console.log(apiData);
+
+
                 const formattedData = apiData.flatMap((fund) =>
                     fund.quyGd.map((item) => ({
-                        tenQuy: fund.tenQuy || 'Chưa có tên quỹ',
-                        description: item.mo_Ta || 'Không có mô tả',
+                        tenThuChi: item.ten_thu_chi || 'Chưa có tên quỹ',
+                        description: item.mo_ta || 'Không có mô tả',
                         amount: item.so_tien || 0,
+                        thu_hoac_chi: item.thu_hoac_chi,
                     }))
                 );
 
@@ -70,16 +75,9 @@ const QuyGD = () => {
         fetchFundData();
     }, []);
 
-
-
     const filteredData = fundData.filter((fund) =>
         searchName === '' || fund.tenQuy.toLowerCase().includes(searchName.toLowerCase())
     );
-
-    const formatAmount = (amount) => {
-        return amount > 0 ? `+${amount}` : amount < 0 ? `-${Math.abs(amount)}` : amount;
-    };
-
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -110,11 +108,11 @@ const QuyGD = () => {
 
     const renderRow = (fund) => (
         <>
-            <CTableDataCell>{fund.tenQuy}</CTableDataCell>
+            <CTableDataCell>{fund.tenThuChi}</CTableDataCell>
             <CTableDataCell
-                style={{ color: fund.amount < 0 ? 'red' : 'green' }}
+                style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}
             >
-                {formatAmount(fund.amount)} <label className="text-white"> VNĐ</label>
+                {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount} <label className="text-white"> VNĐ</label>
             </CTableDataCell>
             <CTableDataCell>{fund.description}</CTableDataCell>
         </>

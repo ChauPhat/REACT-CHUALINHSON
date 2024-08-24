@@ -29,7 +29,7 @@ const DSNganhThanh = () => {
       .then((response) => {
         if (response.data.status === 'OK') {
           const fetchedData = response.data.data.map(item => ({
-            id: item.user.userId,
+            id: item.user.userIdUx,
             name: item.user.hoTen,
             avatar: item.user.avatar,
             registered: item.user.createDate,

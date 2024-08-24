@@ -135,7 +135,7 @@ const getBadgeClass = (status) => {
     case 'Active':
       return 'custom-badge-success';
     case 'Inactive':
-      return 'custom-badge-secondary';
+      return 'custom-badge-danger';
     case 'Pending':
       return 'custom-badge-warning'
     case 'Banned':

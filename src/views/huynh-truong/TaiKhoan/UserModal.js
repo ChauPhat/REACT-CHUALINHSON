@@ -160,7 +160,7 @@ function UserModal({ show, handleClose, user , handleRoleChange}) {
       <Button variant="secondary" disabled={!isEditing} >
         Save
       </Button>
-      <Button variant="secondary" onClick={handleClose}>
+      <Button variant="danger" onClick={handleClose}>
         Close
       </Button>
     </div>

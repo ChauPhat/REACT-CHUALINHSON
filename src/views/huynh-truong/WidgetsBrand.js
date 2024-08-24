@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { CWidgetStatsD, CRow, CCol } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilCalendar } from '@coreui/icons'
+import { cilMoney } from '@coreui/icons'
 
 const WidgetsBrand = ({ className, totalAmount, totalIncome, totalExpense }) => {
   return (
     <CRow className={className} xs={{ gutter: 4 }}>
       <CCol sm={12} xl={4} xxl={4}>
         <CWidgetStatsD
-          icon={<CIcon icon={cilCalendar} height={52} className="my-4 text-white" />}
+          icon={<CIcon icon={cilMoney} height={52} className="my-4 text-white" />}
           values={[
             { title: 'Tổng số tiền', value: `${totalAmount} VND` },
           ]}
@@ -20,7 +20,7 @@ const WidgetsBrand = ({ className, totalAmount, totalIncome, totalExpense }) => 
       </CCol>
       <CCol sm={12} xl={4} xxl={4}>
         <CWidgetStatsD
-          icon={<CIcon icon={cilCalendar} height={52} className="my-4 text-white" />}
+          icon={<CIcon icon={cilMoney} height={52} className="my-4 text-white" />}
           values={[
             { title: 'Tổng thu', value: `${totalIncome} VND` },
           ]}
@@ -31,7 +31,7 @@ const WidgetsBrand = ({ className, totalAmount, totalIncome, totalExpense }) => 
       </CCol>
       <CCol sm={12} xl={4} xxl={4}>
         <CWidgetStatsD
-          icon={<CIcon icon={cilCalendar} height={52} className="my-4 text-white" />}
+          icon={<CIcon icon={cilMoney} height={52} className="my-4 text-white" />}
           values={[
             { title: 'Tổng chi', value: `${totalExpense} VND` },
           ]}
