@@ -57,13 +57,11 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
 
     return (
         <>
-            <CTable hover responsive striped>
+            <CTable hover responsive striped border={1}>
                 <CTableHead>
-                    <CTableRow>
+                    <CTableRow className="g-3">
                         {headers.map((header, index) => (
-                            <CTableHeaderCell key={index} style={{ width: header.props.width }}>
-                                {header.props.children}
-                            </CTableHeaderCell>
+                            <CTableHeaderCell key={index}>{header}</CTableHeaderCell>
                         ))}
                     </CTableRow>
                     <CTableRow>
