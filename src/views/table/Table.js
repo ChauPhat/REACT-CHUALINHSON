@@ -24,7 +24,9 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
     };
 
     useEffect(() => {
-        setCurrentPage(1);
+        if (searchCriteria && searchCriteria.length > 0) {
+            setCurrentPage(1);
+        }
     }, [searchCriteria]);
 
     const renderPageNumbers = () => {

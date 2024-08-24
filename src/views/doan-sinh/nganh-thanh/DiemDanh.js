@@ -20,6 +20,7 @@ import {
 } from '@coreui/react'
 import Table from '../../table/Table'
 import './diemanhnganhthanh.css';
+import '../DoanSinhCss/DanhSach.css'
 
 const DDNganhThanh = () => {
     // Dữ liệu mẫu
@@ -60,25 +61,25 @@ const DDNganhThanh = () => {
     });
 
     const headers = [
-        <CTableDataCell width={'30%'}>Tuần</CTableDataCell>,
-        <CTableDataCell width={'30%'}>Ngày sinh hoạt</CTableDataCell>,
-        <CTableDataCell width={'30%'}>Năm</CTableDataCell>,
-        <CTableDataCell width={'10%'}></CTableDataCell>,
+        <CTableDataCell width={'30%'} className="fixed-width-column">Tuần</CTableDataCell>,
+        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày sinh hoạt</CTableDataCell>,
+        <CTableDataCell width={'30%'} className="fixed-width-column">Năm</CTableDataCell>,
+        <CTableDataCell width={'10%'} className="fixed-width-column"></CTableDataCell>,
     ];
     const headerCells = [
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo tuần"
             value={searchTerm.tuan}
             onChange={(e) => setSearchTerm({ ...searchTerm, tuan: e.target.value })}
         />,
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo ngày sinh hoạt"
             value={searchTerm.ngaySinhHoat}
             onChange={(e) => setSearchTerm({ ...searchTerm, ngaySinhHoat: e.target.value })}
         />,
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo năm"
             value={searchTerm.nam}

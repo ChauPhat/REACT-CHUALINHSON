@@ -284,24 +284,24 @@ const DSNganhThanh = () => {
 
 
   const headers = [
-    <CTableDataCell width={'10%'}>Ảnh</CTableDataCell>,
-    <CTableDataCell width={'20%'}>Họ Và Tên</CTableDataCell>,
-    <CTableDataCell width={'20%'}>Ngày Tạo</CTableDataCell>,
-    <CTableDataCell width={'15%'}>Vai trò 1</CTableDataCell>,
-    <CTableDataCell width={'15%'}>Vai trò 2</CTableDataCell>,
-    <CTableDataCell width={'10%'}>Trạng thái</CTableDataCell>,
-    <CTableDataCell width={'10%'}>Thao tác</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
+    <CTableDataCell width={'20%'} className="fixed-width-column">Họ Và Tên</CTableDataCell>,
+    <CTableDataCell width={'20%'} className="fixed-width-column">Ngày Tạo</CTableDataCell>,
+    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
+    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>,
     
   ];
   const headerCells = [
     '',
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo tên"
       value={searchName}
       onChange={(e) => setSearchName(e.target.value)}
     />,
-    <CFormInput
+    <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Ngày Đăng Ký (dd-mm-yyyy)"
       value={searchRegistered}
@@ -356,7 +356,7 @@ const DSNganhThanh = () => {
                 headerCells={headerCells}
                 items={filteredData}
                 renderRow={renderRow}
-                searchCriteria={{ searchName }} // truyền nhiều giá trị tìm kiếm vào Table nếu mày thích
+                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
             />
    
 

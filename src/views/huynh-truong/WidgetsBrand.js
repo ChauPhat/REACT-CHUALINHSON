@@ -5,9 +5,6 @@ import CIcon from '@coreui/icons-react'
 import { cilCalendar } from '@coreui/icons'
 
 const WidgetsBrand = ({ className, totalAmount, totalIncome, totalExpense }) => {
-  console.log("Total Amount:", totalAmount);
-  console.log("Total Income:", totalIncome);
-  console.log("Total Expense:", totalExpense);
   return (
     <CRow className={className} xs={{ gutter: 4 }}>
       <CCol sm={12} xl={4} xxl={4}>

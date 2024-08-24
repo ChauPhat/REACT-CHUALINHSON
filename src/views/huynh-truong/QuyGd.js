@@ -15,6 +15,7 @@ import Table from '../table/Table';
 import WidgetsBrand from './WidgetsBrand';
 import axios from 'axios'
 import env from '../../env'
+import '../doan-sinh/DoanSinhCss/DanhSach.css'
 
 const QuyGD = () => {
     const [searchName, setSearchName] = useState('');
@@ -22,7 +23,7 @@ const QuyGD = () => {
     const [fundData, setFundData] = useState([]);
     const [fundData2, setFundData2] = useState([]);
     const [newFund, setNewFund] = useState({
-        quyGdId: 0,
+        tenQuy: '',
         description: '',
         amount: 0,
     })
@@ -33,11 +34,9 @@ const QuyGD = () => {
                 const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`);
                 const apiData = response.data.data;
 
-                console.log('apiData:', apiData);
-
                 const formattedData = apiData.flatMap((fund) =>
                     fund.quyGd.map((item) => ({
-                        quyGdId: fund.quyGdId || 'Chưa có tên quỹ nên để tạm id',
+                        tenQuy: fund.tenQuy || 'Chưa có tên quỹ',
                         description: item.mo_Ta || 'Không có mô tả',
                         amount: item.so_tien || 0,
                     }))
@@ -74,7 +73,7 @@ const QuyGD = () => {
 
 
     const filteredData = fundData.filter((fund) =>
-        searchName === '' || fund.quyGdId.toLowerCase().includes(searchName.toLowerCase())
+        searchName === '' || fund.tenQuy.toLowerCase().includes(searchName.toLowerCase())
     );
 
     const formatAmount = (amount) => {
@@ -93,13 +92,13 @@ const QuyGD = () => {
 
 
     const headers = [
-        <CTableDataCell width={'30%'}>Tên Thu Chi</CTableDataCell>,
-        <CTableDataCell width={'30%'}>Số tiền</CTableDataCell>,
-        <CTableDataCell width={'40%'}>Mô tả</CTableDataCell>
+        <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
+        <CTableDataCell width={'30%'} className="fixed-width-column">Số tiền</CTableDataCell>,
+        <CTableDataCell width={'40%'} className="fixed-width-column">Mô tả</CTableDataCell>
     ];
 
     const headerCells = [
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo tên"
             value={searchName}
@@ -111,7 +110,7 @@ const QuyGD = () => {
 
     const renderRow = (fund) => (
         <>
-            <CTableDataCell>{fund.quyGdId}</CTableDataCell>
+            <CTableDataCell>{fund.tenQuy}</CTableDataCell>
             <CTableDataCell
                 style={{ color: fund.amount < 0 ? 'red' : 'green' }}
             >
