@@ -49,4 +49,5 @@
   .fixed-width-input[type="search"] {
     min-width: 180px; /* Kích thước tối thiểu trên các thiết bị nhỏ hơn */
   }
+  
 }
