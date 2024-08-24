@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CBadge,
   CAvatar,
@@ -12,7 +12,7 @@ import {
 import '../TaiKhoan/TaiKhoan.css'
 import Table from '../../table/Table'
 import CategoryCarousel from "../CategoryCarousel";
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -185,15 +185,15 @@ const DSNganhThanh = () => {
           const roles = item.roles.split(',').map(role => roleMapping[role.trim()] || role);
           const [role, role2] = roles.length > 1 ? roles : [roles[0], ''];
           const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
-        
+
 
           return {
             id: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
             registered: item.account.createdDate,
-            role, 
-            role2, 
+            role,
+            role2,
             status: item.account.isActive ? 'Active' : 'Inactive',
             email: item.email,
             gender: item.gioiTinh,
@@ -202,10 +202,10 @@ const DSNganhThanh = () => {
             roleOfDoanTruong: item.roles,
           };
         });
-        
+
 
         setUsersData(fetchedData);
-      
+
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -225,43 +225,20 @@ const DSNganhThanh = () => {
 
 
 
-
+  const formatDateToDDMMYYYY = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
 
 
   const filteredData = usersData.filter((user) => {
-  const registeredDate = formatDate(user.registered);
-  const searchDate = searchRegistered ? searchRegistered.split('-') : [];
-
-
-
-    // Nếu chỉ nhập năm
-    if (searchDate.length === 1 && searchDate[0].length === 4) {
-      const searchYear = parseInt(searchDate[0], 10);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Nếu nhập đầy đủ ngày-tháng-năm
-    if (searchDate.length === 3) {
-      const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getDate() === searchDay &&
-        registeredDate.getMonth() + 1 === searchMonth &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Mặc định trả về khi không nhập ngày đăng ký
     return (
       (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRegistered === '' || formatDateToDDMMYYYY(user.registered).includes(searchRegistered)) &&
       (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
       (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
     );
@@ -282,7 +259,6 @@ const DSNganhThanh = () => {
   };
 
 
-
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'20%'} className="fixed-width-column">Họ Và Tên</CTableDataCell>,
@@ -291,7 +267,7 @@ const DSNganhThanh = () => {
     <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
     <CTableDataCell width={'10%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
     <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>,
-    
+
   ];
   const headerCells = [
     '',
@@ -316,33 +292,33 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={user.avatar} />
+        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
       </CTableDataCell>
-        <CTableDataCell>{user.name}</CTableDataCell>
-        <CTableDataCell>{user.registered}</CTableDataCell>
-        <CTableDataCell>{user.role}</CTableDataCell>
-        <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>{user.name}</CTableDataCell>
+      <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
+      <CTableDataCell>{user.role}</CTableDataCell>
+      <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
-         disabled={user.status !== 'Active'}>Show</CButton>
+        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}
+          disabled={user.status !== 'Active'}>Show</CButton>
 
-         
+
       </CTableDataCell>
     </>
   );
-    
- 
+
+
 
   return (
-    
+
     <div className="container-fluid">
-    <CategoryCarousel categories={usersData} />
-    <br/>
+      <CategoryCarousel categories={usersData} />
+      <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Tài Khoản</h3>
@@ -351,16 +327,16 @@ const DSNganhThanh = () => {
           <CButton color="secondary" >Thêm</CButton>
         </CCol>
       </CRow>
-            <Table
-                headers={headers}
-                headerCells={headerCells}
-                items={filteredData}
-                renderRow={renderRow}
-                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
-            />
-   
+      <Table
+        headers={headers}
+        headerCells={headerCells}
+        items={filteredData}
+        renderRow={renderRow}
+        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+      />
 
-   {selectedUser && (
+
+      {selectedUser && (
         <UserModal
           show={showModal}
           handleClose={handleCloseModal}
@@ -370,7 +346,7 @@ const DSNganhThanh = () => {
       )}
 
 
-   
+
     </div>
   )
 }

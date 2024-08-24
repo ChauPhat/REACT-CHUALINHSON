@@ -133,7 +133,7 @@ const DSOanhNu = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={user.avatar} />
+        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
       <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>

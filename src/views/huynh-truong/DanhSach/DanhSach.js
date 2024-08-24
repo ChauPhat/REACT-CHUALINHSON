@@ -105,41 +105,18 @@ const DSNganhThanh = () => {
 
 
 
-
+  const formatDateToDDMMYYYY = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   const filteredData = usersData.filter((user) => {
-  const registeredDate = formatDate(user.registered);
-  const searchDate = searchRegistered ? searchRegistered.split('-') : [];
-
-
-
-    // Nếu chỉ nhập năm
-    if (searchDate.length === 1 && searchDate[0].length === 4) {
-      const searchYear = parseInt(searchDate[0], 10);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Nếu nhập đầy đủ ngày-tháng-năm
-    if (searchDate.length === 3) {
-      const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
-      return (
-        (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-        (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-        (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
-        registeredDate.getDate() === searchDay &&
-        registeredDate.getMonth() + 1 === searchMonth &&
-        registeredDate.getFullYear() === searchYear
-      );
-    }
-
-    // Mặc định trả về khi không nhập ngày đăng ký
     return (
       (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRegistered === '' || formatDateToDDMMYYYY(user.registered).includes(searchRegistered)) &&
       (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
       (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
     );
@@ -204,10 +181,10 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>  
-        <CAvatar src={user.avatar} />
+        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
       </CTableDataCell>
         <CTableDataCell>{user.name}</CTableDataCell>
-        <CTableDataCell>{user.registered}</CTableDataCell>
+        <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
         <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
         <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
