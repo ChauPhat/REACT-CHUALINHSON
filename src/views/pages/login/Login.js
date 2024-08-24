@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import Swal from 'sweetalert2'
-import env from '../../../env'
-import { jwtDecode } from "jwt-decode";  // Import jwt-decode
+import axios from 'axios';
+import { jwtDecode } from "jwt-decode"; // Import jwt-decode
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import env from '../../../env';
 
+import { cilLockLocked, cilUser } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 import {
   CButton,
   CCard,
@@ -16,12 +18,12 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+} from '@coreui/react';
+import { useRole } from '../../../RoleContext';
 
 const Login = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { role, setRole } = useRole();
 
   useEffect(() => {
     const token = sessionStorage.getItem('token')
@@ -33,11 +35,27 @@ const Login = () => {
       sessionStorage.removeItem('token')
       sessionStorage.removeItem('tokenExpiry')
     }
-  }, [navigate])
+  }, [navigate]);
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const updateSessionStorage = (token) => {
+    // Cập nhật sessionStorage với dữ liệu mới
+    const decodedToken = jwtDecode(token);
+
+    const expiryTime = decodedToken.exp * 1000
+
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('tokenExpiry', expiryTime);
+    sessionStorage.setItem('user', JSON.stringify(decodedToken));
+
+    // Tạo và phát sự kiện tùy chỉnh để thông báo rằng sessionStorage đã được cập nhật
+    const event = new Event('sessionUpdated');
+    window.dispatchEvent(event);
+  };
+
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -59,14 +77,7 @@ const Login = () => {
       const data = response.data.data
 
       if (data) {
-        const decodedToken = jwtDecode(data.token)
-        console.log('Decoded Token:', decodedToken)
-
-        const expiryTime = decodedToken.exp * 1000
-
-        sessionStorage.setItem('token', data.token)
-        sessionStorage.setItem('tokenExpiry', expiryTime)
-        sessionStorage.setItem('user', JSON.stringify(decodedToken))
+        updateSessionStorage(data?.token);
 
         Swal.fire({
           icon: 'success',
@@ -74,7 +85,7 @@ const Login = () => {
           showConfirmButton: false,
           timer: 2000,
         }).then(() => {
-          navigate('/')  
+          navigate('/')
         })
       }
     } catch (error) {
