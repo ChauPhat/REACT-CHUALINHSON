@@ -20,6 +20,7 @@ import '../doan-sinh/DoanSinhCss/DanhSach.css'
 const QuyGD = () => {
     const [searchName, setSearchName] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState(false);
     const [fundData, setFundData] = useState([]);
     const [fundData2, setFundData2] = useState([]);
     const [newFund, setNewFund] = useState({
@@ -28,6 +29,7 @@ const QuyGD = () => {
         thu_hoac_chi: false,
         amount: 0,
     })
+    const [selectedDescription, setSelectedDescription] = useState('');
 
     useEffect(() => {
         const fetchFundData = async () => {
@@ -110,11 +112,16 @@ const QuyGD = () => {
         <>
             <CTableDataCell>{fund.tenThuChi}</CTableDataCell>
             <CTableDataCell
-                style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}
+
             >
-                {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount} <label className="text-white"> VNĐ</label>
+                <label style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}> {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount}</label>  <label className=""> VNĐ</label>
             </CTableDataCell>
-            <CTableDataCell>{fund.description}</CTableDataCell>
+            <CTableDataCell>
+                <CButton color="primary" onClick={() => {
+                    setSelectedDescription(fund.description);
+                    setModalVisible2(true);
+                }}>Xem mô tả</CButton>
+            </CTableDataCell>
         </>
     );
 
@@ -143,8 +150,32 @@ const QuyGD = () => {
                 headerCells={headerCells}
                 items={filteredData}
                 renderRow={renderRow}
-                searchCriteria={{ searchName }} // truyền nhiều giá trị tìm kiếm vào Table nếu mày thích
+                searchCriteria={{ searchName }} 
             />
+
+            {/* Modal hiển thị mô tả */}
+            <CModal visible={modalVisible2} alignment="center" onClose={() => setModalVisible2(false)}>
+                <CModalHeader>
+                    <CModalTitle>Mô tả</CModalTitle>
+                </CModalHeader>
+                <CModalBody>
+                    {selectedDescription.split('-').map((line, index) => {
+                        if (index === 0) {
+                            return <span key={index}>{line.trim()}</span>;
+                        }
+                        return (
+                            <div key={index}>
+                                - {line.trim()}
+                            </div>
+                        );
+                    })}
+                </CModalBody>
+                <CModalFooter>
+                    <CButton color="secondary" onClick={() => setModalVisible2(false)}>
+                        Đóng
+                    </CButton>
+                </CModalFooter>
+            </CModal>
 
             {/* Modal thêm quỹ mới */}
             <CModal visible={modalVisible} onClose={() => setModalVisible(false)}>
