@@ -12,6 +12,7 @@ import axios from 'axios';
 import '../DoanSinhCss/DanhSach.css';
 import Table from '../../table/Table';
 import UserModal from './modalDoanSinh/UserModal';
+import env from '../../../env';
 
 const DSNganhThanh = () => {
   const [searchName, setSearchName] = useState('');
