@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import '../../DoanSinhCss/UserModal.css';
-
+import env from '../../../../env'
 function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChange }) {
 
   const [checkedCount, setCheckedCount] = useState(0);
@@ -53,7 +53,7 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={`../../../../src/assets/images/avatars/`+ user.avatar} alt="Avatar" className="user-avatar" />
+          <img src={ `${env.apiUrl}/api/file/get-img?userId=${formData.id}&t=${Date.now()}`} alt="Avatar" className="user-avatar" />
         </div>
 
         <div class="form-group">
@@ -61,7 +61,7 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
           <div class="input-group">
             <input id="name" name="name" class="form-control" type="text" value={formData.name}
               onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
-            <span class="input-group-text " id="basic-addon2">{user.id}</span>
+            <span class="input-group-text " id="basic-addon2">{formData.idUX}</span>
           </div>
 
           <label for="exampleFormControlInput1">Pháp Danh</label>

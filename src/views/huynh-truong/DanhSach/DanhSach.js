@@ -74,7 +74,8 @@ const DSNganhThanh = () => {
           const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
  
           return {
-            id: item.userIdUx,
+            id: item.userId,
+            idUX: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
             registered: item.createDate,
@@ -94,7 +95,7 @@ const DSNganhThanh = () => {
         });
 
         setUsersData(fetchedData);
-
+   
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -181,7 +182,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>  
-        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
         <CTableDataCell>{user.name}</CTableDataCell>
         <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>

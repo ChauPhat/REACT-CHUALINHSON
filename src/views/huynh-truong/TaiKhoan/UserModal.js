@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './UserModal.css';  
-
+import env from '../../../env'
 
 
 function UserModal({ show, handleClose, user , handleRoleChange}) {
@@ -82,7 +82,7 @@ function UserModal({ show, handleClose, user , handleRoleChange}) {
       </Modal.Header>
     <Modal.Body>
       <div className="avatar-container">
-        <img src={`../../../../src/assets/images/avatars/`+user.avatar} alt="Avatar" className="user-avatar" />
+        <img src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} alt="Avatar" className="user-avatar" />
       </div>
    
     <div class="form-group">
@@ -90,7 +90,7 @@ function UserModal({ show, handleClose, user , handleRoleChange}) {
     <div class="input-group">
     <input  id="name" name="name"class="form-control" type="text" value={formData.name}
     onChange={handleInputChange} readOnly={!isEditing}  disabled={!isEditing}/>
-    <span class="input-group-text " id="basic-addon2">{user.id}</span>
+    <span class="input-group-text " id="basic-addon2">{user.idUX}</span>
     </div>
 
     <label for="exampleFormControlInput1">User Name</label>

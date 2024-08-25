@@ -188,7 +188,8 @@ const DSNganhThanh = () => {
 
 
           return {
-            id: item.userIdUx,
+            id: item.userId,
+            idUX: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
             registered: item.account.createdDate,
@@ -292,7 +293,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
       <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>

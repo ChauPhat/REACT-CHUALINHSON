@@ -29,7 +29,8 @@ const DSNganhThanh = () => {
       .then((response) => {
         if (response.data.status === 'OK') {
           const fetchedData = response.data.data.map(item => ({
-            id: item.user.userIdUx,
+            id: item.user.userId,
+            idUX: item.user.userIdUx,
             name: item.user.hoTen,
             avatar: item.user.avatar,
             registered: item.user.createDate,
@@ -48,8 +49,10 @@ const DSNganhThanh = () => {
             doan: item.doan.tenDoan,
           }));
           setUsersData(fetchedData);
+
         }
       })
+      
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
@@ -133,7 +136,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={`../../../../src/assets/images/avatars/`+user.avatar} />
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
       <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
