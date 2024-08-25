@@ -53,7 +53,7 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={user.avatar} alt="Avatar" className="user-avatar" />
+          <img src={`../../../../src/assets/images/avatars/`+ user.avatar} alt="Avatar" className="user-avatar" />
         </div>
 
         <div class="form-group">

@@ -112,7 +112,7 @@ const QuyGD = () => {
             <CTableDataCell
                 style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}
             >
-                {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount} <label className="text-white"> VNĐ</label>
+                {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount} <label className="text-white" > VNĐ</label>
             </CTableDataCell>
             <CTableDataCell>{fund.description}</CTableDataCell>
         </>
