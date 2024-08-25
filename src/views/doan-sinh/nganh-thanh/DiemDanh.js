@@ -149,7 +149,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -169,7 +169,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -188,7 +188,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -207,7 +207,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -226,7 +226,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -245,7 +245,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -264,7 +264,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -283,7 +283,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -302,7 +302,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -321,7 +321,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
@@ -340,7 +340,7 @@ const DDNganhThanh = () => {
                                         </td>
                                         <td>Tui tên Tài</td>
                                         <td>27-08-2004</td>
-                                        <td>Người Cộng sản Việt Nam</td>
+                                        <td>Ngành Thanh</td>
                                         <td className='justify-content-end '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
