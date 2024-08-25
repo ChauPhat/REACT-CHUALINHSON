@@ -182,7 +182,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>  
-        <CAvatar src={user.avatar} />
+        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
       </CTableDataCell>
         <CTableDataCell>{user.name}</CTableDataCell>
         <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
