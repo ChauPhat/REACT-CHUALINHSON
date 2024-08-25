@@ -108,6 +108,8 @@ const FileLuuTru = () => {
             html: "Vui lòng đợi hệ thống xử lý <b></b> giây.",
             timer: 2000,
             timerProgressBar: true,
+            allowOutsideClick: false, // Ngăn người dùng nhấn ra ngoài để tắt bảng
+            allowEscapeKey: false, // Ngăn người dùng nhấn phím Escape để tắt bảng
             didOpen: () => {
                 MySwal.showLoading();
                 const timer = MySwal.getPopup().querySelector("b");
@@ -175,15 +177,38 @@ const FileLuuTru = () => {
                         }
                     })
                         .then(response => {
-                            MySwal.fire({
-                                title: "Thông báo!",
-                                text: "Tải ảnh thành công.",
-                                icon: "success"
+                            let timerInterval;
+                            Swal.fire({
+                                title: "Đang tải ảnh lên hệ thống!",
+                                html: "Vui lòng chờ trong <b></b> s.",
+                                timer: 2500,
+                                timerProgressBar: true,
+                                allowOutsideClick: false, // Ngăn người dùng nhấn ra ngoài để tắt bảng
+                                allowEscapeKey: false, // Ngăn người dùng nhấn phím Escape để tắt bảng
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                    const timer = Swal.getPopup().querySelector("b");
+                                    timerInterval = setInterval(() => {
+                                        timer.textContent = `${Swal.getTimerLeft()}`;
+                                    }, 100);
+                                },
+                                willClose: () => {
+                                    clearInterval(timerInterval);
+                                }
                             }).then((result) => {
-                                if (result.isConfirmed) {
-                                    fetchFiles();
-                                    document.getElementById('clone').click();
-                                    fileInputRef.current.value = "";
+                                /* Read more about handling dismissals below */
+                                if (result.dismiss === Swal.DismissReason.timer) {
+                                    MySwal.fire({
+                                        title: "Thông báo!",
+                                        text: "Tải ảnh thành công.",
+                                        icon: "success"
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            fetchFiles();
+                                            document.getElementById('clone').click();
+                                            fileInputRef.current.value = "";
+                                        }
+                                    });
                                 }
                             });
                         })

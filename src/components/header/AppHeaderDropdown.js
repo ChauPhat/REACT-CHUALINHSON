@@ -50,14 +50,14 @@ const AppHeaderDropdown = () => {
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.user_id;
         setIdUser(userId);
-  
+
         const response = await fetch(`${env.apiUrl}/api/users/get_thong_tin_doan_sinh?user_id=${userId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
-  
+
         if (response.ok) {
           const data = await response.json();
           setUserProfile(data.data);
@@ -68,7 +68,7 @@ const AppHeaderDropdown = () => {
         console.error('Error:', error);
       }
     };
-  
+
     // Gọi hàm fetchUserProfile khi component được mount
     fetchUserProfile();
   }, []); // Thêm một mảng rỗng để chỉ chạy một lần khi component mount
@@ -142,6 +142,8 @@ const AppHeaderDropdown = () => {
               html: "Đang cập nhật hình ảnh<b></b>s",
               timer: 2500,
               timerProgressBar: true,
+              allowOutsideClick: false, // Ngăn người dùng nhấn ra ngoài để tắt bảng
+              allowEscapeKey: false, // Ngăn người dùng nhấn phím Escape để tắt bảng
               didOpen: () => {
                 Swal.showLoading();
                 const timer = Swal.getPopup().querySelector("b");
