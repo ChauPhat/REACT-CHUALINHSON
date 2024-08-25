@@ -126,18 +126,19 @@ const DDNganhThanh = () => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
+                            <div className='table-responsive'>
                             <table className='table table-border table-striped table-hover'>
                                 <thead>
-                                    <tr className='text-center align-items-center'>
-                                        <th>Ảnh</th>
-                                        <th>Tên</th>
-                                        <th>Ngày sinh hoạt</th>
-                                        <th>Đoàn</th>
-                                        <th>Trạng thái</th>
+                                    <tr className=' align-items-center'>
+                                        <th className='fixed-width-column'>Ảnh</th>
+                                        <th className='fixed-width-column'>Tên</th>
+                                        <th className='fixed-width-column'>Ngày sinh hoạt</th>
+                                        <th className='fixed-width-column'>Đoàn</th>
+                                        <th className='fixed-width-column'>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -147,17 +148,17 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className='fixed-width-column'>Người dùng</td>
+                                        <td className='fixed-width-column'>27-08-2004</td>
+                                        <td className='fixed-width-column'>Ngành Thanh</td>
+                                        <td className=''>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
 
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className=' align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -167,16 +168,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -186,16 +187,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -205,16 +206,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -224,16 +225,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -243,16 +244,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -262,16 +263,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -281,16 +282,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -300,16 +301,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -319,16 +320,16 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr className=' justify-content-center align-items-center'>
+                                    <tr className='  align-items-center'>
                                         <td>
                                             <img
                                                 src="/src/assets/images/avatars/8.jpg"
@@ -338,10 +339,10 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td>Tui tên Tài</td>
+                                        <td>Người dùng</td>
                                         <td>27-08-2004</td>
                                         <td>Ngành Thanh</td>
-                                        <td className='justify-content-end '>
+                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
@@ -349,6 +350,7 @@ const DDNganhThanh = () => {
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Thoát</button>
