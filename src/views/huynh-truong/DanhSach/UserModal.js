@@ -48,7 +48,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title className="modal-title">User Profile</Modal.Title>
+        <Modal.Title className="modal-title">Thông Tin Huynh Trưởng</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">

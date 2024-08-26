@@ -19,7 +19,7 @@ import {
     CCol,
 } from '@coreui/react'
 import Table from '../../table/Table'
-import './diemanhnganhthanh.css';
+import './DiemDanh.css';
 import '../DoanSinhCss/DanhSach.css'
 
 const DDNganhThanh = () => {
