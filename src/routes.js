@@ -91,7 +91,7 @@ const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js')
 const QuyGD = React.lazy(() => import('./views/huynh-truong/QuyGd.js'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Trang Chủ' },
+  // { path: '/', exact: true, name: 'Trang Chủ' },
   { path: '/', name: 'Trang Chủ', element: HomeDashboard },
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', element: Colors },
@@ -138,14 +138,14 @@ const routes = [
   // { path: '/widgets', name: 'Widgets', element: Widgets },
 
 
-  // { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
+  { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
 
 
   { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
-  { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ ĐoànOanh Vũ Nam', element: QDOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
+  { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ Đoàn Oanh Vũ Nam', element: QDOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
   { path: '/doan-sinh/dd-oanh-vu-nam', name: 'Điểm Danh Oanh Vũ Nam', element: DDOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
 
-  { path: '/doan-sinh/ds-oanh-vu-nu', name: 'Danh SáchOanh Vũ Nữ', element: DSOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
+  { path: '/doan-sinh/ds-oanh-vu-nu', name: 'Danh Sách Oanh Vũ Nữ', element: DSOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
   { path: '/doan-sinh/qd-oanh-vu-nu', name: 'Quỹ Đoàn Oanh Vũ Nữ', element: QDOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
   { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DSOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
 
@@ -157,9 +157,9 @@ const routes = [
   { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
   { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
 
-  { path: '/doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
-  { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
-  { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/ds-doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/ds-doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/ds-doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
 
 
 

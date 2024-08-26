@@ -78,7 +78,7 @@ const QuyGD = () => {
     }, []);
 
     const filteredData = fundData.filter((fund) =>
-        searchName === '' || fund.tenQuy.toLowerCase().includes(searchName.toLowerCase())
+        searchName === '' || fund.tenThuChi.toLowerCase().includes(searchName.toLowerCase())
     );
 
     const handleInputChange = (e) => {
