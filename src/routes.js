@@ -138,7 +138,7 @@ const routes = [
   // { path: '/widgets', name: 'Widgets', element: Widgets },
 
 
-  { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
+  // { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
 
 
   { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
@@ -157,9 +157,9 @@ const routes = [
   { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
   { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
 
-  { path: '/doan-sinh/ds-doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
-  { path: '/doan-sinh/ds-doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
-  { path: '/doan-sinh/ds-doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
 
 
 

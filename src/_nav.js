@@ -136,7 +136,7 @@ const _nav = [
           {
             component: CNavItem,
             name: 'Danh Sách',
-            to: '/doan-sinh/ds-doan-sinh/ds-nganh-thanh',
+            to: '/doan-sinh/ds-nganh-thanh',
           },
           {
             component: CNavItem,
