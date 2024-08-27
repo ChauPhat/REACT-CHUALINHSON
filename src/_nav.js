@@ -198,6 +198,11 @@ const _nav = [
         name: 'Tài Khoản',
         to: '/huynh-truong/tai-khoan',
       },
+      {
+        component: CNavItem,
+        name: 'Chức Vụ',
+        to: '/chuc-vu'
+      },
     ],
   },
   {

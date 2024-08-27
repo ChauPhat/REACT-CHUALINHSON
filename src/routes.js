@@ -99,6 +99,8 @@ const ThongBao = React.lazy(() => import('./views/notification/notification.js')
 
 const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
 
+const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu.js'))
+
 const routes = [
   // { path: '/', exact: true, name: 'Trang Chủ' },
   { path: '/', name: 'Trang Chủ', element: HomeDashboard },
@@ -188,6 +190,7 @@ const routes = [
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, role: [Role.ROLE_THUQUY] },
   { path: '/thong-bao', name: 'Thông Báo', element: ThongBao },
   { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc },
+  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu },
 ]
 
 export default routes
