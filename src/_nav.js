@@ -194,7 +194,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Danh sách',
-        to: '/ds-doan-sinh',
+        to: '/file-luu-tru/ds-doan-sinh',
       },
       {
         component: CNavItem,
