@@ -90,8 +90,6 @@ const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js')
 
 const QuyGD = React.lazy(() => import('./views/huynh-truong/QuyGd.js'))
 
-const TrangChuDS = React.lazy(() => import('./views/doan-sinh/nganh-thanh/TrangChuDS.js'))
-
 const routes = [
   // { path: '/', exact: true, name: 'Trang Chủ' },
   { path: '/', name: 'Trang Chủ', element: HomeDashboard },
@@ -140,7 +138,7 @@ const routes = [
   // { path: '/widgets', name: 'Widgets', element: Widgets },
 
 
-  { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true, element: TrangChuDS},
+  { path: '/doan-sinh/ds-doan-sinh', name: 'Danh Sách Đoàn Sinh', exact: true },
 
 
   { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
