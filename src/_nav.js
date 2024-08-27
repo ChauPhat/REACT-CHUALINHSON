@@ -186,11 +186,31 @@ const _nav = [
     role: [Role.ROLE_THUKY]
   },
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
-    icon: <CIcon icon={cilFile} customClassName="nav-icon" />
-  }
+    icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Danh sách',
+        to: '/ds-doan-sinh',
+      },
+      {
+        component: CNavItem,
+        name: 'Tài Khoản',
+        to: '/huynh-truong/tai-khoan',
+      },
+    ],
+  },
+  {
+    component: CNavItem,
+    name: 'Danh Sách thiếu',
+    to: '/quygd',
+    icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+    role: [Role.ROLE_THUQUY]
+  },
+
 
 ]
 
