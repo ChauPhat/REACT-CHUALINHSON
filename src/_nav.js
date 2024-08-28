@@ -5,6 +5,8 @@ import {
   cilMoney,
   cilPlus,
   cilUserPlus,
+  cilBell,
+  cilBook,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
@@ -51,6 +53,11 @@ const _nav = [
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-thieu-nam',
+          },
+          {
+            component: CNavItem,
+            name: 'Đoàn Phả',
+            to: '/doan-sinh/dp-thieu-nam',
           }
         ],
       },
@@ -75,6 +82,11 @@ const _nav = [
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-thieu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Đoàn Phả',
+            to: '/doan-sinh/dp-thieu-nu',
           }
         ],
       },
@@ -99,6 +111,11 @@ const _nav = [
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-oanh-vu-nu',
+          },
+          {
+            component: CNavItem,
+            name: 'Đoàn Phả',
+            to: '/doan-sinh/dp-oanh-vu-nu',
           }
         ],
       },
@@ -123,6 +140,11 @@ const _nav = [
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-oanh-vu-nam',
+          },
+          {
+            component: CNavItem,
+            name: 'Đoàn Phả',
+            to: '/doan-sinh/dp-oanh-vu-nam',
           }
         ],
       },
@@ -147,6 +169,11 @@ const _nav = [
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-nganh-thanh',
+          },
+          {
+            component: CNavItem,
+            name: 'Đoàn Phả',
+            to: '/doan-sinh/dp-nganh-thanh',
           }
         ],
       },
@@ -171,6 +198,11 @@ const _nav = [
         name: 'Tài Khoản',
         to: '/huynh-truong/tai-khoan',
       },
+      {
+        component: CNavItem,
+        name: 'Chức Vụ',
+        to: '/chuc-vu'
+      },
     ],
   },
   {
@@ -178,6 +210,13 @@ const _nav = [
     name: 'Quỹ Gia Đình',
     to: '/quygd',
     icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+    role: [Role.ROLE_THUQUY]
+  },
+  {
+    component: CNavItem,
+    name: 'Bậc Học',
+    to: '/bac-hoc',
+    icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
     role: [Role.ROLE_THUQUY]
   },
   {
@@ -193,11 +232,15 @@ const _nav = [
     
   },
   {
+    component: CNavTitle,
+    name: 'Hệ Thống',
+    role: [Role.ROLE_THUKY]
+  },
+  {
     component: CNavItem,
-    name: 'Danh Sách thiếu',
-    to: '/quygd',
-    icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
-    role: [Role.ROLE_THUQUY]
+    name: 'Thông Báo',
+    to: '/thong-bao',
+    icon: <CIcon icon={cilBell} customClassName="nav-icon" />
   },
 
 
