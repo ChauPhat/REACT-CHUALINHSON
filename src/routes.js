@@ -56,26 +56,31 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 const DSOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DanhSach'))
 const DDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DiemDanh'))
 const QDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/QuyDoan'))
+const DPOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DoanPha'))
 
 //Oanh Nữ
 const DSOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DanhSach'))
 const DDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DiemDanh'))
 const QDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/QuyDoan'))
+const DPOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DoanPha'))
 
 //Thiếu  Nam
 const DSThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DanhSach'))
 const DDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DiemDanh'))
 const QDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/QuyDoan'))
+const DPThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DoanPha'))
 
 //Thiếu  Nữ
 const DSThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DanhSach'))
 const DDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DiemDanh'))
 const QDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/QuyDoan'))
+const DPThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DoanPha'))
 
 //Ngành Thanh
 const DSNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DanhSach'))
 const DDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DiemDanh'))
 const QDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/QuyDoan'))
+const DPNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DoanPha'))
 
 //Tất Cả
 const TatCa = React.lazy(() => import('./views/doan-sinh/TatCa.js'))
@@ -89,6 +94,12 @@ const TaiKhoanHuynhTruong = React.lazy(() => import('./views/huynh-truong/TaiKho
 const FileLuuTru = React.lazy(() => import('./views/file-luu-tru/FileLuuTru.js'))
 
 const QuyGD = React.lazy(() => import('./views/huynh-truong/QuyGd.js'))
+
+const ThongBao = React.lazy(() => import('./views/notification/notification.js'))
+
+const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
+
+const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu.js'))
 
 const routes = [
   // { path: '/', exact: true, name: 'Trang Chủ' },
@@ -144,22 +155,27 @@ const routes = [
   { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
   { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ Đoàn Oanh Vũ Nam', element: QDOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
   { path: '/doan-sinh/dd-oanh-vu-nam', name: 'Điểm Danh Oanh Vũ Nam', element: DDOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
+  { path: '/doan-sinh/dp-oanh-vu-nam', name: 'Đoàn Phả Oanh Vũ Nam', element: DPOanhNam, role: [Role.ROLE_DOANTRUONG_OANHVUNAM] },
 
   { path: '/doan-sinh/ds-oanh-vu-nu', name: 'Danh Sách Oanh Vũ Nữ', element: DSOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
   { path: '/doan-sinh/qd-oanh-vu-nu', name: 'Quỹ Đoàn Oanh Vũ Nữ', element: QDOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
-  { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DSOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
+  { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DDOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
+  { path: '/doan-sinh/dp-oanh-vu-nu', name: 'Đoàn Phả Oanh Vũ Nữ', element: DPOanhNu, role: [Role.ROLE_DOANTRUONG_OANHVUNU] },
 
   { path: '/doan-sinh/ds-thieu-nam', name: 'Danh Sách Thiếu Nam', element: DSThieuNam, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
   { path: '/doan-sinh/qd-thieu-nam', name: 'Quỹ Đoàn Thiếu Nam', element: QDThieuNam, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
   { path: '/doan-sinh/dd-thieu-nam', name: 'Điểm Danh Thiếu Nam', element: DDThieuNam, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
+  { path: '/doan-sinh/dp-thieu-nam', name: 'Đoàn Phả Thiếu Nam', element: DPThieuNam, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
 
   { path: '/doan-sinh/ds-thieu-nu', name: 'Danh Sách Thiếu Nữ', element: DSThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
   { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
   { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNU] },
+  { path: '/doan-sinh/dp-thieu-nu', name: 'Đoàn Phả Thiếu Nữ', element: DPThieuNu, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
 
   { path: '/doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
   { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
   { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, role: [Role.ROLE_DOANTRUONG_NGANHTHANH] },
+  { path: '/doan-sinh/dp-nganh-thanh', name: 'Đoàn Phả Ngành Thanh', element: DPNganhThanh, role: [Role.ROLE_DOANTRUONG_THIEUNAM] },
 
 
 
@@ -171,7 +187,10 @@ const routes = [
   { path: '/huynh-truong/danh-sach', name: 'Danh Sách Huynh Trưởng', element: DanhSachHuynhTruong, role: [Role.ROLE_ADMIN] },
   { path: '/huynh-truong/tai-khoan', name: 'Danh Sách Tài Khoản', element: TaiKhoanHuynhTruong, role: [Role.ROLE_ADMIN] },
   { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru },
-  { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, role: [Role.ROLE_THUQUY] }
+  { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, role: [Role.ROLE_THUQUY] },
+  { path: '/thong-bao', name: 'Thông Báo', element: ThongBao },
+  { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc },
+  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu },
 ]
 
 export default routes
