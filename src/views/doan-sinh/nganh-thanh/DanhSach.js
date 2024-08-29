@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {
   CBadge,
-  CAvatar,
   CTableDataCell,
   CRow,
   CFormInput,
   CButton,
   CCol,
+  CImage,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
 } from '@coreui/react';
 import axios from 'axios';
 import '../DoanSinhCss/DanhSach.css';
@@ -41,7 +45,7 @@ const DSNganhThanh = () => {
             role: item.role,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.user.email,
-            gender: item.user.gioiTinh,
+            gender: item.user.gioiTinh ? "Male" : "Female",
             address: item.user.diaChi,
             sdtgd: item.user.sdtNguoiGiamHo,
             ngayGiaNhapDoan: item.joinDate,
@@ -53,7 +57,7 @@ const DSNganhThanh = () => {
 
         }
       })
-      
+
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
@@ -137,7 +141,10 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
+        <CImage
+          src={`${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()}`}
+          size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
+        />
       </CTableDataCell>
       <CTableDataCell>{user.name}</CTableDataCell>
       <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
@@ -148,11 +155,17 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}>Show</CButton>
+        <CDropdown>
+          <CDropdownToggle variant="outline"  color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>Thông Tin</CDropdownItem>
+            <CDropdownItem>Bật Trạng Thái</CDropdownItem>
+            <CDropdownItem>Tắt Trạng Thái</CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
       </CTableDataCell>
     </>
   );
-
   return (
     <div className="container-fluid">
       <CRow className="mb-3 d-flex">
@@ -160,7 +173,7 @@ const DSNganhThanh = () => {
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary">Thêm</CButton>
+          <CButton variant="outline"  color="info">Thêm</CButton>
         </CCol>
       </CRow>
 

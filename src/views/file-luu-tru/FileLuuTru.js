@@ -285,7 +285,7 @@ const FileLuuTru = () => {
                         <h3>File lưu trữ</h3>
                     </CCol>
                     <CCol className="d-flex justify-content-end">
-                        {isAllowed && <CButton color="secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
+                        {isAllowed && <CButton  variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
                     </CCol>
                 </CRow>
 

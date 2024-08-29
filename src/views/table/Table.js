@@ -61,12 +61,12 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
         <>
             <CTable hover responsive striped border={1}>
                 <CTableHead>
-                    <CTableRow className="g-3">
+                    <CTableRow className="g-3 align-middle" >
                         {headers.map((header, index) => (
                             <CTableHeaderCell key={index}>{header}</CTableHeaderCell>
                         ))}
                     </CTableRow>
-                    <CTableRow>
+                    <CTableRow className="align-middle">
                         {headerCells.map((headerCell, index) => (
                             <CTableDataCell key={index}>{headerCell}</CTableDataCell>
                         ))}
@@ -75,7 +75,7 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                 <CTableBody>
                     {currentItems.length > 0 ? (
                         currentItems.map((item, index) => (
-                            <CTableRow key={index}>
+                            <CTableRow key={index} className="align-middle">
                                 {renderRow(item)}
                             </CTableRow>
                         ))
