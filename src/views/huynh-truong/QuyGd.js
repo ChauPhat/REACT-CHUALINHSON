@@ -8,7 +8,11 @@ import {
     CModalHeader,
     CModalTitle,
     CRow,
-    CTableDataCell
+    CTableDataCell,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
 } from '@coreui/react';
 import React, { useState, useEffect } from 'react';
 import Table from '../table/Table';
@@ -117,10 +121,16 @@ const QuyGD = () => {
                 <label style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}> {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount}</label>  <label className=""> VNĐ</label>
             </CTableDataCell>
             <CTableDataCell>
-                <CButton color="primary" onClick={() => {
-                    setSelectedDescription(fund.description);
-                    setModalVisible2(true);
-                }}>Xem mô tả</CButton>
+                <CDropdown>
+                    <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+                    <CDropdownMenu > 
+                        <CDropdownItem href="#" onClick={() => {
+                            setSelectedDescription(fund.description);
+                            setModalVisible2(true);
+                        }}>Xem mô tả</CDropdownItem>
+                        <CDropdownItem href="#">Another action</CDropdownItem>
+                    </CDropdownMenu>
+                </CDropdown>
             </CTableDataCell>
         </>
     );
@@ -150,7 +160,7 @@ const QuyGD = () => {
                 headerCells={headerCells}
                 items={filteredData}
                 renderRow={renderRow}
-                searchCriteria={{ searchName }} 
+                searchCriteria={{ searchName }}
             />
 
             {/* Modal hiển thị mô tả */}
@@ -178,7 +188,7 @@ const QuyGD = () => {
             </CModal>
 
             {/* Modal thêm quỹ mới */}
-            <CModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+            <CModal visible={modalVisible} alignment="center" onClose={() => setModalVisible(false)}>
                 <CModalHeader>
                     <CModalTitle>Thêm Quỹ Mới</CModalTitle>
                 </CModalHeader>
