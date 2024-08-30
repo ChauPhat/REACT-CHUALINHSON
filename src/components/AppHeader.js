@@ -65,12 +65,53 @@ const AppHeader = () => {
           </CNavItem> */}
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-         {/*  <CNavItem>
+        <CDropdown variant="nav-item" direction="dropup-center">
+          <CDropdownToggle caret={false}>
+            <CIcon icon={cilBell} size="lg" />
+          </CDropdownToggle>
+          <CDropdownMenu className="p-0" style={{ minWidth: '300px' }}>
+            {/* Header */}
+            <div className="dropdown-header bg-light text-center font-weight-bold">
+              Thông Báo
+            </div>
+
+            {/* Body with Scroll */}
+            <div
+              className="p-2"
+              style={{
+                maxHeight: '250px', // Chiều cao tối đa cho phần body
+                overflowY: 'auto', // Thêm thanh trượt khi nội dung vượt quá chiều cao
+              }}
+            >
+              <CDropdownItem href="#">Thông báo 1</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 2</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 3</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 4</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 5</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 6</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 7</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 8</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 1</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 2</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 3</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 4</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 5</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 6</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 7</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 8</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 1</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 2</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 3</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 4</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 5</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 6</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 7</CDropdownItem>
+              <CDropdownItem href="#">Thông báo 8</CDropdownItem>
+            </div>
+          </CDropdownMenu>
+        </CDropdown>
+
+          {/*  <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilList} size="lg" />
             </CNavLink>

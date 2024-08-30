@@ -17,13 +17,15 @@ import {
 } from '@coreui/react'
 import {
   cilLockLocked,
-  cilUser
+  cilUser,
+  cilSettings
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { jwtDecode } from 'jwt-decode'
 import Swal from "sweetalert2";
 import env from '../../env';
 import axios from 'axios';
+import ChangePass from './ChangePassword'
 
 
 const logOut = () => {
@@ -40,6 +42,7 @@ const AppHeaderDropdown = () => {
   const [iduser, setIdUser] = useState();
   const [avatarUrl, setAvatarUrl] = useState(`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`)
   const fileInputRef = useRef(null)
+  const [changePassModalVisible, setChangePassModalVisible] = useState(false) 
 
 
   // dùng để cập nhật ảnh nhỏ khi vào trang chủ
@@ -107,6 +110,14 @@ const AppHeaderDropdown = () => {
 
   const handleAvatarClick = () => {
     fileInputRef.current.click()
+  }
+
+  const handleChangePassClick = () => {
+    setChangePassModalVisible(true); // Mở modal đổi mật khẩu
+  }
+
+  const handleCloseChangePassModal = () => {
+    setChangePassModalVisible(false); // Đóng modal đổi mật khẩu
   }
 
   const handleFileChange = (event) => {
@@ -182,6 +193,7 @@ const AppHeaderDropdown = () => {
 
   return (
     <>
+      <ChangePass modalVisible={changePassModalVisible} onCloseModal={handleCloseChangePassModal} />
       <CDropdown variant="nav-item">
         <CDropdownToggle placement="bottom-end" className="py-1" caret={false}>
           <div class="avatar">
@@ -194,6 +206,10 @@ const AppHeaderDropdown = () => {
             <CIcon icon={cilUser} className="me-2" />
             Hồ sơ của bạn
           </CDropdownItem>
+          <CDropdownItem href="#" onClick={handleChangePassClick}>
+          <CIcon icon={cilSettings} className="me-2" />
+          Đổi mật khẩu
+        </CDropdownItem>
           <CDropdownDivider />
           <CDropdownItem href="#" onClick={logOut}>
             <CIcon icon={cilLockLocked} className="me-2" />
