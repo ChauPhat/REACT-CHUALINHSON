@@ -13,6 +13,7 @@ import {
     CDropdownToggle,
     CDropdownMenu,
     CDropdownItem,
+    CFormSelect,
 } from '@coreui/react';
 import React, { useState, useEffect } from 'react';
 import Table from '../table/Table';
@@ -29,29 +30,38 @@ const QuyGD = () => {
     const [fundData2, setFundData2] = useState([]);
     const [newFund, setNewFund] = useState({
         tenThuChi: '',
-        description: '',
-        thu_hoac_chi: false,
-        amount: 0,
+        moTa: '',
+        thuHoacChi: false,
+        soTien: 0,
     })
-    const [selectedDescription, setSelectedDescription] = useState('');
+    const [selectedMoTa, setSelectedMoTa] = useState('');
+    const [years, setYears] = useState([]); // State để lưu danh sách năm
+    const [selectedYear, setSelectedYear] = useState(''); // State để lưu năm được chọn
+    const [selectedQuarter, setSelectedQuarter] = useState('1'); // State để lưu quý được chọn
 
     useEffect(() => {
         const fetchFundData = async () => {
             try {
-                const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`);
+                const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`
+                );
                 const apiData = response.data.data;
 
                 console.log(apiData);
 
 
                 const formattedData = apiData.flatMap((fund) =>
-                    fund.quyGd.map((item) => ({
-                        tenThuChi: item.ten_thu_chi || 'Chưa có tên quỹ',
-                        description: item.mo_ta || 'Không có mô tả',
-                        amount: item.so_tien || 0,
-                        thu_hoac_chi: item.thu_hoac_chi,
+                    fund.lichSuQuyGiaDinhs.map((item) => ({
+                        tenThuChi: item.tenThuChi || 'Chưa có tên quỹ',
+                        moTa: item.moTa || 'Không có mô tả',
+                        soTien: item.soTien || 0,
+                        thuHoacChi: item.thuOrChi,
                     }))
                 );
+
+                  // Lấy danh sách năm từ API
+                  const uniqueYears = [...new Set(apiData.flatMap((fund) =>
+                    fund.lichSuQuyGiaDinhs.map((item) => item.year)
+                ))];
 
                 //truyền giá trị qua widgetBrand
                 let totalAmount = 0;
@@ -59,11 +69,11 @@ const QuyGD = () => {
                 let totalExpense = 0;
 
                 apiData.forEach(fund => {
-                    fund.quyGd.forEach(item => {
-                        const amount = item.so_tien || 0;
+                    fund.lichSuQuyGiaDinhs.forEach(item => {
+                        const amount = item.soTien || 0;
                         totalAmount += amount;
 
-                        if (item.thu_hoac_chi) {
+                        if (item.thuOrChi) {
                             totalIncome += amount;
                         } else {
                             totalExpense += amount;
@@ -73,6 +83,7 @@ const QuyGD = () => {
 
                 setFundData(formattedData);
                 setFundData2({ totalAmount, totalIncome, totalExpense });
+                setYears(uniqueYears); 
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -118,17 +129,16 @@ const QuyGD = () => {
             <CTableDataCell
 
             >
-                <label style={{ color: fund.thu_hoac_chi ? 'green' : 'red' }}> {(fund.thu_hoac_chi) ? '+' : '-'}{fund.amount}</label>  <label className=""> VNĐ</label>
+                <label style={{ color: fund.thuHoacChi ? 'green' : 'red' }}> {(fund.thuHoacChi) ? '+' : '-'}{fund.soTien}</label>  <label className=""> VNĐ</label>
             </CTableDataCell>
             <CTableDataCell>
                 <CDropdown>
                     <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
-                    <CDropdownMenu > 
-                        <CDropdownItem href="#" onClick={() => {
-                            setSelectedDescription(fund.description);
+                    <CDropdownMenu >
+                        <CDropdownItem onClick={() => {
+                            setSelectedMoTa(fund.moTa);
                             setModalVisible2(true);
                         }}>Xem mô tả</CDropdownItem>
-                        <CDropdownItem href="#">Another action</CDropdownItem>
                     </CDropdownMenu>
                 </CDropdown>
             </CTableDataCell>
@@ -149,6 +159,25 @@ const QuyGD = () => {
                     <h3>Quỹ Gia Đình</h3>
                 </CCol>
                 <CCol className="d-flex justify-content-end">
+                    <CFormSelect
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                        className="me-2"
+                    >
+                        <option value="">Chọn năm</option>
+                        {years.map((year) => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </CFormSelect>
+                    <CFormSelect className='me-2'
+                        value={selectedQuarter}
+                        onChange={(e) => setSelectedQuarter(e.target.value)}
+                    >
+                        <option value="1">Quý 1</option>
+                        <option value="2">Quý 2</option>
+                        <option value="3">Quý 3</option>
+                        <option value="4">Quý 4</option>
+                    </CFormSelect>
                     <CButton color="secondary" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
@@ -169,7 +198,7 @@ const QuyGD = () => {
                     <CModalTitle>Mô tả</CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                    {selectedDescription.split('-').map((line, index) => {
+                    {selectedMoTa.split('-').map((line, index) => {
                         if (index === 0) {
                             return <span key={index}>{line.trim()}</span>;
                         }
