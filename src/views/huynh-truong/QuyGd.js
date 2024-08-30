@@ -149,7 +149,7 @@ const QuyGD = () => {
                     <h3>Quỹ Gia Đình</h3>
                 </CCol>
                 <CCol className="d-flex justify-content-end">
-                    <CButton color="secondary" onClick={() => setModalVisible(true)}>
+                    <CButton variant="outline" color="info"onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
                 </CCol>

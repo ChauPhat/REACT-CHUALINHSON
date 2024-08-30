@@ -1,14 +1,19 @@
-
-// export default UserModal;
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import '../../DoanSinhCss/UserModal.css';
-import env from '../../../../env'
-function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChange }) {
+import env from '../../../../env';
+import {
+  CFormInput
+} from '@coreui/react';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
+function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChange }) {
   const [checkedCount, setCheckedCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false); // State for edit mode
-  const [formData, setFormData] = useState(user); // Local state for form data
+  const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
+  const [avatarUrl, setAvatarUrl] = useState(`${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()}`);
+  const fileInputRef = useRef(null);
 
   const handleCheck = (event) => {
     const newCheckedCount = event.target.checked ? checkedCount + 1 : checkedCount - 1;
@@ -27,33 +32,114 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
     });
   };
 
-  const getGenderLabel = (gender) => {
-    switch (gender) {
-      case 'male':
-        return 'Nam';
-      case 'female':
-        return 'Nữ';
-      case 'other':
-        return 'Khác';
-      default:
-        return 'Không xác định';
-    }
+  const VhandleGenderChange = (value) => {
+    setFormData({
+      ...formData,
+      gender: value ? "Male" : "Female",
+    });
   };
 
   const handleSave = () => {
-    // Save logic goes here (e.g., API call or local state update)
+    // Logic save (e.g., API call or local state update)
     setIsEditing(false); // Disable editing mode after saving
-    // You might want to call handleRoleChange or other handlers here to save changes
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
+
+      if (!validExtensions.includes(file.type)) {
+        Swal.fire({
+          title: "Thông báo từ hệ thống!",
+          text: "Đây không phải file ảnh, vui lòng chọn lại.",
+          icon: "warning"
+        });
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        axios.post(`${env.apiUrl}/api/file/upload-img?userId=${user.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+          }
+        })
+          .then(response => {
+            let timerInterval;
+            Swal.fire({
+              title: "Thông báo từ hệ thống!",
+              html: "Đang cập nhật hình ảnh<b></b>s",
+              timer: 2500,
+              timerProgressBar: true,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                  timer.textContent = `${Swal.getTimerLeft()}`;
+                }, 100);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+              }
+            }).then((result) => {
+              if (result.dismiss === Swal.DismissReason.timer) {
+                const newAvatarUrl = `${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()}`;
+                setAvatarUrl(newAvatarUrl); // Cập nhật URL ảnh mới
+                Swal.fire({
+                  title: "Thông báo từ hệ thống!",
+                  text: "Cập nhật ảnh thành công",
+                  icon: "success"
+                });
+              }
+            });
+          })
+          .catch(error => {
+            Swal.fire({
+              title: "Thông báo từ hệ thống!",
+              text: "Cập nhật ảnh thất bại.",
+              icon: "error"
+            });
+          });
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal scrollable show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Đoàn Sinh</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={ `${env.apiUrl}/api/file/get-img?userId=${formData.id}&t=${Date.now()}`} alt="Avatar" className="user-avatar" />
+          <div className="text-center mb-3">
+            <img
+              src={avatarUrl}
+              alt="User Avatar"
+              style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
+              onClick={handleAvatarClick}
+              onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}
+            />
+            <CFormInput
+              type="file"
+              className="mb-3"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleFileChange} readonly={!isEditing} disabled={!isEditing}
+              accept=".jpg,.jpeg,.png"
+            />
+          </div>
         </div>
 
         <div class="form-group">
@@ -93,42 +179,23 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
           <input id="phone" name="phone" class="form-control" type="text" value={formData.phone}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
-          <label htmlFor="gender">Giới Tính</label>
-          <div className="radio-group">
+<label>Giới Tính</label>
+            <div className="radio-group">
             <label className="radio-inline">
-              <input
-                type="radio"
-                name="gender"
-                value="male"
-                checked={formData.gender === 'male'}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                disabled={!isEditing}
-              /> Nam
+              <input type="radio" name="gender" value="Male"
+                checked={formData.gender === "Male"}
+                onChange={() => VhandleGenderChange(true)}
+                disabled={!isEditing} />
+              Nam
             </label>
             <label className="radio-inline">
-              <input
-                type="radio"
-                name="gender"
-                value="female"
-                checked={formData.gender === 'female'}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                disabled={!isEditing}
-              /> Nữ
+              <input type="radio" name="gender" value="Female"
+                checked={formData.gender === "Female"} 
+                onChange={() => handleGenderChange(false)}
+                disabled={!isEditing} />
+              Nữ
             </label>
-            <label className="radio-inline">
-              <input
-                type="radio"
-                name="gender"
-                value="other"
-                checked={formData.gender === 'other'}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                disabled={!isEditing}
-              /> Khác
-            </label>
-          </div>
+            </div>
 
 
           <label for="exampleFormControlInput1">Địa Chỉ</label>
@@ -161,7 +228,7 @@ function UserModal({ show, handleClose, user, handleRoleChange, handleGenderChan
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} >
+            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
             <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>

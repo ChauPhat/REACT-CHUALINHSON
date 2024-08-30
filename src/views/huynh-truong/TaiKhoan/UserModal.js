@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import './UserModal.css';  
+import './UserModal.css';
 import env from '../../../env'
 
 
-function UserModal({ show, handleClose, user , handleRoleChange}) {
-  
+function UserModal({ show, handleClose, user, handleRoleChange }) {
+
   const [checkedCount, setCheckedCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
@@ -80,51 +80,51 @@ function UserModal({ show, handleClose, user , handleRoleChange}) {
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Tài Khoản</Modal.Title>
       </Modal.Header>
-    <Modal.Body>
-      <div className="avatar-container">
-        <img src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} alt="Avatar" className="user-avatar" />
-      </div>
-   
-    <div class="form-group">
-      <label for="exampleFormControlInput1">Họ Và Tên</label>
-    <div class="input-group">
-    <input  id="name" name="name"class="form-control" type="text" value={formData.name}
-    onChange={handleInputChange} readOnly={!isEditing}  disabled={!isEditing}/>
-    <span class="input-group-text " id="basic-addon2">{user.idUX}</span>
-    </div>
+      <Modal.Body>
+        <div className="avatar-container">
+          <img src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} alt="Avatar" className="user-avatar" />
+        </div>
 
-    <label for="exampleFormControlInput1">User Name</label>
-    <input id="userName" name="userName" class="form-control" type="text" value={formData.userName} 
-    onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}/>
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Họ Và Tên</label>
+          <div class="input-group">
+            <input id="name" name="name" class="form-control" type="text" value={formData.name}
+              onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
+            <span class="input-group-text " id="basic-addon2">{user.idUX}</span>
+          </div>
 
-    <label for="exampleFormControlInput1">Password</label>
-    <input id="password" name="password" class="form-control" type="password" value={formData.password} 
-    onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}/>
+          <label for="exampleFormControlInput1">User Name</label>
+          <input id="userName" name="userName" class="form-control" type="text" value={formData.userName}
+            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
-    <label for="exampleFormControlInput1">Email</label>
-    <input id="email" name="email" class="form-control" type="email" value={formData.email} 
-    onChange={handleInputChange}  readonly={!isEditing} disabled={!isEditing}/>
+          <label for="exampleFormControlInput1">Password</label>
+          <input id="password" name="password" class="form-control" type="password" value={formData.password}
+            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
+
+          <label for="exampleFormControlInput1">Email</label>
+          <input id="email" name="email" class="form-control" type="email" value={formData.email}
+            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
 
-    <label>Giới Tính</label>
-      <div className="radio-group">
-        <label className="radio-inline">
+          <label>Giới Tính</label>
+          <div className="radio-group">
+            <label className="radio-inline">
               <input type="radio" name="gender" value="Male"
                 checked={formData.gender === "Male"}
                 onChange={() => handleGenderChange(true)}
                 disabled={!isEditing} />
               Nam
             </label>
-        <label className="radio-inline">
+            <label className="radio-inline">
               <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"} 
+                checked={formData.gender === "Female"}
                 onChange={() => handleGenderChange(false)}
                 disabled={!isEditing} />
               Nữ
-          </label>
-      </div>
+            </label>
+          </div>
 
-      <label htmlFor="roles">Chức Vụ</label>
+          <label htmlFor="roles">Chức Vụ</label>
           <div className="checkbox-container">
             {Object.keys(rolesMapping).map(key => (
               <div className="form-check" key={key}>
@@ -143,28 +143,28 @@ function UserModal({ show, handleClose, user , handleRoleChange}) {
             ))}
           </div>
 
-      <label for="exampleFormControlInput1">Ngày Tạo</label>
-      <input  id="registered"name="registered"class="form-control" type="date" value={formData.registered}  
-      onChange={handleInputChange}  readonly={!isEditing}  disabled={!isEditing}
-      /*định dạng YYYY-MM-DD*//> 
-      </div>
+          <label for="exampleFormControlInput1">Ngày Tạo</label>
+          <input id="registered" name="registered" class="form-control" type="date" value={formData.registered}
+            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}
+      /*định dạng YYYY-MM-DD*/ />
+        </div>
 
       </Modal.Body>
       <Modal.Footer>
-    <div className="footer-container">
-    <div className="form-check form-switch" >
-      <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked={isEditing} onChange={handleEditToggle}/>
-      <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
-    </div>
-    <div className="footer-buttons">
-      <Button variant="secondary" disabled={!isEditing} >
-        Save
-      </Button>
-      <Button variant="danger" onClick={handleClose}>
-        Close
-      </Button>
-    </div>
-  </div>
+        <div className="footer-container">
+          <div className="form-check form-switch" >
+            <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked={isEditing} onChange={handleEditToggle} />
+            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
+          </div>
+          <div className="footer-buttons">
+            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>
+              Save
+            </Button>
+            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </div>
+        </div>
       </Modal.Footer>
     </Modal>
   );
