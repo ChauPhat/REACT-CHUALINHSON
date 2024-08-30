@@ -38,43 +38,27 @@ const logOut = () => {
 const AppHeaderDropdown = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [userProfile, setUserProfile] = useState(null)
-  const [imageUrl, setImageUrl] = useState('')
-  const [iduser, setIdUser] = useState();
-  const [avatarUrl, setAvatarUrl] = useState(`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`)
+  const [iduser, setIdUser] = useState('');
+  const [iduserlog, setIdUserlog] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef(null)
-  const [changePassModalVisible, setChangePassModalVisible] = useState(false) 
+  const [changePassModalVisible, setChangePassModalVisible] = useState(false)
 
-
-  // dùng để cập nhật ảnh nhỏ khi vào trang chủ
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
         const token = sessionStorage.getItem('token');
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.user_id;
-        setIdUser(userId);
-
-        const response = await fetch(`${env.apiUrl}/api/users/get_thong_tin_doan_sinh?user_id=${userId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUserProfile(data.data);
-        } else {
-          console.error('Failed to load profile');
-        }
+        setImageUrl(`${env.apiUrl}/api/file/get-img?userId=${userId}&t=${Date.now()}`)
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching image:', error);
       }
     };
 
-    // Gọi hàm fetchUserProfile khi component được mount
-    fetchUserProfile();
-  }, []); // Thêm một mảng rỗng để chỉ chạy một lần khi component mount
+    fetchData();
+  }, []);
+
 
   const handleProfileClick = async () => {
     setModalVisible(true);
@@ -86,7 +70,7 @@ const AppHeaderDropdown = () => {
       const userId = decodedToken.user_id;
       setIdUser(userId);
 
-      const response = await fetch(`http://103.15.222.65:8888/api/users/get_thong_tin_doan_sinh?user_id=${userId}`, {
+      const response = await fetch(`${env.apiUrl}/api/users/get_thong_tin_doan_sinh?user_id=${userId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -140,6 +124,8 @@ const AppHeaderDropdown = () => {
         const formData = new FormData();
         formData.append('file', file);
 
+        const tempImageUrl = URL.createObjectURL(file); // Tạo URL tạm thời cho hình ảnh
+
         axios.post(`${env.apiUrl}/api/file/upload-img?userId=${iduser}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -168,8 +154,9 @@ const AppHeaderDropdown = () => {
             }).then((result) => {
               /* Read more about handling dismissals below */
               if (result.dismiss === Swal.DismissReason.timer) {
-                const newAvatarUrl = `${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`;
-                setAvatarUrl(newAvatarUrl); // Giả sử bạn có hàm `setAvatarUrl` để cập nhật avatar
+                URL.revokeObjectURL(tempImageUrl); // Giải phóng URL tạm thời nếu cần
+                const newImageUrl = `${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`;
+                setImageUrl(newImageUrl);
                 Swal.fire({
                   title: "Thông báo từ hệ thông!",
                   text: "Cập nhật ảnh thành công",
@@ -192,110 +179,116 @@ const AppHeaderDropdown = () => {
   }
 
   return (
+
     <>
       <ChangePass modalVisible={changePassModalVisible} onCloseModal={handleCloseChangePassModal} />
-      <CDropdown variant="nav-item">
-        <CDropdownToggle placement="bottom-end" className="py-1" caret={false}>
-          <div class="avatar">
-            <img class="avatar-img" src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`} style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }} />
-          </div>
-        </CDropdownToggle>
-        <CDropdownMenu className="pt-0" placement="bottom-end">
-          <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Tài khoản</CDropdownHeader>
-          <CDropdownItem href="#" onClick={handleProfileClick}>
-            <CIcon icon={cilUser} className="me-2" />
-            Hồ sơ của bạn
-          </CDropdownItem>
-          <CDropdownItem href="#" onClick={handleChangePassClick}>
-          <CIcon icon={cilSettings} className="me-2" />
-          Đổi mật khẩu
-        </CDropdownItem>
-          <CDropdownDivider />
-          <CDropdownItem href="#" onClick={logOut}>
-            <CIcon icon={cilLockLocked} className="me-2" />
-            Đăng xuất
-          </CDropdownItem>
-        </CDropdownMenu>
-      </CDropdown>
 
-      <CModal visible={modalVisible} onClose={handleCloseModal}>
-        <CModalHeader>
-          <CModalTitle>Hồ sơ người dùng</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {userProfile ? (
-            <>
-              <div className="text-center mb-3">
-                <img
-                  src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`}
-                  alt="User Avatar"
-                  style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
-                  onClick={handleAvatarClick}
+      <div>
+
+        <CDropdown variant="nav-item">
+          <CDropdownToggle placement="bottom-end" className="py-1" caret={false}>
+            <div class="avatar">
+              <img class="avatar-img" src={`${imageUrl}`} style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }} />
+            </div>
+          </CDropdownToggle>
+          <CDropdownMenu className="pt-0" placement="bottom-end">
+            <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Tài khoản</CDropdownHeader>
+            <CDropdownItem href="#" onClick={handleProfileClick}>
+              <CIcon icon={cilUser} className="me-2" />
+              Hồ sơ của bạn
+            </CDropdownItem>
+            <CDropdownItem href="#" onClick={handleChangePassClick}>
+              <CIcon icon={cilSettings} className="me-2" />
+              Đổi mật khẩu
+            </CDropdownItem>
+            <CDropdownDivider />
+            <CDropdownItem href="#" onClick={logOut}>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Đăng xuất
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+
+        <CModal visible={modalVisible} onClose={handleCloseModal}>
+          <CModalHeader>
+            <CModalTitle>Hồ sơ người dùng</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {userProfile ? (
+              <>
+                <div className="text-center mb-3">
+                  <img
+                    src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`}
+                    alt="User Avatar"
+                    style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
+                    onClick={handleAvatarClick}
+                  />
+                  <CFormInput
+                    type="file"
+                    className="mb-3"
+                    style={{ display: 'none' }}
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".jpg,.jpeg,.png"
+                  />
+                </div>
+                <CFormInput
+                  type="text"
+                  label="Họ tên"
+                  value={userProfile.hoTen}
+                  disabled
+                  className="mb-3"
                 />
                 <CFormInput
-                  type="file"
+                  type="text"
+                  label="Pháp Danh"
+                  value={userProfile.phapDanh}
+                  disabled
                   className="mb-3"
-                  style={{ display: 'none' }}
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".jpg,.jpeg,.png"
                 />
-              </div>
-              <CFormInput
-                type="text"
-                label="Họ tên"
-                value={userProfile.hoTen}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Pháp Danh"
-                value={userProfile.phapDanh}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Giới tính"
-                value={userProfile.gioiTinh ? "Nam" : "Nữ"}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="email"
-                label="Email"
-                value={userProfile.email}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="tel"
-                label="Số điện thoại"
-                value={userProfile.sdt}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Địa chỉ"
-                value={userProfile.diaChi}
-                disabled
-                className="mb-3"
-              />
-            </>
-          ) : (
-            <p>Loading...</p>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="outline-secondary" onClick={handleCloseModal}>
-            Đóng
-          </CButton>
-        </CModalFooter>
-      </CModal>
+                <CFormInput
+                  type="text"
+                  label="Giới tính"
+                  value={userProfile.gioiTinh ? "Nam" : "Nữ"}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="email"
+                  label="Email"
+                  value={userProfile.email}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="tel"
+                  label="Số điện thoại"
+                  value={userProfile.sdt}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="text"
+                  label="Địa chỉ"
+                  value={userProfile.diaChi}
+                  disabled
+                  className="mb-3"
+                />
+              </>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="outline-secondary" onClick={handleCloseModal}>
+              Đóng
+            </CButton>
+          </CModalFooter>
+        </CModal>
+      </div>
     </>
   )
+
 }
 
 export default AppHeaderDropdown

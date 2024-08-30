@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes,HashRouter} from 'react-router-dom'
 
 import { CSpinner, useColorModes } from '@coreui/react'
 import { RoleProvider } from './RoleContext'
@@ -36,7 +36,7 @@ const App = () => {
 
   return (
     <RoleProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Suspense
           fallback={
             <div className="pt-3 text-center">
@@ -65,7 +65,7 @@ const App = () => {
             } /> */}
           </Routes>
         </Suspense>
-      </BrowserRouter>
+      </HashRouter>
     </RoleProvider>
   )
 }

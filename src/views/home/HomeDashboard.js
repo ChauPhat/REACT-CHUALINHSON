@@ -47,7 +47,7 @@ const Home = () => {
     {
       avatar: { src: avatar1, status: 'success' },
       user: {
-        name: 'Yiorgos Avraamu',
+        name: 'Yiorgos Avraamu || An Duy',
         new: true,
         registered: 'Jan 1, 2023',
       },
@@ -177,12 +177,10 @@ const Home = () => {
                     <CTableHeaderCell className="bg-body-tertiary text-center">
                       <CIcon icon={cilPeople} />
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Country
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Pháp Danh || Tên</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Vai Trò </CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Vai Trò 2</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Trạng Thái</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>

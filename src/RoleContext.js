@@ -1,19 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { replaceRole, Role } from './GlobalVariable';
 
 const RoleContext = createContext();
 
 export const RoleProvider = ({ children }) => {
     const [role, setRole] = useState(() => {
         const user = JSON.parse(sessionStorage.getItem('user'));
-        return user && replaceRole(Role, user?.roles?.split(','));
+        // return user && replaceRole(Role, user?.roles?.split(','));
+        return null;
     });
 
     useEffect(() => {
         // Hàm xử lý sự kiện khi sessionStorage được cập nhật
         const handleSessionUpdate = () => {
             const user = JSON.parse(sessionStorage.getItem('user'));
-            setRole(user && replaceRole(Role, user?.roles?.split(',')));
+            // setRole(user && replaceRole(Role, user?.roles?.split(',')));
+            setRole(null);
         };
 
         // Lắng nghe sự kiện 'sessionUpdated'
