@@ -136,7 +136,7 @@ const routes = [
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, screen_id: 'quy-gd' },
   { path: '/thong-bao', name: 'Thông Báo', element: ThongBao, screen_id: 'thong-bao' },
   { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc, screen_id: 'bac-hoc' },
-  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu, screen_id: 'chuc-vu' },
+  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu, screen_id: 'huynh-truong.chuc-vu' },
 ];
 
 

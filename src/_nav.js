@@ -229,7 +229,7 @@ const _nav = [
         component: CNavItem,
         name: 'Chức Vụ',
         to: '/chuc-vu',
-        screen_id: 'chuc-vu'
+        screen_id: 'huynh-truong.chuc-vu'
       },
     ],
   },
