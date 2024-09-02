@@ -69,7 +69,7 @@ const QuyGD = () => {
                 }
             });
             const apiData = response.data.data;
-
+            
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyGiaDinhs.map((item) => ({
                     lichSuQuyGiaDinhId: item.lichSuQuyGiaDinhId,
@@ -267,13 +267,17 @@ const QuyGD = () => {
                                 setSelectedMoTa(fund.moTa); // Nếu không có dấu '-', không cần thay đổi
                             } else {
                                 // Phần đầu tiên không thay đổi
-                                const firstPart = parts[0].trim();
-
+                                let firstPart = parts[0].trim();
+                                if(firstPart.length === 0) {
+                                    parts.shift();
+                                    firstPart = parts[0].trim();
+                                }
+                            
                                 // Phần còn lại, mỗi phần bắt đầu với '- ' và xuống dòng
                                 const restParts = parts.slice(1).map(part => `\n- ${part.trim()}`);
 
                                 // Kết hợp phần đầu tiên với các phần còn lại
-                                const formattedMoTa = `${firstPart}${restParts.join('')}`;
+                                const formattedMoTa = `${`- `+firstPart+restParts.join('')}`;
 
                                 setSelectedMoTa(formattedMoTa);
                             }

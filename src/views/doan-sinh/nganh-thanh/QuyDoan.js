@@ -14,6 +14,7 @@ import {
     CDropdownMenu,
     CDropdownItem,
     CFormSelect,
+    CFormTextarea,
 } from '@coreui/react';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Table from '../../table/Table';
@@ -23,7 +24,7 @@ import env from '../../../env';
 import '../DoanSinhCss/DanhSach.css';
 import Swal from 'sweetalert2';
 
-const QuyDoanNganhThanh = () => {
+const QuyGD = () => {
     const [searchName, setSearchName] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisible2, setModalVisible2] = useState(false);
@@ -41,6 +42,7 @@ const QuyDoanNganhThanh = () => {
         return '4';
     }, []);
     const [newFund, setNewFund] = useState({
+        lichSuQuyDoanId: 0,
         tenThuChi: '',
         moTa: '',
         thuOrChi: false,
@@ -49,25 +51,27 @@ const QuyDoanNganhThanh = () => {
         quy: getCurrentQuarter(), // Đặt giá trị quý hiện tại mặc định
     });
     const [selectedMoTa, setSelectedMoTa] = useState('');
+    const [selectedLichSuQuyId, setSelectedLichSuQuyId] = useState(0);
     const [years, setYears] = useState([]);
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedQuarter, setSelectedQuarter] = useState('0'); // Khởi tạo với giá trị mặc định '0'
 
     useEffect(() => {
         fetchFundData();
+
     }, []); // Chạy hàm fetchFundData khi component mount
 
     const fetchFundData = async () => {
         try {
-            const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`, {
+            const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?doanId=5`, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
                 }
             });
             const apiData = response.data.data;
-
             const formattedData = apiData.flatMap((fund) =>
-                fund.lichSuQuyGiaDinhs.map((item) => ({
+                fund.lichSuQuyDoans.map((item) => ({
+                    lichSuQuyDoanId: item.lichSuQuyDoanId,
                     tenThuChi: item.tenThuChi || 'Chưa có tên quỹ',
                     moTa: item.moTa || 'Không có mô tả',
                     soTien: item.soTien || 0,
@@ -78,7 +82,7 @@ const QuyDoanNganhThanh = () => {
             );
 
             const uniqueYears = [...new Set(apiData.flatMap((fund) =>
-                fund.lichSuQuyGiaDinhs.map((item) => item.year)
+                fund.lichSuQuyDoans.map((item) => item.year)
             ))].sort((a, b) => b - a);
 
             setFundData(formattedData);
@@ -162,7 +166,12 @@ const QuyDoanNganhThanh = () => {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
                 }
             });
-            // Tải lại dữ liệu quỹ sau khi thêm thành công
+            Swal.fire({
+                icon: 'success',
+                title: 'Thêm quỹ thành công',
+                showConfirmButton: false,
+                timer: 1500,
+            });
             await fetchFundData();
             setNewFund({
                 tenThuChi: '',
@@ -177,6 +186,41 @@ const QuyDoanNganhThanh = () => {
             console.error('Error adding fund:', error);
         }
     };
+
+    const handleUpdateMoTa = async () => {
+        try {
+            console.log(selectedMoTa);
+            console.log(selectedLichSuQuyId);
+
+            const response = await fetch(`${env.apiUrl}/api/quygiadinh/updateMotaLichSuQuyGiaDinh?lich_su_quy_gia_dinh_id=${selectedLichSuQuyId}&mo_ta=${selectedMoTa}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // Cập nhật dữ liệu sau khi chỉnh sửa
+            await fetchFundData();
+            Swal.fire({
+                icon: 'success',
+                title: 'Cập nhật thành công!',
+                showConfirmButton: true,
+            });
+        } catch (error) {
+            console.error('Error updating fund:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Cập nhật thất bại!',
+                text: 'Có lỗi xảy ra khi cập nhật mô tả.',
+                showConfirmButton: true,
+            });
+        }
+    };
+
 
     const headers = useMemo(() => [
         <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
@@ -194,6 +238,8 @@ const QuyDoanNganhThanh = () => {
         '',
         '',
     ], [searchName]);
+
+
 
     const renderRow = useCallback((fund) => (
         <>
@@ -213,7 +259,28 @@ const QuyDoanNganhThanh = () => {
                     <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
                     <CDropdownMenu>
                         <CDropdownItem onClick={() => {
-                            setSelectedMoTa(fund.moTa);
+                            // Tách phần mô tả theo dấu '-'
+                            const parts = fund.moTa.split('-');
+
+                            if (parts.length <= 1) {
+                                setSelectedMoTa(fund.moTa); // Nếu không có dấu '-', không cần thay đổi
+                            } else {
+                                // Phần đầu tiên không thay đổi
+                                let firstPart = parts[0].trim();
+                                if(firstPart.length === 0) {
+                                    parts.shift();
+                                    firstPart = parts[0].trim();
+                                }
+                            
+                                // Phần còn lại, mỗi phần bắt đầu với '- ' và xuống dòng
+                                const restParts = parts.slice(1).map(part => `\n- ${part.trim()}`);
+
+                                // Kết hợp phần đầu tiên với các phần còn lại
+                                const formattedMoTa = `${`- `+firstPart+restParts.join('')}`;
+
+                                setSelectedMoTa(formattedMoTa);
+                            }
+                            setSelectedLichSuQuyId(fund.lichSuQuyDoanId);
                             setModalVisible2(true);
                         }}>Xem mô tả</CDropdownItem>
                     </CDropdownMenu>
@@ -275,18 +342,16 @@ const QuyDoanNganhThanh = () => {
                     <CModalTitle>Mô tả</CModalTitle>
                 </CModalHeader>
                 <CModalBody>
-                    {selectedMoTa.split('-').map((line, index) => {
-                        if (index === 0) {
-                            return <span key={index}>{line.trim()}</span>;
-                        }
-                        return (
-                            <div key={index}>
-                                - {line.trim()}
-                            </div>
-                        );
-                    })}
+                    <CFormTextarea
+                        rows="5"
+                        value={selectedMoTa}
+                        onChange={(e) => setSelectedMoTa(e.target.value)}
+                    />
                 </CModalBody>
                 <CModalFooter>
+                    <CButton color="primary" onClick={handleUpdateMoTa}>
+                        Cập nhật
+                    </CButton>
                     <CButton color="secondary" onClick={() => setModalVisible2(false)}>
                         Đóng
                     </CButton>
@@ -368,4 +433,4 @@ const QuyDoanNganhThanh = () => {
     );
 }
 
-export default QuyDoanNganhThanh;
+export default QuyGD;
