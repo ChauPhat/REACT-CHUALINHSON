@@ -2,12 +2,12 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { authorize } from '../GlobalVariable';
-import { useRole } from './RoleContext';
+import { useScreen } from './ScreenContext';
 
-const ProtectedRoute = ({ element: Component, requiredRole }) => {
-    const { role } = useRole();
+const ProtectedRoute = ({ element: Component, requiredScreen }) => {
+    const { screen } = useScreen();
 
-    if (!authorize(requiredRole, role)) {
+    if (!authorize(requiredScreen, screen)) {
         return <Navigate to="/401" />;
     }
 

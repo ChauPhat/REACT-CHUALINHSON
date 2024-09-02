@@ -9,22 +9,22 @@ export const RoleProvider = ({ children }) => {
         return null;
     });
 
-    useEffect(() => {
-        // Hàm xử lý sự kiện khi sessionStorage được cập nhật
-        const handleSessionUpdate = () => {
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            // setRole(user && replaceRole(Role, user?.roles?.split(',')));
-            setRole(null);
-        };
+    // useEffect(() => {
+    //     // Hàm xử lý sự kiện khi sessionStorage được cập nhật
+    //     const handleSessionUpdate = () => {
+    //         const user = JSON.parse(sessionStorage.getItem('user'));
+    //         // setRole(user && replaceRole(Role, user?.roles?.split(',')));
+    //         setRole(null);
+    //     };
 
-        // Lắng nghe sự kiện 'sessionUpdated'
-        window.addEventListener('sessionUpdated', handleSessionUpdate);
+    //     // // Lắng nghe sự kiện 'sessionUpdated'
+    //     // window.addEventListener('sessionUpdated', handleSessionUpdate);
 
-        // Hủy lắng nghe sự kiện khi component bị unmount
-        return () => {
-            window.removeEventListener('sessionUpdated', handleSessionUpdate);
-        };
-    }, []);
+    //     // // Hủy lắng nghe sự kiện khi component bị unmount
+    //     // return () => {
+    //     //     window.removeEventListener('sessionUpdated', handleSessionUpdate);
+    //     // };
+    // }, []);
 
     return (
         <RoleContext.Provider value={{ role, setRole }}>
