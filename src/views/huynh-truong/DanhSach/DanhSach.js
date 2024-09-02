@@ -15,7 +15,6 @@ import CategoryCarousel from "../CategoryCarousel";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
-import avatar1 from 'src/assets/images/avatars/1.jpg'
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import axios from 'axios'
 import env from '../../../env'
@@ -52,13 +51,6 @@ const DSNganhThanh = () => {
   const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
 
-  const roleMapping = {
-    'ROLE_DOANTRUONG': 'Đoàn Trưởng',
-    'ROLE_THUKY': 'Thư Ký',
-    'ROLE_THUQUY': 'Thủ Quỹ',
-    'ROLE_ADMIN': 'Liên Đoàn Trưởng',
-  };
-
   useEffect(() => {
     const layDuLieu = async () => {
       try {
@@ -69,8 +61,8 @@ const DSNganhThanh = () => {
         });
 
           const fetchedData = response.data.data.map(item => {
-          const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
-          const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
+          // const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
+          // const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
           const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
  
           return {
@@ -79,8 +71,8 @@ const DSNganhThanh = () => {
             name: item.hoTen,
             avatar: item.avatar,
             registered: item.createDate,
-            role1, 
-            role2, 
+            // role1, 
+            // role2, 
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
             gender: item.gioiTinh ,
@@ -141,8 +133,7 @@ const DSNganhThanh = () => {
 
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Họ Và Tên</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Ngày Tạo</CTableDataCell>,
+    <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
     <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
     <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
     <CTableDataCell width={'20%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
@@ -168,7 +159,7 @@ const DSNganhThanh = () => {
       value={searchRole}
       onChange={(e) => setSearchRole(e.target.value)}
     />,
-    '',
+
     <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo trạng thái"
@@ -185,7 +176,6 @@ const DSNganhThanh = () => {
         <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
       </CTableDataCell>
         <CTableDataCell>{user.name}</CTableDataCell>
-        <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
         <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
         <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>

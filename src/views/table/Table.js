@@ -24,10 +24,10 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
     };
 
     useEffect(() => {
-        if (searchCriteria && searchCriteria.length > 0) {
-            setCurrentPage(1);
-        }
-    }, [searchCriteria]);
+        setCurrentPage(1);
+    }, [searchCriteria.searchName, searchCriteria.selectedYear, searchCriteria.selectedQuarter, searchCriteria.searchRegistered
+        , searchCriteria.searchRole, searchCriteria.searchStatus, searchCriteria.searchTerm,
+    ]);
 
     const renderPageNumbers = () => {
         let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
@@ -44,13 +44,12 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                     className={`page-item ${currentPage === i ? 'active' : ''}`}
                     key={i}
                 >
-                    <a
+                    <button
                         className="page-link"
-                        href="#"
                         onClick={() => handlePageChange(i)}
                     >
                         {i}
-                    </a>
+                    </button>
                 </li>
             );
         }
@@ -95,27 +94,25 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                         <nav aria-label="Page navigation example">
                             <ul className="pagination">
                                 <li className="page-item">
-                                    <a
+                                    <button
                                         className="page-link"
-                                        href="#"
                                         aria-label="Previous"
                                         onClick={() => handlePageChange(currentPage - 1)}
                                         disabled={currentPage === 1}
                                     >
                                         <span aria-hidden="true">&laquo;</span>
-                                    </a>
+                                    </button>
                                 </li>
                                 {renderPageNumbers()}
                                 <li className="page-item">
-                                    <a
+                                    <button
                                         className="page-link"
-                                        href="#"
                                         aria-label="Next"
                                         onClick={() => handlePageChange(currentPage + 1)}
                                         disabled={currentPage === totalPages}
                                     >
                                         <span aria-hidden="true">&raquo;</span>
-                                    </a>
+                                    </button>
                                 </li>
                             </ul>
                         </nav>

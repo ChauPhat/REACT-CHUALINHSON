@@ -98,7 +98,7 @@ const ThongBao = React.lazy(() => import('./views/notification/notification.js')
 
 const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
 
-const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu.js'))
+const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu/ChucVu.js'))
 
 const routes = [
   { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: 'trang-chu' },
