@@ -10,6 +10,7 @@ function BacHocModal({ show, handleClose, bachoc }) {
     role: bachoc.role || '',
     mota: bachoc.mota || '',
   });
+  const [errors, setErrors] = useState({});
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing); // Toggle edit mode
@@ -21,11 +22,68 @@ function BacHocModal({ show, handleClose, bachoc }) {
       ...formData,
       [name]: value,
     });
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
-  const handleSave = () => {
-    // Implement save logic here
-    console.log('Saving data:', formData);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Tên Bậc Học không được để trống.';
+    if (!formData.role.trim()) newErrors.role = 'Cấp Bậc không được để trống.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
+    const result = await Swal.fire({
+      title: 'Xác nhận!',
+      text: 'Bạn có chắc chắn muốn sửa bậc học này không?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Có, S!',
+      cancelButtonText: 'Hủy',
+    });
+    
+    if (result.isDenied || result.isDismissed) return;
+
+    try {
+      const response = await axios.post(`${env.apiUrl}/api/bac-hoc/update`, formData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        },
+      });
+      const newBacHoc = {
+        id: response.data.data.bacHocId, // Assuming the response returns the new bacHocId
+        name,
+        role,
+        mota,
+      };
+      onAddBacHoc(newBacHoc);
+      Swal.fire({
+        title: 'Thông báo từ hệ thống!',
+        text: 'Thêm bậc học thành công!',
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      setName('');
+      setRole('');
+      setMota('');
+      // Close modal after successful save
+      handleClose();
+    } catch (error) {
+      console.error('Lỗi khi gọi API:', error);
+      Swal.fire({
+        title: 'Thông báo từ hệ thống!',
+        text: 'Thêm bậc học thất bại.',
+        icon: 'error',
+      });
+    }
+    
+
+
     setIsEditing(false); // Disable editing mode after saving
   };
 
