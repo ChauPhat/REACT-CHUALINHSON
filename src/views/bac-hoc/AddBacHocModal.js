@@ -11,7 +11,7 @@ function AddBacHocModal({ show, handleClose, onAddBacHoc  }) {
     const [mota, setMota] = useState('');
     const [errors, setErrors] = useState({});
 
-    const handleInputChange = (e) => {
+  const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'name') setName(value);
         if (name === 'role') setRole(value);
@@ -28,6 +28,18 @@ function AddBacHocModal({ show, handleClose, onAddBacHoc  }) {
 
    const handleSave = async () => {
     if (!validateForm()) return;
+
+    const result = await Swal.fire({
+      title: 'Xác nhận!',
+      text: 'Bạn có chắc chắn muốn thêm bậc học này không?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Có, thêm!',
+      cancelButtonText: 'Hủy',
+    });
+    
+    if (result.isDenied || result.isDismissed) return;
+
     const formData = {
       tenBacHoc: name,
       capBac: role,
