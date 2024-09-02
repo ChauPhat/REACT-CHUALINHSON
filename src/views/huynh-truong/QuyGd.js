@@ -240,6 +240,8 @@ const QuyGD = () => {
         '',
     ], [searchName]);
 
+
+
     const renderRow = useCallback((fund) => (
         <>
             <CTableDataCell>{fund.tenThuChi}</CTableDataCell>
@@ -258,7 +260,23 @@ const QuyGD = () => {
                     <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
                     <CDropdownMenu>
                         <CDropdownItem onClick={() => {
-                            setSelectedMoTa(fund.moTa);
+                            // Tách phần mô tả theo dấu '-'
+                            const parts = fund.moTa.split('-');
+
+                            if (parts.length <= 1) {
+                                setSelectedMoTa(fund.moTa); // Nếu không có dấu '-', không cần thay đổi
+                            } else {
+                                // Phần đầu tiên không thay đổi
+                                const firstPart = parts[0].trim();
+
+                                // Phần còn lại, mỗi phần bắt đầu với '- ' và xuống dòng
+                                const restParts = parts.slice(1).map(part => `\n- ${part.trim()}`);
+
+                                // Kết hợp phần đầu tiên với các phần còn lại
+                                const formattedMoTa = `${firstPart}${restParts.join('')}`;
+
+                                setSelectedMoTa(formattedMoTa);
+                            }
                             setSelectedLichSuQuyId(fund.lichSuQuyGiaDinhId);
                             setModalVisible2(true);
                         }}>Xem mô tả</CDropdownItem>

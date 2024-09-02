@@ -25,7 +25,9 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchCriteria]);
+    }, [searchCriteria.searchName, searchCriteria.selectedYear, searchCriteria.selectedQuarter, searchCriteria.searchRegistered
+        , searchCriteria.searchRole, searchCriteria.searchStatus, searchCriteria.searchTerm,
+    ]);
 
     const renderPageNumbers = () => {
         let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
