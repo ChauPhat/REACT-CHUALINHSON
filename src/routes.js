@@ -4,7 +4,7 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 // const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 // const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
-// // Base
+// Base
 // const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 // const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
 // const Cards = React.lazy(() => import('./views/base/cards/Cards'))
@@ -21,12 +21,12 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 // const Tables = React.lazy(() => import('./views/base/tables/Tables'))
 // const Tooltips = React.lazy(() => import('./views/base/tooltips/Tooltips'))
 
-// // Buttons
+// Buttons
 // const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'))
 // const ButtonGroups = React.lazy(() => import('./views/buttons/button-groups/ButtonGroups'))
 // const Dropdowns = React.lazy(() => import('./views/buttons/dropdowns/Dropdowns'))
 
-// //Forms
+// Forms
 // const ChecksRadios = React.lazy(() => import('./views/forms/checks-radios/ChecksRadios'))
 // const FloatingLabels = React.lazy(() => import('./views/forms/floating-labels/FloatingLabels'))
 // const FormControl = React.lazy(() => import('./views/forms/form-control/FormControl'))
@@ -38,12 +38,12 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 
 // const Charts = React.lazy(() => import('./views/charts/Charts'))
 
-// // Icons
+// Icons
 // const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'))
 // const Flags = React.lazy(() => import('./views/icons/flags/Flags'))
 // const Brands = React.lazy(() => import('./views/icons/brands/Brands'))
 
-// // Notifications
+// Notifications
 // const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 // const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 // const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
@@ -101,42 +101,44 @@ const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
 const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu/ChucVu.js'))
 
 const routes = [
-  { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: 'trang-chu' },
+  // { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: 'trang-chu' },
+  { path: '/', name: 'Trang Chủ', element: HomeDashboard },
 
   { path: '/doan-sinh/ds-thieu-nam', name: 'Danh Sách Thiếu Nam', element: DSThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.danh-sach' },
-  { path: '/doan-sinh/qd-thieu-nam', name: 'Quỹ Đoàn Thiếu Nam', element: QDThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.qd-doan' },
-  { path: '/doan-sinh/dd-thieu-nam', name: 'Điểm Danh Thiếu Nam', element: DDThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.dd-danh' },
-  { path: '/doan-sinh/dp-thieu-nam', name: 'Đoàn Phả Thiếu Nam', element: DPThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.dp-doan' },
+  { path: '/doan-sinh/qd-thieu-nam', name: 'Quỹ Đoàn Thiếu Nam', element: QDThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.quy-doan' },
+  { path: '/doan-sinh/dd-thieu-nam', name: 'Điểm Danh Thiếu Nam', element: DDThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.diem-danh' },
+  { path: '/doan-sinh/dp-thieu-nam', name: 'Đoàn Phả Thiếu Nam', element: DPThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.doan-pha' },
 
   { path: '/doan-sinh/ds-thieu-nu', name: 'Danh Sách Thiếu Nữ', element: DSThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.danh-sach' },
-  { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.qd-doan' },
-  { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.dd-danh' },
-  { path: '/doan-sinh/dp-thieu-nu', name: 'Đoàn Phả Thiếu Nữ', element: DPThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.dp-doan' },
+  { path: '/doan-sinh/qd-thieu-nu', name: 'Quỹ Đoàn Thiếu Nữ', element: QDThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.quy-doan' },
+  { path: '/doan-sinh/dd-thieu-nu', name: 'Điểm Danh Thiếu Nữ', element: DDThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.diem-danh' },
+  { path: '/doan-sinh/dp-thieu-nu', name: 'Đoàn Phả Thiếu Nữ', element: DPThieuNu, screen_id: 'doan-sinh.doan-thieu-nu.doan-pha' },
 
   { path: '/doan-sinh/ds-oanh-vu-nam', name: 'Danh Sách Oanh Vũ Nam', element: DSOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.danh-sach' },
-  { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ Đoàn Oanh Vũ Nam', element: QDOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.qd-doan' },
-  { path: '/doan-sinh/dd-oanh-vu-nam', name: 'Điểm Danh Oanh Vũ Nam', element: DDOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.dd-danh' },
-  { path: '/doan-sinh/dp-oanh-vu-nam', name: 'Đoàn Phả Oanh Vũ Nam', element: DPOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.dp-doan' },
+  { path: '/doan-sinh/qd-oanh-vu-nam', name: 'Quỹ Đoàn Oanh Vũ Nam', element: QDOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.quy-doan' },
+  { path: '/doan-sinh/dd-oanh-vu-nam', name: 'Điểm Danh Oanh Vũ Nam', element: DDOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.diem-danh' },
+  { path: '/doan-sinh/dp-oanh-vu-nam', name: 'Đoàn Phả Oanh Vũ Nam', element: DPOanhNam, screen_id: 'doan-sinh.doan-oanh-vu-nam.doan-pha' },
 
   { path: '/doan-sinh/ds-oanh-vu-nu', name: 'Danh Sách Oanh Vũ Nữ', element: DSOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.danh-sach' },
-  { path: '/doan-sinh/qd-oanh-vu-nu', name: 'Quỹ Đoàn Oanh Vũ Nữ', element: QDOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.qd-doan' },
-  { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DDOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.dd-danh' },
-  { path: '/doan-sinh/dp-oanh-vu-nu', name: 'Đoàn Phả Oanh Vũ Nữ', element: DPOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.dp-doan' },
+  { path: '/doan-sinh/qd-oanh-vu-nu', name: 'Quỹ Đoàn Oanh Vũ Nữ', element: QDOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.quy-doan' },
+  { path: '/doan-sinh/dd-oanh-vu-nu', name: 'Điểm Danh Oanh Vũ Nữ', element: DDOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.diem-danh' },
+  { path: '/doan-sinh/dp-oanh-vu-nu', name: 'Đoàn Phả Oanh Vũ Nữ', element: DPOanhNu, screen_id: 'doan-sinh.doan-oanh-vu-nu.doan-pha' },
 
   { path: '/doan-sinh/ds-nganh-thanh', name: 'Danh Sách Ngành Thanh', element: DSNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.danh-sach' },
-  { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.qd-doan' },
-  { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.dd-danh' },
-  { path: '/doan-sinh/dp-nganh-thanh', name: 'Đoàn Phả Ngành Thanh', element: DPNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.dp-doan' },
+  { path: '/doan-sinh/qd-nganh-thanh', name: 'Quỹ Đoàn Ngành Thanh', element: QDNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.quy-doan' },
+  { path: '/doan-sinh/dd-nganh-thanh', name: 'Điểm Danh Ngành Thanh', element: DDNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.diem-danh' },
+  { path: '/doan-sinh/dp-nganh-thanh', name: 'Đoàn Phả Ngành Thanh', element: DPNganhThanh, screen_id: 'doan-sinh.doan-nganh-thanh.doan-pha' },
 
   { path: '/doan-sinh/ds-doan-sinh/tat-ca', name: 'Tất Cả', element: TatCa, screen_id: 'doan-sinh.tat-ca' },
 
   { path: '/huynh-truong/danh-sach', name: 'Danh Sách Huynh Trưởng', element: DanhSachHuynhTruong, screen_id: 'huynh-truong.danh-sach' },
   { path: '/huynh-truong/tai-khoan', name: 'Danh Sách Tài Khoản', element: TaiKhoanHuynhTruong, screen_id: 'huynh-truong.tai-khoan' },
-  { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru, screen_id: 'file-luu-tru' },
+  // { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru, screen_id: 'file-luu-tru' },
+  { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru },
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, screen_id: 'quy-gd' },
   { path: '/thong-bao', name: 'Thông Báo', element: ThongBao, screen_id: 'thong-bao' },
   { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc, screen_id: 'bac-hoc' },
-  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu, screen_id: 'chuc-vu' },
+  { path: '/chuc-vu', name: 'Chức Vụ', element: ChucVu, screen_id: 'huynh-truong.chuc-vu' },
 ];
 
 

@@ -40,7 +40,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
   const handleSave = () => {
     // Implement save logic here
     // Example: Call handleRoleChange or update state with new formData
-    console.log('Saving data:', formData);
+    // console.log('Saving data:', formData);
 
     setIsEditing(false); // Disable editing mode after saving
   };

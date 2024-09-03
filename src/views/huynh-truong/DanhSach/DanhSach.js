@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CBadge,
   CAvatar,
@@ -12,12 +12,13 @@ import {
 import './DanhSach.css'
 import Table from '../../table/Table'
 import CategoryCarousel from "../CategoryCarousel";
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import axios from 'axios'
 import env from '../../../env'
+import apiClient from '../../../apiClient';
 
 
 
@@ -54,40 +55,37 @@ const DSNganhThanh = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/users/getListHuyTruong?is_huy_truonng=1`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          }
-        });
+        const response = await apiClient.get(`/api/users?is_huynh_truong=true`);
 
-          const fetchedData = response.data.data.map(item => {
+        const fetchedData = response.data.data.map(item => {
           // const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
           // const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
           const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
- 
+
           return {
+            // ...item,
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
             registered: item.createDate,
-            // role1, 
-            // role2, 
+            role1: item?.roleId1?.roleName,
+            role2: item?.roleId2?.roleName,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
-            gender: item.gioiTinh ,
+            gender: item.gioiTinh,
             address: item.diaChi,
             phone: item.sdt,
             birthDate: item.ngaySinh,
-            admissionDate: item.ngayGiaNhapDoan, 
-            group: item.doan ? item.doan.tenDoan : 'N/A', 
+            admissionDate: item.ngayGiaNhapDoan,
+            group: item.doan ? item.doan.tenDoan : 'N/A',
             phapdanh: item.phapDanh,
             roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
           };
         });
 
         setUsersData(fetchedData);
-   
+
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -166,55 +164,60 @@ const DSNganhThanh = () => {
       value={searchStatus}
       onChange={(e) => setSearchStatus(e.target.value)}
     />,
-    
+
     '',
   ];
 
   const renderRow = (user) => (
     <>
-      <CTableDataCell>  
+      <CTableDataCell>
         <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
       </CTableDataCell>
-        <CTableDataCell>{user.name}</CTableDataCell>
-        <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
-        <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>{user.name}</CTableDataCell>
+      <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
+      <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-      <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
-       >Show</CButton>
+        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}
+        >Show</CButton>
       </CTableDataCell>
     </>
   );
 
   return (
-    
+
     <div className="container-fluid">
-    <CategoryCarousel categories={usersData} />
-    <br/>
+      <CategoryCarousel categories={usersData} />
+      <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
+
         <CButton  variant="outline" color="info">Thêm</CButton>
         
+
+          <CButton color="secondary" >Thêm</CButton>
+
+
         </CCol>
       </CRow>
 
-            <Table
-                headers={headers}
-                headerCells={headerCells}
-                items={filteredData}
-                renderRow={renderRow}
-                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }} 
-            />
-   
+      <Table
+        headers={headers}
+        headerCells={headerCells}
+        items={filteredData}
+        renderRow={renderRow}
+        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+      />
 
-   {selectedUser && (
+
+      {selectedUser && (
         <UserModal
           show={showModal}
           handleClose={handleCloseModal}
@@ -224,7 +227,7 @@ const DSNganhThanh = () => {
       )}
 
 
-   
+
     </div>
   )
 }
