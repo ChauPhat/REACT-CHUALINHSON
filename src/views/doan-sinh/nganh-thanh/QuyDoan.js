@@ -63,12 +63,14 @@ const QuyGD = () => {
 
     const fetchFundData = async () => {
         try {
-            const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?doanId=5`, {
+            const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?quyDoanId=5`, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
                 }
             });
             const apiData = response.data.data;
+            console.log(apiData);
+
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyDoans.map((item) => ({
                     lichSuQuyDoanId: item.lichSuQuyDoanId,
@@ -155,13 +157,14 @@ const QuyGD = () => {
             });
             return;
         }
-        newFund.quyGiaDinhId = 1;
+        newFund.quyDoanId = 5;
+        newFund.doanId = 5;
         newFund.quy = parseInt(newFund.quy);
         newFund.userId = null;
         newFund.soTien = parseInt(newFund.soTien);
         console.log(newFund);
         try {
-            await axios.post(`${env.apiUrl}/api/quygiadinh/insertLichSuQuyGiaDinh`, newFund, {
+            await axios.post(`${env.apiUrl}/api/lichsuquydoan/insertLichSuQuyDoan`, newFund, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
                 }
@@ -192,16 +195,12 @@ const QuyGD = () => {
             console.log(selectedMoTa);
             console.log(selectedLichSuQuyId);
 
-            const response = await fetch(`${env.apiUrl}/api/quygiadinh/updateMotaLichSuQuyGiaDinh?lich_su_quy_gia_dinh_id=${selectedLichSuQuyId}&mo_ta=${selectedMoTa}`, {
+            const response = await fetch(`${env.apiUrl}/api/lichsuquydoan/updateMoTaLichSuQuyDoan?lichSuQuyDoanId=${selectedLichSuQuyId}&moTa=${selectedMoTa}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
                 }
             });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
 
             // Cập nhật dữ liệu sau khi chỉnh sửa
             await fetchFundData();
@@ -267,16 +266,16 @@ const QuyGD = () => {
                             } else {
                                 // Phần đầu tiên không thay đổi
                                 let firstPart = parts[0].trim();
-                                if(firstPart.length === 0) {
+                                if (firstPart.length === 0) {
                                     parts.shift();
                                     firstPart = parts[0].trim();
                                 }
-                            
+
                                 // Phần còn lại, mỗi phần bắt đầu với '- ' và xuống dòng
                                 const restParts = parts.slice(1).map(part => `\n- ${part.trim()}`);
 
                                 // Kết hợp phần đầu tiên với các phần còn lại
-                                const formattedMoTa = `${`- `+firstPart+restParts.join('')}`;
+                                const formattedMoTa = `${`- ` + firstPart + restParts.join('')}`;
 
                                 setSelectedMoTa(formattedMoTa);
                             }
@@ -299,7 +298,7 @@ const QuyGD = () => {
 
             <CRow className="my-3 d-flex">
                 <CCol className="d-flex align-items-center flex-grow-1">
-                    <h3>Quỹ Gia Đình</h3>
+                    <h3>Quỹ Đoàn Ngành Thanh</h3>
                 </CCol>
                 <CCol className="d-flex justify-content-end">
                     <CFormSelect
