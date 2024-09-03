@@ -182,9 +182,9 @@ const DSNganhThanh = () => {
         });
 
         const fetchedData = response.data.data.map(item => {
-          const roles = item.roles.split(',').map(role => roleMapping[role.trim()] || role);
-          const [role, role2] = roles.length > 1 ? roles : [roles[0], ''];
-          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
+          // const roles = item.roles.split(',').map(role => roleMapping[role.trim()] || role);
+          // const [role, role2] = roles.length > 1 ? roles : [roles[0], ''];
+          //const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
 
 
           return {
@@ -192,14 +192,14 @@ const DSNganhThanh = () => {
             idUX: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
-            registered: item.account.createdDate,
-            role,
-            role2,
-            status: item.account.isActive ? 'Active' : 'Inactive',
+            registered: item.createdDate,
+            // role,
+            // role2,
+            status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
             gender: item.gioiTinh,
-            userName: item.account.username,
-            password: item.account.username,
+            userName: item.username,
+            password: item.username,
             roleOfDoanTruong: item.roles,
           };
         });

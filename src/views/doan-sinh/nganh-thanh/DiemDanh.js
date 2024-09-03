@@ -43,6 +43,8 @@ const DDNganhThanh = () => {
         ngaySinhHoat: '',
         nam: ''
     });
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 4 }, (_, index) => currentYear + index);  
 
     const formatDate = (dateString) => {
         const [year, month, day] = dateString.split("-");
@@ -104,8 +106,18 @@ const DDNganhThanh = () => {
     return (
         <div className="container-fluid">
             <CRow className="mb-3 d-flex">
-                <CCol className="d-flex align-items-center flex-grow-1">
-                    <h3>Điểm Danh</h3>
+            <CCol className="d-flex align-items-center flex-grow-1">
+            <h3>Danh sách Đoàn Sinh</h3>
+            </CCol>
+            <CCol className="d-flex justify-content-end">
+            <CFormSelect className="small-select me-2" 
+                style={{ width: 'auto' }}aria-label="Chọn năm" >
+                {years.map((year) => (
+                <option key={year} value={year}>{year}
+                </option>
+              ))}
+            </CFormSelect>
+                <CButton color="secondary">Thêm</CButton>
                 </CCol>
             </CRow>
 
