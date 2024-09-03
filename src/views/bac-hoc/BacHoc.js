@@ -26,7 +26,6 @@
     const [imageUrl, setImageUrl] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
 
-
     const handleShowAddModal = () => setShowAddModal(true);
     const handleCloseAddModal = () => setShowAddModal(false);
 
@@ -47,6 +46,7 @@
           name: item.tenBacHoc,
           role: item.capBac,
           mota: item.moTa,
+          avatar: item.avatar,
         }));
   
         setBacHocData(fetchedData);
@@ -78,77 +78,6 @@
 
     
 
-    const handleFileChange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
-
-        if (!validExtensions.includes(file.type)) {
-          Swal.fire({
-            title: 'Thông báo từ hệ thống!',
-            text: 'Đây không phải file ảnh, vui lòng chọn lại.',
-            icon: 'warning',
-          });
-          return;
-        }
-
-        try {
-          const formData = new FormData();
-          formData.append('file', file);
-
-          const tempImageUrl = URL.createObjectURL(file);
-
-          axios
-            .post(`${env.apiUrl}/api/file/upload-img?userId=${iduser}`, formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-              },
-            })
-            .then((response) => {
-              let timerInterval;
-              Swal.fire({
-                title: 'Thông báo từ hệ thống!',
-                html: 'Đang cập nhật hình ảnh<b></b>s',
-                timer: 2500,
-                timerProgressBar: true,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                  Swal.showLoading();
-                  const timer = Swal.getPopup().querySelector('b');
-                  timerInterval = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
-                  }, 100);
-                },
-                willClose: () => {
-                  clearInterval(timerInterval);
-                },
-              }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                  URL.revokeObjectURL(tempImageUrl);
-                  const newImageUrl = `${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`;
-                  setImageUrl(newImageUrl);
-                  Swal.fire({
-                    title: 'Thông báo từ hệ thống!',
-                    text: 'Cập nhật ảnh thành công',
-                    icon: 'success',
-                  });
-                }
-              });
-            })
-            .catch((error) => {
-              Swal.fire({
-                title: 'Thông báo từ hệ thống!',
-                text: 'Cập nhật ảnh thất bại.',
-                icon: 'error',
-              });
-            });
-        } catch (error) {
-          console.error('Error uploading image:', error);
-        }
-      }
-    };
 
     const headers = [
       <CTableDataCell width={'20%'} className="fixed-width-column">
@@ -187,16 +116,10 @@
     const renderRow = (bacHoc) => (
       <>
         <CTableDataCell>
-          <CAvatar
-            src={`${imageUrl}`}
-            style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }}
-            onChange={handleFileChange}
-            accept=".jpg,.jpeg,.png"
-            onError={(e) => {
-              e.target.onerror = null;
-            }
-          }
-          />
+        <CAvatar
+        src={`${env.apiUrl}/api/bac-hoc/get-img?bac_hoc_id=${bacHoc.id}&t=${Date.now()}`}
+        style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }}
+      />
         </CTableDataCell>
         <CTableDataCell>{bacHoc.name}</CTableDataCell>
         <CTableDataCell>{bacHoc.role}</CTableDataCell>
