@@ -17,10 +17,10 @@ export const RoleProvider = ({ children }) => {
     //         setRole(null);
     //     };
 
-    //     // // Lắng nghe sự kiện 'sessionUpdated'
+    //     // Lắng nghe sự kiện 'sessionUpdated'
     //     // window.addEventListener('sessionUpdated', handleSessionUpdate);
 
-    //     // // Hủy lắng nghe sự kiện khi component bị unmount
+    //     // Hủy lắng nghe sự kiện khi component bị unmount
     //     // return () => {
     //     //     window.removeEventListener('sessionUpdated', handleSessionUpdate);
     //     // };

@@ -25,7 +25,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   // const [checkedCount, setCheckedCount] = useState(0);
 
   useEffect(() => {
-    console.dir(user);
+    // console.dir(user);
     // Update formData when user data changes
     let tempScreens = []; // need optimized
     user?.accountDTO?.screenIds?.forEach(element => {
@@ -49,7 +49,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   }, [user]);
 
   // useEffect(() => {
-  //   console.dir(selectedScreens);
+  //   // console.dir(selectedScreens);
   //   // setFormData({ ...formData, screenIds: convertSelectedScreensToListScreens() });
   //   // console.dir({ ...formData, screenIds: convertSelectedScreensToListScreens() });
   // }, [selectedScreens]);
@@ -74,7 +74,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   //   setSelectedScreens(screen);
   //   screens.forEach(element => {
   //     if (element.screenId.startsWith(screen.screenId)) {
-  //       console.dir(element);
+  //       // console.dir(element);
   //       setSelectedScreens(element);
   //     }
   //   });

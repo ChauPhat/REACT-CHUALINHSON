@@ -8,9 +8,9 @@ export const ScreenProvider = ({ children }) => {
         const user = JSON.parse(sessionStorage.getItem('user'));
         return user && user?.screen_ids?.split(',');
         // const result = user && user?.screen_ids?.split(',');
-        // // if (result) {
-        // //     await fetchScreens();
-        // // }
+        // if (result) {
+        //     await fetchScreens();
+        // }
         // return result;
     });
 
@@ -20,7 +20,6 @@ export const ScreenProvider = ({ children }) => {
     const fetchScreens = async () => {
         try {
             const response = await apiClient.get('/api/screens/get-all');
-            console.dir(response.data.data);
             setScreens(response.data.data);
         } catch (error) {
             console.error('Error fetching data:', error);

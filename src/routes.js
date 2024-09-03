@@ -4,7 +4,7 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 // const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 // const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
-// // Base
+// Base
 // const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 // const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
 // const Cards = React.lazy(() => import('./views/base/cards/Cards'))
@@ -21,12 +21,12 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 // const Tables = React.lazy(() => import('./views/base/tables/Tables'))
 // const Tooltips = React.lazy(() => import('./views/base/tooltips/Tooltips'))
 
-// // Buttons
+// Buttons
 // const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'))
 // const ButtonGroups = React.lazy(() => import('./views/buttons/button-groups/ButtonGroups'))
 // const Dropdowns = React.lazy(() => import('./views/buttons/dropdowns/Dropdowns'))
 
-// //Forms
+// Forms
 // const ChecksRadios = React.lazy(() => import('./views/forms/checks-radios/ChecksRadios'))
 // const FloatingLabels = React.lazy(() => import('./views/forms/floating-labels/FloatingLabels'))
 // const FormControl = React.lazy(() => import('./views/forms/form-control/FormControl'))
@@ -38,12 +38,12 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 
 // const Charts = React.lazy(() => import('./views/charts/Charts'))
 
-// // Icons
+// Icons
 // const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'))
 // const Flags = React.lazy(() => import('./views/icons/flags/Flags'))
 // const Brands = React.lazy(() => import('./views/icons/brands/Brands'))
 
-// // Notifications
+// Notifications
 // const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 // const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
 // const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))

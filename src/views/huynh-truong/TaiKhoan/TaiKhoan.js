@@ -227,7 +227,7 @@ const DSNganhThanh = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const handleShowModal = (user) => {
-    console.dir(user);
+    // console.dir(user);
     setSelectedUser(user);
     setShowModal(true);
   };

@@ -9,12 +9,9 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('token');
-    console.log(token);
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
   (error) => {
@@ -41,7 +38,6 @@ apiClient.interceptors.response.use(
         title: error.response?.data?.message || 'Thao tác dữ liệu thất bại!'
       })
     }
-
     return Promise.reject(error);
   }
 );

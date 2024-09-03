@@ -10,7 +10,7 @@ import { useScreens } from '../../../ScreenContext';
 export function FilterDemo({ isEditable, selectedScreens, setSelectedScreens }) {
 
   useEffect(() => {
-    console.dir(selectedScreens);
+    // console.dir(selectedScreens);
   }, [isEditable]);
 
   const { screens } = useScreens();

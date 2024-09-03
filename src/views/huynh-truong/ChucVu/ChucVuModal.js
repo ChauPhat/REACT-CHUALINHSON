@@ -25,7 +25,7 @@ function ChucVuModal({ show, handleClose, ChucVu }) {
 
   const handleSave = () => {
     // Implement save logic here
-    console.log('Saving data:', formData);
+    // console.log('Saving data:', formData);
     setIsEditing(false); // Disable editing mode after saving
   };
 

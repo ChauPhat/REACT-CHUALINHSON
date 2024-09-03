@@ -98,7 +98,7 @@ const QuyGD = () => {
         const matchesName = searchName === '' || fund.tenThuChi.toLowerCase().includes(searchName.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        console.log(searchName, selectedYear, selectedQuarter);
+        // console.log(searchName, selectedYear, selectedQuarter);
 
         return matchesName && matchesYear && matchesQuarter;
     }), [fundData, searchName, selectedYear, selectedQuarter]);
@@ -160,7 +160,7 @@ const QuyGD = () => {
         newFund.quy = parseInt(newFund.quy);
         newFund.userId = null;
         newFund.soTien = parseInt(newFund.soTien);
-        console.log(newFund);
+        // console.log(newFund);
         try {
             await axios.post(`${env.apiUrl}/api/quygiadinh/insertLichSuQuyGiaDinh`, newFund, {
                 headers: {
@@ -190,8 +190,8 @@ const QuyGD = () => {
 
     const handleUpdateMoTa = async () => {
         try {
-            console.log(selectedMoTa);
-            console.log(selectedLichSuQuyId);
+            // console.log(selectedMoTa);
+            // console.log(selectedLichSuQuyId);
 
             const response = await fetch(`${env.apiUrl}/api/quygiadinh/updateMotaLichSuQuyGiaDinh?lich_su_quy_gia_dinh_id=${selectedLichSuQuyId}&mo_ta=${selectedMoTa}`, {
                 method: 'PUT',

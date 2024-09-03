@@ -69,7 +69,7 @@ const QuyGD = () => {
                 }
             });
             const apiData = response.data.data;
-            console.log(apiData);
+            // console.log(apiData);
 
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyDoans.map((item) => ({
@@ -99,7 +99,7 @@ const QuyGD = () => {
         const matchesName = searchName === '' || fund.tenThuChi.toLowerCase().includes(searchName.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        console.log(searchName, selectedYear, selectedQuarter);
+        // console.log(searchName, selectedYear, selectedQuarter);
 
         return matchesName && matchesYear && matchesQuarter;
     }), [fundData, searchName, selectedYear, selectedQuarter]);
@@ -162,7 +162,7 @@ const QuyGD = () => {
         newFund.quy = parseInt(newFund.quy);
         newFund.userId = null;
         newFund.soTien = parseInt(newFund.soTien);
-        console.log(newFund);
+        // console.log(newFund);
         try {
             await axios.post(`${env.apiUrl}/api/lichsuquydoan/insertLichSuQuyDoan`, newFund, {
                 headers: {
@@ -192,8 +192,8 @@ const QuyGD = () => {
 
     const handleUpdateMoTa = async () => {
         try {
-            console.log(selectedMoTa);
-            console.log(selectedLichSuQuyId);
+            // console.log(selectedMoTa);
+            // console.log(selectedLichSuQuyId);
 
             const response = await fetch(`${env.apiUrl}/api/lichsuquydoan/updateMoTaLichSuQuyDoan?lichSuQuyDoanId=${selectedLichSuQuyId}&moTa=${selectedMoTa}`, {
                 method: 'PUT',
