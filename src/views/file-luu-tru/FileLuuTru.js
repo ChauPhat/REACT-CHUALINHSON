@@ -11,8 +11,7 @@ import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import env from '../../env';
-import { authorize, Role } from '../../GlobalVariable';
-import { useRole } from '../../RoleContext';
+import { authorizeRole } from '../../ScreenContext';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../table/Table';
 
@@ -26,11 +25,11 @@ const formatDate = (dateString) => {
 
 const FileLuuTru = () => {
     const MySwal = withReactContent(Swal);
-    const { role } = useRole();
+    // const { role } = useRole();
 
     const [searchName, setSearchName] = useState('')
     const [searchRegistered, setSearchRegistered] = useState('')
-    const [searchRole, setSearchRole] = useState('')
+    // const [searchRole, setSearchRole] = useState('')
     const [searchStatus, setSearchStatus] = useState('')
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [fileData, setFileData] = useState([]);
@@ -69,7 +68,7 @@ const FileLuuTru = () => {
             const searchYear = parseInt(searchDate[0], 10);
             return (
                 (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-                (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+                // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
                 (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
                 registeredDate.getFullYear() === searchYear
             );
@@ -80,7 +79,7 @@ const FileLuuTru = () => {
             const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
             return (
                 (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-                (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+                // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
                 (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
                 registeredDate.getDate() === searchDay &&
                 registeredDate.getMonth() + 1 === searchMonth &&
@@ -91,7 +90,7 @@ const FileLuuTru = () => {
         // Mặc định trả về khi không nhập ngày đăng ký
         return (
             (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-            (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+            // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
             (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
         );
     });
@@ -275,7 +274,8 @@ const FileLuuTru = () => {
         </>
     );
 
-    const isAllowed = authorize([Role.ROLE_ADMIN, Role.ROLE_THUKY], role);
+    const currentUser = JSON.parse(sessionStorage.getItem('user'));
+    const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
     return (
         <div>

@@ -19,11 +19,9 @@ import {
   CInputGroupText,
   CRow,
 } from '@coreui/react';
-import { useRole } from '../../../RoleContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { role, setRole } = useRole();
 
   useEffect(() => {
     const token = sessionStorage.getItem('token')

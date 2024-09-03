@@ -16,14 +16,12 @@ const _nav = [
     component: CNavItem,
     name: 'Trang Chủ',
     to: '/',
-    icon: <CIcon icon={cilHouse} customClassName='nav-icon' />,
-    screen_id: 'trang-chu'
+    icon: <CIcon icon={cilHouse} customClassName='nav-icon' />
   },
   {
     component: CNavTitle,
-    name: 'Quản Lý',
-    // role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU],
-    screen_id: 'quan-ly'
+    name: 'Quản Lý'
+    // role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU]
   },
   {
     component: CNavGroup,
@@ -51,19 +49,19 @@ const _nav = [
             component: CNavItem,
             name: 'Điểm Danh',
             to: '/doan-sinh/dd-thieu-nam',
-            screen_id: 'doan-sinh.doan-thieu-nam.dd-danh'
+            screen_id: 'doan-sinh.doan-thieu-nam.diem-danh'
           },
           {
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-thieu-nam',
-            screen_id: 'doan-sinh.doan-thieu-nam.qd-doan'
+            screen_id: 'doan-sinh.doan-thieu-nam.quy-doan'
           },
           {
             component: CNavItem,
             name: 'Đoàn Phả',
             to: '/doan-sinh/dp-thieu-nam',
-            screen_id: 'doan-sinh.doan-thieu-nam.dp-doan'
+            screen_id: 'doan-sinh.doan-thieu-nam.doan-pha'
           }
         ],
       },
@@ -85,19 +83,19 @@ const _nav = [
             component: CNavItem,
             name: 'Điểm Danh',
             to: '/doan-sinh/dd-thieu-nu',
-            screen_id: 'doan-sinh.doan-thieu-nu.dd-danh'
+            screen_id: 'doan-sinh.doan-thieu-nu.diem-danh'
           },
           {
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-thieu-nu',
-            screen_id: 'doan-sinh.doan-thieu-nu.qd-doan'
+            screen_id: 'doan-sinh.doan-thieu-nu.quy-doan'
           },
           {
             component: CNavItem,
             name: 'Đoàn Phả',
             to: '/doan-sinh/dp-thieu-nu',
-            screen_id: 'doan-sinh.doan-thieu-nu.dp-doan'
+            screen_id: 'doan-sinh.doan-thieu-nu.doan-pha'
           }
         ],
       },
@@ -119,19 +117,19 @@ const _nav = [
             component: CNavItem,
             name: 'Điểm Danh',
             to: '/doan-sinh/dd-oanh-vu-nu',
-            screen_id: 'doan-sinh.doan-oanh-vu-nu.dd-danh'
+            screen_id: 'doan-sinh.doan-oanh-vu-nu.diem-danh'
           },
           {
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-oanh-vu-nu',
-            screen_id: 'doan-sinh.doan-oanh-vu-nu.qd-doan'
+            screen_id: 'doan-sinh.doan-oanh-vu-nu.quy-doan'
           },
           {
             component: CNavItem,
             name: 'Đoàn Phả',
             to: '/doan-sinh/dp-oanh-vu-nu',
-            screen_id: 'doan-sinh.doan-oanh-vu-nu.dp-doan'
+            screen_id: 'doan-sinh.doan-oanh-vu-nu.doan-pha'
           }
         ],
       },
@@ -153,19 +151,19 @@ const _nav = [
             component: CNavItem,
             name: 'Điểm Danh',
             to: '/doan-sinh/dd-oanh-vu-nam',
-            screen_id: 'doan-sinh.doan-oanh-vu-nam.dd-danh'
+            screen_id: 'doan-sinh.doan-oanh-vu-nam.diem-danh'
           },
           {
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-oanh-vu-nam',
-            screen_id: 'doan-sinh.doan-oanh-vu-nam.qd-doan'
+            screen_id: 'doan-sinh.doan-oanh-vu-nam.quy-doan'
           },
           {
             component: CNavItem,
             name: 'Đoàn Phả',
             to: '/doan-sinh/dp-oanh-vu-nam',
-            screen_id: 'doan-sinh.doan-oanh-vu-nam.dp-doan'
+            screen_id: 'doan-sinh.doan-oanh-vu-nam.doan-pha'
           }
         ],
       },
@@ -187,19 +185,19 @@ const _nav = [
             component: CNavItem,
             name: 'Điểm Danh',
             to: '/doan-sinh/dd-nganh-thanh',
-            screen_id: 'doan-sinh.nganh-thanh.dd-danh'
+            screen_id: 'doan-sinh.nganh-thanh.diem-danh'
           },
           {
             component: CNavItem,
             name: 'Quỹ Đoàn',
             to: '/doan-sinh/qd-nganh-thanh',
-            screen_id: 'doan-sinh.nganh-thanh.qd-doan'
+            screen_id: 'doan-sinh.nganh-thanh.quy-doan'
           },
           {
             component: CNavItem,
             name: 'Đoàn Phả',
             to: '/doan-sinh/dp-nganh-thanh',
-            screen_id: 'doan-sinh.nganh-thanh.dp-doan'
+            screen_id: 'doan-sinh.nganh-thanh.doan-pha'
           }
         ],
       },
@@ -229,7 +227,7 @@ const _nav = [
         component: CNavItem,
         name: 'Chức Vụ',
         to: '/chuc-vu',
-        screen_id: 'chuc-vu'
+        screen_id: 'huynh-truong.chuc-vu'
       },
     ],
   },
@@ -253,20 +251,17 @@ const _nav = [
     component: CNavTitle,
     name: 'Tài Liệu',
     // role: [Role.ROLE_THUKY],
-    screen_id: 'tai-lieu'
   },
   {
     component: CNavItem,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
-    icon: <CIcon icon={cilFile} customClassName='nav-icon' />,
-    screen_id: 'file-luu-tru'
+    icon: <CIcon icon={cilFile} customClassName='nav-icon' />
   },
   {
     component: CNavTitle,
     name: 'Hệ Thống',
     // role: [Role.ROLE_THUKY],
-    screen_id: 'he-thong'
   },
   {
     component: CNavItem,
