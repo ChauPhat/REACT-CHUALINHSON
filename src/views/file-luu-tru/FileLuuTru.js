@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import env from '../../env';
+import { authorizeRole } from '../../ScreenContext';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../table/Table';
 
@@ -273,7 +274,8 @@ const FileLuuTru = () => {
         </>
     );
 
-    const isAllowed = true;
+    const currentUser = JSON.parse(sessionStorage.getItem('user'));
+    const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
     return (
         <div>

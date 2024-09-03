@@ -10,7 +10,6 @@ import { useScreens } from '../../../ScreenContext';
 import './MultiSelectScreen.css';
 import './UserModal.css';
 
-
 function UserModal({ show, handleClose, user, setUpdated }) {
 
   // const [roles, setRoles] = useState([]);

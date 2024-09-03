@@ -28,7 +28,7 @@ export const ScreenProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        {JSON.parse(sessionStorage.getItem('user')) && fetchScreens()}
+        { JSON.parse(sessionStorage.getItem('user')) && fetchScreens() }
         // fetchScreens();
         const handleSessionUpdate = () => {
             const user = JSON.parse(sessionStorage.getItem('user'));
@@ -60,6 +60,13 @@ export const authorizeScreen = (screen_id, state) => {
         }
     }
     return false;
+}
+
+export const authorizeRole = (require, state) => {
+    if (!require) return true;
+    if (!state) return false;
+    const setRequire = new Set(require);
+    return state.some(element => setRequire.has(element));
 }
 
 export const useScreen = () => useContext(ScreenContext);

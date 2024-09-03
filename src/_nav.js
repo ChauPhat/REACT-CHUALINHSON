@@ -16,14 +16,12 @@ const _nav = [
     component: CNavItem,
     name: 'Trang Chủ',
     to: '/',
-    icon: <CIcon icon={cilHouse} customClassName='nav-icon' />,
-    screen_id: 'trang-chu'
+    icon: <CIcon icon={cilHouse} customClassName='nav-icon' />
   },
   {
     component: CNavTitle,
-    name: 'Quản Lý',
-    // role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU],
-    screen_id: 'quan-ly'
+    name: 'Quản Lý'
+    // role: [Role.ROLE_DOANTRUONG_NGANHTHANH, Role.ROLE_DOANTRUONG_OANHVUNAM, Role.ROLE_DOANTRUONG_OANHVUNU, Role.ROLE_DOANTRUONG_THIEUNAM, Role.ROLE_DOANTRUONG_THIEUNU]
   },
   {
     component: CNavGroup,
@@ -253,20 +251,17 @@ const _nav = [
     component: CNavTitle,
     name: 'Tài Liệu',
     // role: [Role.ROLE_THUKY],
-    screen_id: 'tai-lieu'
   },
   {
     component: CNavItem,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
-    icon: <CIcon icon={cilFile} customClassName='nav-icon' />,
-    screen_id: 'file-luu-tru'
+    icon: <CIcon icon={cilFile} customClassName='nav-icon' />
   },
   {
     component: CNavTitle,
     name: 'Hệ Thống',
     // role: [Role.ROLE_THUKY],
-    screen_id: 'he-thong'
   },
   {
     component: CNavItem,

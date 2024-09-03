@@ -101,7 +101,8 @@ const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
 const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu/ChucVu.js'))
 
 const routes = [
-  { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: 'trang-chu' },
+  // { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: 'trang-chu' },
+  { path: '/', name: 'Trang Chủ', element: HomeDashboard },
 
   { path: '/doan-sinh/ds-thieu-nam', name: 'Danh Sách Thiếu Nam', element: DSThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.danh-sach' },
   { path: '/doan-sinh/qd-thieu-nam', name: 'Quỹ Đoàn Thiếu Nam', element: QDThieuNam, screen_id: 'doan-sinh.doan-thieu-nam.quy-doan' },
@@ -132,7 +133,8 @@ const routes = [
 
   { path: '/huynh-truong/danh-sach', name: 'Danh Sách Huynh Trưởng', element: DanhSachHuynhTruong, screen_id: 'huynh-truong.danh-sach' },
   { path: '/huynh-truong/tai-khoan', name: 'Danh Sách Tài Khoản', element: TaiKhoanHuynhTruong, screen_id: 'huynh-truong.tai-khoan' },
-  { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru, screen_id: 'file-luu-tru' },
+  // { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru, screen_id: 'file-luu-tru' },
+  { path: '/file-luu-tru', name: 'File Lưu Trữ', element: FileLuuTru },
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, screen_id: 'quy-gd' },
   { path: '/thong-bao', name: 'Thông Báo', element: ThongBao, screen_id: 'thong-bao' },
   { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc, screen_id: 'bac-hoc' },
