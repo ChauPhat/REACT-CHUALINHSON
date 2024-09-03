@@ -1,3 +1,4 @@
+
 import 'primeicons/primeicons.css';
 import { MultiSelect } from 'primereact/multiselect';
 import 'primereact/resources/primereact.css';
@@ -13,6 +14,7 @@ import './UserModal.css';
 function UserModal({ show, handleClose, user, setUpdated }) {
 
   // const [roles, setRoles] = useState([]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     password: user?.password,
@@ -174,6 +176,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
 
 
           {/* <label>Giới Tính</label>
+
           <div className="radio-group">
             <label className="radio-inline">
               <input type="radio" name="gender" value="Male"
@@ -226,6 +229,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
             ))}
           </div> */}
 
+
           <label for="exampleFormControlInput1">Ngày tạo</label>
           <input id="registered" name="registered" class="form-control" type="date" value={user.registered}
             readOnly />
@@ -239,10 +243,12 @@ function UserModal({ show, handleClose, user, setUpdated }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button variant="secondary" disabled={!isEditing} onClick={handleSave}>
+
+            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
-            <Button variant="danger" onClick={handleClose}>
+            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
+
               Close
             </Button>
           </div>

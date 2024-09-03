@@ -298,7 +298,7 @@ const DSNganhThanh = () => {
           <h3>Danh sách Tài Khoản</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" >Thêm</CButton>
+          <CButton variant="outline" color="info">Thêm</CButton>
         </CCol>
       </CRow>
       <Table
