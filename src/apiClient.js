@@ -8,7 +8,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +29,8 @@ apiClient.interceptors.response.use(
         icon: 'error',
         title: 'Đã có người đăng nhập vào tài khoản này!'
       }).then(() => {
-        sessionStorage.clear();
-        window.location.href('/login');
+        localStorage.clear();
+        window.location.href = '/#login';
       })
     } else if (error.response) {
       Swal.fire({

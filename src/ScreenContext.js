@@ -5,7 +5,7 @@ const ScreenContext = createContext();
 
 export const ScreenProvider = ({ children }) => {
     const [screen, setScreen] = useState(() => {
-        const user = JSON.parse(sessionStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('user'));
         return user && user?.screen_ids?.split(',');
         // const result = user && user?.screen_ids?.split(',');
         // if (result) {
@@ -27,10 +27,10 @@ export const ScreenProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        { JSON.parse(sessionStorage.getItem('user')) && fetchScreens() }
+        { JSON.parse(localStorage.getItem('user')) && fetchScreens() }
         // fetchScreens();
         const handleSessionUpdate = () => {
-            const user = JSON.parse(sessionStorage.getItem('user'));
+            const user = JSON.parse(localStorage.getItem('user'));
             const result = user && user?.screen_ids?.split(',');
             setScreen(result);
             // console.dir(result);

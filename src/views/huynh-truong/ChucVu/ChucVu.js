@@ -37,7 +37,7 @@ const ChucVu = () => {
     try {
       const response = await axios.get(`${env.apiUrl}/api/role/get-all`, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 

@@ -24,14 +24,14 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token')
-    const expiryTime = sessionStorage.getItem('tokenExpiry')
+    const token = localStorage.getItem('token')
+    const expiryTime = localStorage.getItem('tokenExpiry')
     const now = new Date().getTime()
     if (token && expiryTime && now < expiryTime) {
       navigate('/')
     } else {
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('tokenExpiry')
+      localStorage.removeItem('token')
+      localStorage.removeItem('tokenExpiry')
     }
   }, [navigate]);
 
@@ -39,17 +39,17 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const updateSessionStorage = (token) => {
-    // Cập nhật sessionStorage với dữ liệu mới
+  const updatelocalStorage = (token) => {
+    // Cập nhật localStorage với dữ liệu mới
     const decodedToken = jwtDecode(token);
 
     const expiryTime = decodedToken.exp * 1000
 
-    sessionStorage.setItem('token', token);
-    sessionStorage.setItem('tokenExpiry', expiryTime);
-    sessionStorage.setItem('user', JSON.stringify(decodedToken));
+    localStorage.setItem('token', token);
+    localStorage.setItem('tokenExpiry', expiryTime);
+    localStorage.setItem('user', JSON.stringify(decodedToken));
 
-    // Tạo và phát sự kiện tùy chỉnh để thông báo rằng sessionStorage đã được cập nhật
+    // Tạo và phát sự kiện tùy chỉnh để thông báo rằng localStorage đã được cập nhật
     const event = new Event('sessionUpdated');
     window.dispatchEvent(event);
   };
@@ -75,7 +75,7 @@ const Login = () => {
       const data = response.data.data
 
       if (data) {
-        updateSessionStorage(data?.token);
+        updatelocalStorage(data?.token);
 
         Swal.fire({
           icon: 'success',

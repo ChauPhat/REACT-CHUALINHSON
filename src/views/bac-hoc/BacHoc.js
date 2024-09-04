@@ -37,7 +37,7 @@
       try {
         const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
   

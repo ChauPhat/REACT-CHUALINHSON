@@ -44,7 +44,7 @@ const FileLuuTru = () => {
         try {
             axios.get(`${env.apiUrl}/api/file/getAllFile`, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                 }
             })
                 .then(response => {
@@ -125,7 +125,7 @@ const FileLuuTru = () => {
                     axios.get(`${env.apiUrl}/api/file/downloadFile?fileName=${name}`, {
                         responseType: 'blob', // Nhận dữ liệu dưới dạng Blob
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                         }
                     })
                         .then(response => {
@@ -171,7 +171,7 @@ const FileLuuTru = () => {
                     formData.append('file', selectedFile);
                     axios.post(`${env.apiUrl}/api/file/upload-file`, formData, {
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                             'Content-Type': 'multipart/form-data' // Đảm bảo rằng nội dung là form-data
                         }
                     })
@@ -274,7 +274,7 @@ const FileLuuTru = () => {
         </>
     );
 
-    const currentUser = JSON.parse(sessionStorage.getItem('user'));
+    const currentUser = JSON.parse(localStorage.getItem('user'));
     const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
     return (

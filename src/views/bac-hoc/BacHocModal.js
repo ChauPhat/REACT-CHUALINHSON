@@ -87,7 +87,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
     try {
       const response = await axios.put(`${env.apiUrl}/api/bac-hoc/updateBacHoc?bacHocId=${bachoc.id}`, BacHocData, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
