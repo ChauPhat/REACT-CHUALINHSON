@@ -27,17 +27,17 @@ import env from '../../env'
 
 
 const logout = async () => {
-  try {
-    Swal.fire({
-      icon: 'question',
-      title: 'Bạn có muốn đăng xuất khỏi phần mềm?',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Đăng xuất',
-      cancelButtonText: 'Hủy'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+  Swal.fire({
+    icon: 'question',
+    title: 'Bạn có muốn đăng xuất khỏi phần mềm?',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Đăng xuất',
+    cancelButtonText: 'Hủy'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
         await apiClient.post(`/api/auth/logout`);
         Swal.fire({
           icon: 'success',
@@ -46,11 +46,11 @@ const logout = async () => {
           localStorage.clear();
           window.location.href = '/#login';
         });
+      } catch (error) {
+        console.error(error);
       }
-    })
-  } catch (error) {
-    console.error(error);
-  }
+    }
+  })
 }
 
 const AppHeaderDropdown = () => {

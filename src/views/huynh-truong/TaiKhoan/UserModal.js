@@ -1,7 +1,8 @@
+import { useColorModes } from '@coreui/react';
 import 'primeicons/primeicons.css';
 import { MultiSelect } from 'primereact/multiselect';
 import 'primereact/resources/primereact.css';
-import 'primereact/resources/themes/lara-dark-indigo/theme.css';
+// import 'primereact/resources/themes/lara-dark-indigo/theme.css';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import apiClient from '../../../apiClient';
@@ -9,8 +10,25 @@ import env from '../../../env';
 import { useScreens } from '../../../ScreenContext';
 import './MultiSelectScreen.css';
 import './UserModal.css';
+import Swal from 'sweetalert2';
 
 function UserModal({ show, handleClose, user, setUpdated }) {
+
+  const { colorMode } = useColorModes('coreui-free-react-admin-template-theme');
+  React.useEffect(() => {
+    if (colorMode === 'auto') {
+      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDarkMode) {
+        import(`primereact/resources/themes/lara-dark-indigo/theme.css`);
+      } else {
+        import(`primereact/resources/themes/lara-light-indigo/theme.css`);
+      }
+    } else if (colorMode === 'light') {
+      import('primereact/resources/themes/lara-light-indigo/theme.css');
+    } else if (colorMode === 'dark') {
+      import('primereact/resources/themes/lara-dark-indigo/theme.css');
+    }
+  }, [colorMode]);
 
   // const [roles, setRoles] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -112,15 +130,37 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   const handleSave = async () => {
     setIsEditing(false); // Disable editing mode after saving
     const payload = getAccountPayload();
-    try {
-      // console.dir(payload);
-      const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
-      // const response = await apiClient.put(`/api/accounts/199`, payload);
-      // console.dir(response.data);
-      setUpdated(response.data.data);
-    } catch (error) {
-      console.error('Error update account:', error);
-    }
+    Swal.fire({
+      icon: 'question',
+      title: 'Bạn có đồng ý cập nhật?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
+          setUpdated(response.data.data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật thành công!'
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })
+    // try {
+    //   // console.dir(payload);
+    //   const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
+    //   // const response = await apiClient.put(`/api/accounts/199`, payload);
+    //   // console.dir(response.data);
+    //   setUpdated(response.data.data);
+    // } catch (error) {
+    //   console.error('Error update account:', error);
+    // }
   };
 
   // const rolesMapping = {
