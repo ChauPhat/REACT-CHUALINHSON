@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
+import apiClient from '../apiClient'
+import Swal from 'sweetalert2'
 
 
 
@@ -8,9 +10,20 @@ const DefaultLayout = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token')
+    const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login')
+      window.location.href = '/#login';
+      return;
+    }
+    try {
+      const isLogin = apiClient.get(`/api/auth/is-login`);
+    } catch (error) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Lỗi xác thực, vui lòng đăng nhập lại!'
+      }).then(() => {
+        window.location.href = '/#login';
+      })
     }
   }, [navigate])
 
