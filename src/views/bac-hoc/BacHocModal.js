@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './BacHocModal.css';
 import env from '../../env';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
-function BacHocModal({ show, handleClose, bachoc }) {
+function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: bachoc.name || '',
@@ -11,6 +13,15 @@ function BacHocModal({ show, handleClose, bachoc }) {
     mota: bachoc.mota || '',
   });
   const [errors, setErrors] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [initialImageUrl, setInitialImageUrl] = useState('');
+
+
+  useEffect(() => {
+    if (bachoc) {
+      setInitialImageUrl(`${env.apiUrl}/api/file/get-img?bachocId=${bachoc.id}&t=${Date.now()}`);
+    }
+  }, [bachoc]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing); // Toggle edit mode
@@ -23,6 +34,24 @@ function BacHocModal({ show, handleClose, bachoc }) {
       [name]: value,
     });
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+    
+    const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
+  
+    if (file && validExtensions.includes(file.type)) {
+      setSelectedFile(file);
+    } else {
+      Swal.fire({
+        title: 'Lỗi!',
+        text: 'Chỉ chấp nhận các file ảnh định dạng jpeg, jpg, png.',
+        icon: 'error',
+      });
+      fileInputRef.current.value = ''; // Reset file input if invalid
+    }
+  
   };
 
   const validateForm = () => {
@@ -42,25 +71,50 @@ function BacHocModal({ show, handleClose, bachoc }) {
       text: 'Bạn có chắc chắn muốn sửa bậc học này không?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Có, S!',
+      confirmButtonText: 'Có, Sửa',
       cancelButtonText: 'Hủy',
     });
     
     if (result.isDenied || result.isDismissed) return;
 
+    const BacHocData = {
+      tenBacHoc: formData.name, // Mapping the formData to the expected field
+      capBac: formData.role,    // Mapping the formData to the expected field
+      moTa: formData.mota,      // Mapping the formData to the expected field
+    };
+    
+    console.log(BacHocData , bachoc.id)
     try {
-      const response = await axios.post(`${env.apiUrl}/api/bac-hoc/update`, formData, {
+      const response = await axios.put(`${env.apiUrl}/api/bac-hoc/updateBacHoc?bacHocId=${bachoc.id}`, BacHocData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`,
         },
       });
-      const newBacHoc = {
-        id: response.data.data.bacHocId, // Assuming the response returns the new bacHocId
-        name,
-        role,
-        mota,
-      };
-      onAddBacHoc(newBacHoc);
+
+      if (selectedFile && URL.createObjectURL(selectedFile) !== initialImageUrl) {
+        try {
+          const fileFormData = new FormData();
+          fileFormData.append('file', selectedFile);
+          const idBacHoc = response.data.data.bacHocId
+          // Second API call to upload the file
+          await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bac_hoc_id=${idBacHoc}`, fileFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            },
+          });
+        } catch (fileUploadError) {
+          console.error('Lỗi khi upload file:', fileUploadError);
+          Swal.fire({
+            title: 'Thông báo từ hệ thống!',
+            text: 'Thêm bậc học thất bại do lỗi upload file.',
+            icon: 'error',
+          });
+  
+          return;
+        }
+      }
+
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
         text: 'Thêm bậc học thành công!',
@@ -68,11 +122,9 @@ function BacHocModal({ show, handleClose, bachoc }) {
         timer: 2000,
         timerProgressBar: true,
       });
-      setName('');
-      setRole('');
-      setMota('');
-      // Close modal after successful save
-      handleClose();
+      handleClose(); // Close the modal after successful save
+      onReloadTable(); // Reload the data table after successful save
+      setIsEditing(false); // Disable editing mode
     } catch (error) {
       console.error('Lỗi khi gọi API:', error);
       Swal.fire({
@@ -94,11 +146,21 @@ function BacHocModal({ show, handleClose, bachoc }) {
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img
+          {/* <img
             src={`${env.apiUrl}/api/file/get-img?bachocId=${bachoc.id}&t=${Date.now()}`}
             alt="Avatar"
             className="bachoc-avatar"
+          /> */}
+
+
+          <img
+            src={selectedFile ? URL.createObjectURL(selectedFile) : initialImageUrl}
+            alt="Avatar"
+            className="bachoc-avatar"
           />
+           {isEditing && (
+            <input type="file" onChange={handleFileChange}  accept=".jpg,.jpeg,.png" className="form-control mt-2" />
+          )}
         </div>
 
         <div className="form-group">

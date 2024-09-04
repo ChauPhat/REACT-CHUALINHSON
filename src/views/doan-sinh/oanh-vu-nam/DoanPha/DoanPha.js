@@ -1,0 +1,258 @@
+import React, { useState,useEffect } from 'react'
+import {
+  CBadge,
+  CAvatar,
+  CTableDataCell,
+  CRow,
+  CFormInput,
+  CButton,
+  CCol,
+} from '@coreui/react'
+
+
+import Table from '../../../table/Table'
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import UserModal from './UserModal';
+import '../../../doan-sinh/DoanSinhCss/DanhSach.css'
+import axios from 'axios'
+import env from '../../../../env'
+
+
+
+
+// Hàm format date từ dd-mm-yyyy sang đối tượng Date
+const formatDate = (dateString) => {
+  const [day, month, year] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+const getBadgeClass = (status) => {
+  switch (status) {
+    case 'Active':
+      return 'custom-badge-success';
+    case 'Inactive':
+      return 'custom-badge-danger';
+  }
+}
+
+const handleGenderChange = (newGender) => {
+  setUser(prevUser => ({
+    ...prevUser,
+    gender: newGender
+  }));
+};
+
+const DPOanhNam = () => {
+  const [searchName, setSearchName] = useState('')
+  const [searchRegistered, setSearchRegistered] = useState('')
+  const [searchRole, setSearchRole] = useState('')
+  const [searchStatus, setSearchStatus] = useState('')
+  const [usersData, setUsersData] = useState([]);
+
+  useEffect(() => {
+    const layDuLieu = async () => {
+      try {
+        // First API call
+        const response1 = await axios.get(`${env.apiUrl}/api/nhiemkydoans/getListNhiemKyDoanWithDoanId?doan_Id=1`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        });
+  
+        // Second API call
+        const response2 = await axios.post(`${env.apiUrl}/api/doansinhdetails/getDoanSinhDetailsWithDoanId?doan_id=1`, formData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          },
+        });
+  
+        // Mapping data from the first API response
+        const data1 = response1.data.data.map(item => {
+          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
+          return {
+            id: item.userId,
+            name: item.hoTen,
+            avatar: item.avatar,
+            registered: item.createDate,
+            status: item.isActive ? 'Active' : 'Inactive',
+            email: item.email,
+            gender: item.gioiTinh,
+            address: item.diaChi,
+            phone: item.sdt,
+            birthDate: item.ngaySinh,
+            admissionDate: item.ngayGiaNhapDoan,
+            group: item.doan ? item.doan.tenDoan : 'N/A',
+            phapdanh: item.phapDanh,
+            roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
+          };
+        });
+  
+        // Mapping data from the second API response
+        const data2 = response2.data.data.map(item => {
+          // Adjust mapping logic according to the structure of the second API response
+          return {
+            id: item.id,
+            name: item.hoTen,
+            avatar: item.avatar,
+            registered: item.createDate,
+            status: item.isActive ? 'Active' : 'Inactive',
+            email: item.email,
+            gender: item.gioiTinh,
+            address: item.diaChi,
+            phone: item.sdt,
+            birthDate: item.ngaySinh,
+            admissionDate: item.ngayGiaNhapDoan,
+            group: item.doan ? item.doan.tenDoan : 'N/A',
+            phapdanh: item.phapDanh,
+            roleOfDoanTruong: item.role || '',
+          };
+        });
+  
+        // Combine both lists into a single array
+        const combinedData = [...data1, ...data2];
+  
+        // Set the combined data to state
+        setUsersData(combinedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    layDuLieu();
+  }, []);
+
+
+
+  const formatDateToDDMMYYYY = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const filteredData = usersData.filter((user) => {
+    return (
+      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRegistered === '' || formatDateToDDMMYYYY(user.registered).includes(searchRegistered)) &&
+      (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+      (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
+    );
+  });
+
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleShowModal = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
+
+
+
+  const headers = [
+    <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
+    <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
+    <CTableDataCell width={'20%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>
+  ];
+  const headerCells = [
+    '',
+    <CFormInput className='fixed-width-input'
+      type="search"
+      placeholder="Tìm theo tên"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+    />,
+    <CFormInput className='fixed-width-input'
+      type="search"
+      placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
+      value={searchRegistered}
+      onChange={(e) => setSearchRegistered(e.target.value)}
+    />,
+    <CFormInput className='fixed-width-input'
+      type="search"
+      placeholder="Tìm theo vai trò"
+      value={searchRole}
+      onChange={(e) => setSearchRole(e.target.value)}
+    />,
+
+    <CFormInput className='fixed-width-input'
+      type="search"
+      placeholder="Tìm theo trạng thái"
+      value={searchStatus}
+      onChange={(e) => setSearchStatus(e.target.value)}
+    />,
+    
+    '',
+  ];
+
+  const renderRow = (user) => (
+    <>
+      <CTableDataCell>  
+        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
+      </CTableDataCell>
+        <CTableDataCell>{user.name}</CTableDataCell>
+        <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
+        <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>
+        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
+          {user.status}
+        </CBadge>
+      </CTableDataCell>
+      <CTableDataCell>
+      <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
+       >Show</CButton>
+      </CTableDataCell>
+    </>
+  );
+
+  return (
+    
+    <div className="container-fluid">
+
+    <br/>
+      <CRow className="mb-3 d-flex">
+        <CCol className="d-flex align-items-center flex-grow-1">
+          <h3>Danh sách Huynh Trưởng</h3>
+        </CCol>
+        <CCol className="d-flex justify-content-end">
+        <CButton color="secondary" >Thêm</CButton>
+        
+        </CCol>
+      </CRow>
+
+            <Table
+                headers={headers}
+                headerCells={headerCells}
+                items={filteredData}
+                renderRow={renderRow}
+                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }} 
+            />
+   
+
+   {selectedUser && (
+        <UserModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          user={selectedUser}
+          handleGenderChange={handleGenderChange}
+        />
+      )}
+
+
+   
+    </div>
+  )
+}
+
+export default DPOanhNam
