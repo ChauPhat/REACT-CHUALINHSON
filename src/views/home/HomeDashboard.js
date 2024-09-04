@@ -167,7 +167,7 @@ const Home = () => {
     },
 
   ];
-  const currentUser = JSON.parse(sessionStorage.getItem('user'));
+  const currentUser = JSON.parse(localStorage.getItem('user'));
   const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
   return (

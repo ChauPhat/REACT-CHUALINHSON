@@ -38,7 +38,7 @@ const logout = async () => {
       cancelButtonText: 'Hủy'
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const isLogout = await apiClient.post(`/api/auth/logout`);
+        await apiClient.post(`/api/auth/logout`);
         Swal.fire({
           icon: 'success',
           title: 'Đăng xuất thành công!'

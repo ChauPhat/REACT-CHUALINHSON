@@ -65,7 +65,7 @@ const QuyGD = () => {
         try {
             const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?quyDoanId=5`, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
             const apiData = response.data.data;
@@ -166,7 +166,7 @@ const QuyGD = () => {
         try {
             await axios.post(`${env.apiUrl}/api/lichsuquydoan/insertLichSuQuyDoan`, newFund, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
             Swal.fire({
@@ -198,7 +198,7 @@ const QuyGD = () => {
             const response = await fetch(`${env.apiUrl}/api/lichsuquydoan/updateMoTaLichSuQuyDoan?lichSuQuyDoanId=${selectedLichSuQuyId}&moTa=${selectedMoTa}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
 

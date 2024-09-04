@@ -37,7 +37,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
     try {
       const response = await axios.post(`${env.apiUrl}/api/bac-hoc/insert`, formData, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       const newChucVu = {

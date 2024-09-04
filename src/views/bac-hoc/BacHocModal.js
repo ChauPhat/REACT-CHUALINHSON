@@ -51,7 +51,7 @@ function BacHocModal({ show, handleClose, bachoc }) {
     try {
       const response = await axios.post(`${env.apiUrl}/api/bac-hoc/update`, formData, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       const newBacHoc = {
