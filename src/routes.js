@@ -55,7 +55,7 @@ const HomeDashboard = React.lazy(() => import('./views/home/HomeDashboard'))
 const DSOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DanhSach'))
 const DDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DiemDanh'))
 const QDOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/QuyDoan'))
-const DPOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DoanPha'))
+const DPOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DoanPha/DoanPha'))
 
 //Oanh Nữ
 const DSOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DanhSach'))

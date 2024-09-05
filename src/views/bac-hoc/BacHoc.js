@@ -76,6 +76,10 @@
       setSelectedBacHoc(null);
     };
 
+    const onReloadTable = () => {
+      fetchData(); // Reload the data table after editing
+    };
+
     
 
 
@@ -153,7 +157,8 @@
         />
 
         {selectedBacHoc && (
-          <BacHocModal show={showModal} handleClose={handleCloseModal} bachoc={selectedBacHoc} />
+          <BacHocModal show={showModal} handleClose={handleCloseModal} 
+          bachoc={selectedBacHoc}  onReloadTable={onReloadTable}/>
         )}
 
         {showAddModal && (
