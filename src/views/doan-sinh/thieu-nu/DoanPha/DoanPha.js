@@ -1,6 +1,5 @@
 import React, { useState,useEffect } from 'react'
 import {
-  CBadge,
   CAvatar,
   CTableDataCell,
   CRow,
@@ -21,21 +20,6 @@ import env from '../../../../env'
 
 
 
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-const formatDate = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
-
-const getBadgeClass = (status) => {
-  switch (status) {
-    case 'Active':
-      return 'custom-badge-success';
-    case 'Inactive':
-      return 'custom-badge-danger';
-  }
-}
-
 const handleGenderChange = (newGender) => {
   setUser(prevUser => ({
     ...prevUser,
@@ -43,7 +27,7 @@ const handleGenderChange = (newGender) => {
   }));
 };
 
-const DPOanhNam = () => {
+const DPThieuNu = () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -54,14 +38,14 @@ const DPOanhNam = () => {
     const layDuLieu = async () => {
       try {
         // First API call
-        const response1 = await axios.get(`${env.apiUrl}/api/nhiemkydoans/getListNhiemKyDoanWithDoanId?doan_id=1`, {
+        const response1 = await axios.get(`${env.apiUrl}/api/nhiemkydoans/getListNhiemKyDoanWithDoanId?doan_id=4`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
   
         // Second API call
-        const response2 = await axios.get(`${env.apiUrl}/api/doansinhdetails/getDoanSinhDetailsWithDoanId?doan_id=1`,{
+        const response2 = await axios.get(`${env.apiUrl}/api/doansinhdetails/getDoanSinhDetailsWithDoanId?doan_id=4`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -193,7 +177,7 @@ const DPOanhNam = () => {
     <br/>
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
-          <h3>Danh Phả Oanh Vũ Nam</h3>
+          <h3>Đoàn Phả Thiếu Nữ </h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
 
@@ -223,4 +207,4 @@ const DPOanhNam = () => {
   )
 }
 
-export default DPOanhNam
+export default DPThieuNu

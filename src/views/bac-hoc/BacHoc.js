@@ -91,7 +91,7 @@
         Tên Bậc Học
       </CTableDataCell>,
       <CTableDataCell width={'20%'} className="fixed-width-column">
-        Cấp Bật
+        Cấp Bậc
       </CTableDataCell>,
       <CTableDataCell width={'20%'} className="fixed-width-column">
         Thao tác
