@@ -61,25 +61,25 @@ const DPOanhNam = React.lazy(() => import('./views/doan-sinh/oanh-vu-nam/DoanPha
 const DSOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DanhSach'))
 const DDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DiemDanh'))
 const QDOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/QuyDoan'))
-const DPOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DoanPha'))
+const DPOanhNu = React.lazy(() => import('./views/doan-sinh/oanh-vu-nu/DoanPha/DoanPha'))
 
 //Thiếu  Nam
 const DSThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DanhSach'))
 const DDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DiemDanh'))
 const QDThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/QuyDoan'))
-const DPThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DoanPha'))
+const DPThieuNam = React.lazy(() => import('./views/doan-sinh/thieu-nam/DoanPha/DoanPha'))
 
 //Thiếu  Nữ
 const DSThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DanhSach'))
 const DDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DiemDanh'))
 const QDThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/QuyDoan'))
-const DPThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DoanPha'))
+const DPThieuNu = React.lazy(() => import('./views/doan-sinh/thieu-nu/DoanPha/DoanPha'))
 
 //Ngành Thanh
 const DSNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DanhSach'))
 const DDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DiemDanh'))
 const QDNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/QuyDoan'))
-const DPNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DoanPha'))
+const DPNganhThanh = React.lazy(() => import('./views/doan-sinh/nganh-thanh/DoanPha/DoanPha'))
 
 //Tất Cả
 const TatCa = React.lazy(() => import('./views/doan-sinh/TatCa.js'))
