@@ -58,9 +58,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
     setSelectedScreens(tempScreens);
     setFormData({
       password: user?.password,
-      userId: {
-        userId: user.userId
-      }
+      userId: user.userId
     });
     // const initialRoles = formData.roleOfDoanTruong ? [formData.roleOfDoanTruong] : [];
     // setRoles(initialRoles);

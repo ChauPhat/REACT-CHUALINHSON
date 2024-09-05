@@ -275,7 +275,7 @@ const FileLuuTru = () => {
     );
 
     const currentUser = JSON.parse(localStorage.getItem('user'));
-    const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
+    const isAllowed = authorizeRole(["Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
     return (
         <div>

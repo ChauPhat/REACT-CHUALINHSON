@@ -14,6 +14,7 @@ import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
+import { authorizeRole } from '../../ScreenContext'
 
 const WidgetsDropdown = (props) => {
   const widgetChartRef1 = useRef(null)
@@ -35,7 +36,10 @@ const WidgetsDropdown = (props) => {
         })
       }
     })
-  }, [widgetChartRef1, widgetChartRef2])
+  }, [widgetChartRef1, widgetChartRef2]);
+  
+  const currentUser = JSON.parse(localStorage.getItem('user'));
+  const isAllowed = authorizeRole(["Thủ Quỹ"], [currentUser?.role_name1, currentUser?.role_name2]);
 
   return (
     <CRow className={props.className}  xs={{ gutter: 4 }}>
@@ -117,7 +121,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3} className='w-100'>
+      {isAllowed && <CCol sm={6} xl={4} xxl={3} className='w-100'>
         <CWidgetStatsA
           color="info"
           value={
@@ -193,7 +197,7 @@ const WidgetsDropdown = (props) => {
             />
           }
         />
-      </CCol>
+      </CCol>}
       <CCol sm={6} xl={4} xxl={3} className='w-100'>
         <CWidgetStatsA
           color="warning"

@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import {
   CAvatar,
   CCol,
@@ -11,8 +10,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
+import React from 'react'
 
-import CIcon from '@coreui/icons-react'
 import {
   cibCcAmex,
   cibCcApplePay,
@@ -28,6 +27,7 @@ import {
   cifUs,
   cilPeople,
 } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -37,9 +37,8 @@ import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-import FiltersBarChart from "../charts/ChartBar";
+import FiltersBarChart from "../charts/ChartBar"
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
-import { authorizeRole } from '../../ScreenContext';
 
 
 const Home = () => {
@@ -167,14 +166,12 @@ const Home = () => {
     },
 
   ];
-  const currentUser = JSON.parse(localStorage.getItem('user'));
-  const isAllowed = authorizeRole(["Thủ Quỹ", "Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
 
   return (
     <>
 
       <CRow xs={{ gutter: 3 }}>
-        <CCol sm={isAllowed ? 6 : 12} md={isAllowed ? 8 : 12}>
+        <CCol sm={6} md={8}>
           <CTable align="middle" className="mb-0 border table-scroll" hover responsive rai >
             <CTableHead className="text-nowrap">
               <CTableRow>
@@ -221,12 +218,12 @@ const Home = () => {
             </CTableBody>
           </CTable>
         </CCol>
-        {isAllowed && <CCol sm={6} md={4} >
+        <CCol sm={6} md={4} >
           <WidgetsDropdown className="d-flex flex-column " />
-        </CCol>}
+        </CCol>
       </CRow>
       <br />
-      {isAllowed && <FiltersBarChart />}
+      <FiltersBarChart />
 
     </>
   )
