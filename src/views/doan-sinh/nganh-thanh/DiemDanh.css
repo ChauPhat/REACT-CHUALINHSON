@@ -1,7 +1,5 @@
 .checkbox-con {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .checkbox-con input[type="checkbox"] {
@@ -62,16 +60,6 @@
     vertical-align: middle;
 }
 .btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.checkbox-con {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#nuiDiemDanhId {
     display: flex;
     justify-content: center;
     align-items: center;

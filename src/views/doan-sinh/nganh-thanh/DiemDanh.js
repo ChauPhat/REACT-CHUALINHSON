@@ -131,7 +131,7 @@ const DDNganhThanh = () => {
 
             {/* Modal */}
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-scrollable">
+                <div className="modal-dialog modal-dialog-scrollable modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">Điểm danh</h1>
@@ -142,11 +142,11 @@ const DDNganhThanh = () => {
                             <table className='table table-border table-striped table-hover'>
                                 <thead>
                                     <tr className=' align-items-center'>
-                                        <th className='fixed-width-column'>Ảnh</th>
-                                        <th className='fixed-width-column'>Tên</th>
-                                        <th className='fixed-width-column'>Ngày sinh hoạt</th>
-                                        <th className='fixed-width-column'>Đoàn</th>
-                                        <th className='fixed-width-column'>Trạng thái</th>
+                                        <th >Ảnh</th>
+                                        <th >Tên</th>
+                                        <th >Ngày sinh hoạt</th>
+                                        <th >Đoàn</th>
+                                        <th >Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -160,201 +160,10 @@ const DDNganhThanh = () => {
                                                 height="50"
                                             />
                                         </td>
-                                        <td className='fixed-width-column'>Người dùng</td>
-                                        <td className='fixed-width-column'>27-08-2004</td>
-                                        <td className='fixed-width-column'>Ngành Thanh</td>
+                                        <td>Người dùng</td>
+                                        <td>27-08-2004</td>
+                                        <td>Ngành Thanh</td>
                                         <td className=''>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr className=' align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
                                             <div className="checkbox-con">
                                                 <input id="checkbox" type="checkbox"></input>
                                             </div>
