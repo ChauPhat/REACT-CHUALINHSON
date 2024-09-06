@@ -10,9 +10,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { authorizeRole } from '../../AuthorizationContext';
 import env from '../../env';
-import { authorize, Role } from '../../GlobalVariable';
-import { useRole } from '../../RoleContext';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../table/Table';
 
@@ -22,15 +21,13 @@ const formatDate = (dateString) => {
     return new Date(year, month - 1, day)
 }
 
-
-
 const FileLuuTru = () => {
     const MySwal = withReactContent(Swal);
-    const { role } = useRole();
+    // const { role } = useRole();
 
     const [searchName, setSearchName] = useState('')
     const [searchRegistered, setSearchRegistered] = useState('')
-    const [searchRole, setSearchRole] = useState('')
+    // const [searchRole, setSearchRole] = useState('')
     const [searchStatus, setSearchStatus] = useState('')
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [fileData, setFileData] = useState([]);
@@ -45,7 +42,7 @@ const FileLuuTru = () => {
         try {
             axios.get(`${env.apiUrl}/api/file/getAllFile`, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                 }
             })
                 .then(response => {
@@ -59,7 +56,6 @@ const FileLuuTru = () => {
         }
     };
 
-
     const filteredData = fileData.filter((user) => {
         const registeredDate = formatDate(user.registered);
         const searchDate = searchRegistered ? searchRegistered.split('-') : [];
@@ -69,7 +65,7 @@ const FileLuuTru = () => {
             const searchYear = parseInt(searchDate[0], 10);
             return (
                 (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-                (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+                // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
                 (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
                 registeredDate.getFullYear() === searchYear
             );
@@ -80,7 +76,7 @@ const FileLuuTru = () => {
             const [searchDay, searchMonth, searchYear] = searchDate.map(Number);
             return (
                 (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-                (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+                // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
                 (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase())) &&
                 registeredDate.getDate() === searchDay &&
                 registeredDate.getMonth() + 1 === searchMonth &&
@@ -91,11 +87,10 @@ const FileLuuTru = () => {
         // Mặc định trả về khi không nhập ngày đăng ký
         return (
             (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-            (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
+            // (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
             (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
         );
     });
-
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen)
@@ -126,7 +121,7 @@ const FileLuuTru = () => {
                     axios.get(`${env.apiUrl}/api/file/downloadFile?fileName=${name}`, {
                         responseType: 'blob', // Nhận dữ liệu dưới dạng Blob
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                         }
                     })
                         .then(response => {
@@ -172,7 +167,7 @@ const FileLuuTru = () => {
                     formData.append('file', selectedFile);
                     axios.post(`${env.apiUrl}/api/file/upload-file`, formData, {
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                             'Content-Type': 'multipart/form-data' // Đảm bảo rằng nội dung là form-data
                         }
                     })
@@ -275,7 +270,7 @@ const FileLuuTru = () => {
         </>
     );
 
-    const isAllowed = authorize([Role.ROLE_ADMIN, Role.ROLE_THUKY], role);
+    const isAuthorized = authorizeRole(["Thư Ký"]);
 
     return (
         <div>
@@ -285,7 +280,7 @@ const FileLuuTru = () => {
                         <h3>File lưu trữ</h3>
                     </CCol>
                     <CCol className="d-flex justify-content-end">
-                        {isAllowed && <CButton color="secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
+                        {isAuthorized && <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
                     </CCol>
                 </CRow>
 

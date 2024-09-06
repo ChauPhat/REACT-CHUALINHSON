@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './UserModal.css';
-import env from '../../../env'
+import env from '../../../../env'
 function UserModal({ show, handleClose, user, handleRoleChange}) {
   const [checkedCount, setCheckedCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false); // State for edit mode
@@ -40,7 +40,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
   const handleSave = () => {
     // Implement save logic here
     // Example: Call handleRoleChange or update state with new formData
-    // console.log('Saving data:', formData);
+    console.log('Saving data:', formData);
 
     setIsEditing(false); // Disable editing mode after saving
   };
@@ -62,7 +62,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
               id="name" name="name" className="form-control" type="text"
               value={formData.name} onChange={handleInputChange}
               readOnly={!isEditing} disabled={!isEditing}/>
-            <span className="input-group-text" id="basic-addon2">{user.idUX}</span>
+            <span className="input-group-text" id="basic-addon2">{user.id}</span>
           </div>
 
           <label htmlFor="phapdanh">Pháp Danh</label>
@@ -70,16 +70,20 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
             value={formData.phapdanh} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
+          <label htmlFor="phapdanh">Vai Trò</label>
+          <input name="phapdanh" className="form-control" type="text"
+            value={formData.roleOfDoanTruong} onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing}/>
+
           <label htmlFor="email">Email</label>
           <input name="email" className="form-control" type="email"
             value={formData.email} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
-          <label htmlFor="registered">Ngày Sinh</label>
-          <input name="registered" className="form-control" type="date"
+          <label htmlFor="birthDate">Ngày Sinh</label>
+          <input name="birthDate" className="form-control" type="date"
             value={formData.birthDate} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
-
 
           <label htmlFor="registered">Ngày Gia Nhập</label>
           <input name="registered" className="form-control" type="date"
@@ -90,7 +94,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
           <input  name="phone"  className="form-control" type="text" value={formData.phone} 
           onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}/>
 
-      <label>Giới Tính</label>
+          <label>Giới Tính</label>
             <div className="radio-group">
             <label className="radio-inline">
               <input type="radio" name="gender" value="Male"
@@ -117,17 +121,13 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       <Modal.Footer>
         <div className="footer-container">
           <div className="form-check form-switch">
-            <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" 
-            checked={isEditing} onChange={handleEditToggle}/>
-            <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
+    
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave} >
-              Save
-            </Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
+      
+             <Button variant="danger" onClick={handleClose}>
               Close
-            </Button>
+            </Button> 
           </div>
         </div>
       </Modal.Footer>

@@ -1,19 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react'
+
 import {
-  CAvatar,
+  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
+  CFormInput,
   CModal,
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle,
-  CButton,
-  CFormInput
+  CModalTitle
 } from '@coreui/react'
 import {
   cilLockLocked,
@@ -26,20 +25,43 @@ import Swal from "sweetalert2";
 import env from '../../env';
 import axios from 'axios';
 import ChangePass from './ChangePassword'
+import React, { useEffect, useRef, useState } from 'react'
+import apiClient from '../../apiClient'
 
 
-const logOut = () => {
-  sessionStorage.removeItem('token')
-  sessionStorage.removeItem('tokenExpiry')
-  sessionStorage.removeItem('user')
-  window.location.href = '/login'
+
+const logout = async () => {
+  Swal.fire({
+    icon: 'question',
+    title: 'Bạn có muốn đăng xuất khỏi phần mềm?',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Đăng xuất',
+    cancelButtonText: 'Hủy'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await apiClient.post(`/api/auth/logout`);
+        Swal.fire({
+          icon: 'success',
+          title: 'Đăng xuất thành công!'
+        }).then(() => {
+          localStorage.clear();
+          window.location.href = '/#login';
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  })
 }
 
 const AppHeaderDropdown = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [userProfile, setUserProfile] = useState(null)
   const [iduser, setIdUser] = useState('');
-  const [iduserlog, setIdUserlog] = useState('');
+  // const [iduserlog, setIdUserlog] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef(null)
   const [changePassModalVisible, setChangePassModalVisible] = useState(false)
@@ -47,7 +69,7 @@ const AppHeaderDropdown = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.user_id;
         setImageUrl(`${env.apiUrl}/api/file/get-img?userId=${userId}&t=${Date.now()}`)
@@ -64,7 +86,7 @@ const AppHeaderDropdown = () => {
     setModalVisible(true);
 
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       // Giải mã token để lấy user_id
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
@@ -129,7 +151,7 @@ const AppHeaderDropdown = () => {
         axios.post(`${env.apiUrl}/api/file/upload-img?userId=${iduser}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${sessionStorage.getItem('token')}`, // Thêm Authorization header
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
           }
         })
           .then(response => {
@@ -202,7 +224,7 @@ const AppHeaderDropdown = () => {
               Đổi mật khẩu
             </CDropdownItem>
             <CDropdownDivider />
-            <CDropdownItem href="#" onClick={logOut}>
+            <CDropdownItem href="#" onClick={logout}>
               <CIcon icon={cilLockLocked} className="me-2" />
               Đăng xuất
             </CDropdownItem>

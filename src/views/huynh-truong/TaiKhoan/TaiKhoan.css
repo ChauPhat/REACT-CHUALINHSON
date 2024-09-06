@@ -20,3 +20,9 @@
     background-color: #EECC00; /* Màu đỏ */
     color: white; /* Màu chữ */
   }
+  
+  .card {
+    background: var(--surface-card);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }

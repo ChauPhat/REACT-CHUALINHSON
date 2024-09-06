@@ -1,19 +1,16 @@
-import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import React, { useEffect, useRef } from 'react'
 
-import {
-  CRow,
-  CCol,
-  CDropdown,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdownToggle,
-  CWidgetStatsA,
-} from '@coreui/react'
-import { getStyle } from '@coreui/utils'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
+import { cilArrowBottom, cilArrowTop } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
+import {
+  CCol,
+  CRow,
+  CWidgetStatsA
+} from '@coreui/react'
+import { CChartLine } from '@coreui/react-chartjs'
+import { getStyle } from '@coreui/utils'
+import { authorizeRole } from '../../AuthorizationContext'
 
 const WidgetsDropdown = (props) => {
   const widgetChartRef1 = useRef(null)
@@ -35,10 +32,12 @@ const WidgetsDropdown = (props) => {
         })
       }
     })
-  }, [widgetChartRef1, widgetChartRef2])
+  }, [widgetChartRef1, widgetChartRef2]);
+
+  const isAuthorized = authorizeRole(["Thủ Quỹ"]);
 
   return (
-    <CRow className={props.className}  xs={{ gutter: 4 }}>
+    <CRow className={props.className} xs={{ gutter: 4 }}>
       <CCol sm={6} xl={4} xxl={3} className='w-100'>
         <CWidgetStatsA
           color="primary"
@@ -51,7 +50,7 @@ const WidgetsDropdown = (props) => {
             </>
           }
           title="Tổng Đoàn Sinh"
-         
+
           chart={
             <CChartLine
               ref={widgetChartRef1}
@@ -117,7 +116,7 @@ const WidgetsDropdown = (props) => {
           }
         />
       </CCol>
-      <CCol sm={6} xl={4} xxl={3} className='w-100'>
+      {isAuthorized && <CCol sm={6} xl={4} xxl={3} className='w-100'>
         <CWidgetStatsA
           color="info"
           value={
@@ -129,7 +128,7 @@ const WidgetsDropdown = (props) => {
             </>
           }
           title="Tổng Thu Chi"
-          
+
           chart={
             <CChartLine
               ref={widgetChartRef2}
@@ -193,7 +192,7 @@ const WidgetsDropdown = (props) => {
             />
           }
         />
-      </CCol>
+      </CCol>}
       <CCol sm={6} xl={4} xxl={3} className='w-100'>
         <CWidgetStatsA
           color="warning"
