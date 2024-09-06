@@ -1,8 +1,4 @@
-import {
-  cilLockLocked,
-  cilUser
-} from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+
 import {
   CButton,
   CDropdown,
@@ -18,12 +14,20 @@ import {
   CModalHeader,
   CModalTitle
 } from '@coreui/react'
-import axios from 'axios'
+import {
+  cilLockLocked,
+  cilUser,
+  cilSettings
+} from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 import { jwtDecode } from 'jwt-decode'
+import Swal from "sweetalert2";
+import env from '../../env';
+import axios from 'axios';
+import ChangePass from './ChangePassword'
 import React, { useEffect, useRef, useState } from 'react'
-import Swal from "sweetalert2"
 import apiClient from '../../apiClient'
-import env from '../../env'
+
 
 
 const logout = async () => {
@@ -60,6 +64,7 @@ const AppHeaderDropdown = () => {
   // const [iduserlog, setIdUserlog] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef(null)
+  const [changePassModalVisible, setChangePassModalVisible] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,6 +116,14 @@ const AppHeaderDropdown = () => {
 
   const handleAvatarClick = () => {
     fileInputRef.current.click()
+  }
+
+  const handleChangePassClick = () => {
+    setChangePassModalVisible(true); // Mở modal đổi mật khẩu
+  }
+
+  const handleCloseChangePassModal = () => {
+    setChangePassModalVisible(false); // Đóng modal đổi mật khẩu
   }
 
   const handleFileChange = (event) => {
@@ -188,105 +201,116 @@ const AppHeaderDropdown = () => {
   }
 
   return (
-    <div>
-      <CDropdown variant="nav-item">
-        <CDropdownToggle placement="bottom-end" className="py-1" caret={false}>
-          <div class="avatar">
-            <img class="avatar-img" src={`${imageUrl}`} style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }} />
-          </div>
-        </CDropdownToggle>
-        <CDropdownMenu className="pt-0" placement="bottom-end">
-          <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Tài khoản</CDropdownHeader>
-          <CDropdownItem href="#" onClick={handleProfileClick}>
-            <CIcon icon={cilUser} className="me-2" />
-            Hồ sơ của bạn
-          </CDropdownItem>
-          <CDropdownDivider />
-          <CDropdownItem onClick={logout}>
-            <CIcon icon={cilLockLocked} className="me-2" />
-            Đăng xuất
-          </CDropdownItem>
-        </CDropdownMenu>
-      </CDropdown>
 
-      <CModal visible={modalVisible} onClose={handleCloseModal}>
-        <CModalHeader>
-          <CModalTitle>Hồ sơ người dùng</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          {userProfile ? (
-            <>
-              <div className="text-center mb-3">
-                <img
-                  src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`}
-                  alt="User Avatar"
-                  style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
-                  onClick={handleAvatarClick}
+    <>
+      <ChangePass modalVisible={changePassModalVisible} onCloseModal={handleCloseChangePassModal} />
+
+      <div>
+
+        <CDropdown variant="nav-item">
+          <CDropdownToggle placement="bottom-end" className="py-1" caret={false}>
+            <div class="avatar">
+              <img class="avatar-img" src={`${imageUrl}`} style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }} />
+            </div>
+          </CDropdownToggle>
+          <CDropdownMenu className="pt-0" placement="bottom-end">
+            <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Tài khoản</CDropdownHeader>
+            <CDropdownItem href="#" onClick={handleProfileClick}>
+              <CIcon icon={cilUser} className="me-2" />
+              Hồ sơ của bạn
+            </CDropdownItem>
+            <CDropdownItem href="#" onClick={handleChangePassClick}>
+              <CIcon icon={cilSettings} className="me-2" />
+              Đổi mật khẩu
+            </CDropdownItem>
+            <CDropdownDivider />
+            <CDropdownItem href="#" onClick={logout}>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Đăng xuất
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+
+        <CModal visible={modalVisible} onClose={handleCloseModal}>
+          <CModalHeader>
+            <CModalTitle>Hồ sơ người dùng</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {userProfile ? (
+              <>
+                <div className="text-center mb-3">
+                  <img
+                    src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`}
+                    alt="User Avatar"
+                    style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
+                    onClick={handleAvatarClick}
+                  />
+                  <CFormInput
+                    type="file"
+                    className="mb-3"
+                    style={{ display: 'none' }}
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".jpg,.jpeg,.png"
+                  />
+                </div>
+                <CFormInput
+                  type="text"
+                  label="Họ tên"
+                  value={userProfile.hoTen}
+                  disabled
+                  className="mb-3"
                 />
                 <CFormInput
-                  type="file"
+                  type="text"
+                  label="Pháp Danh"
+                  value={userProfile.phapDanh}
+                  disabled
                   className="mb-3"
-                  style={{ display: 'none' }}
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".jpg,.jpeg,.png"
                 />
-              </div>
-              <CFormInput
-                type="text"
-                label="Họ tên"
-                value={userProfile.hoTen}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Pháp Danh"
-                value={userProfile.phapDanh}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Giới tính"
-                value={userProfile.gioiTinh ? "Nam" : "Nữ"}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="email"
-                label="Email"
-                value={userProfile.email}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="tel"
-                label="Số điện thoại"
-                value={userProfile.sdt}
-                disabled
-                className="mb-3"
-              />
-              <CFormInput
-                type="text"
-                label="Địa chỉ"
-                value={userProfile.diaChi}
-                disabled
-                className="mb-3"
-              />
-            </>
-          ) : (
-            <p>Loading...</p>
-          )}
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="outline-secondary" onClick={handleCloseModal}>
-            Đóng
-          </CButton>
-        </CModalFooter>
-      </CModal>
-    </div>
+                <CFormInput
+                  type="text"
+                  label="Giới tính"
+                  value={userProfile.gioiTinh ? "Nam" : "Nữ"}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="email"
+                  label="Email"
+                  value={userProfile.email}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="tel"
+                  label="Số điện thoại"
+                  value={userProfile.sdt}
+                  disabled
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="text"
+                  label="Địa chỉ"
+                  value={userProfile.diaChi}
+                  disabled
+                  className="mb-3"
+                />
+              </>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="outline-secondary" onClick={handleCloseModal}>
+              Đóng
+            </CButton>
+          </CModalFooter>
+        </CModal>
+      </div>
+    </>
   )
+
 }
 
 export default AppHeaderDropdown

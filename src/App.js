@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { BrowserRouter, Route, Routes,HashRouter} from 'react-router-dom'
 
 import { CSpinner, useColorModes } from '@coreui/react'
-import { ScreenProvider } from './ScreenContext'
+import { AuthorizationProvider } from './AuthorizationContext'
 import './scss/style.scss'
 import UnauthorizedPage from './views/pages/page401/401Page'
 
@@ -35,7 +35,7 @@ const App = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <ScreenProvider>
+    <AuthorizationProvider>
       <HashRouter>
         <Suspense
           fallback={
@@ -66,7 +66,7 @@ const App = () => {
           </Routes>
         </Suspense>
       </HashRouter>
-    </ScreenProvider>
+    </AuthorizationProvider>
   )
 }
 

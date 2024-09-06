@@ -1,83 +1,93 @@
-import { useColorModes } from '@coreui/react';
 import 'primeicons/primeicons.css';
-import { MultiSelect } from 'primereact/multiselect';
 import 'primereact/resources/primereact.css';
-// import 'primereact/resources/themes/lara-dark-indigo/theme.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import { TreeSelect } from 'primereact/treeselect';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
+import { useScreens } from '../../../AuthorizationContext';
 import env from '../../../env';
-import { useScreens } from '../../../ScreenContext';
 import './MultiSelectScreen.css';
 import './UserModal.css';
-import Swal from 'sweetalert2';
 
 function UserModal({ show, handleClose, user, setUpdated }) {
 
-  const { colorMode } = useColorModes('coreui-free-react-admin-template-theme');
-  React.useEffect(() => {
-    if (colorMode === 'auto') {
-      const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDarkMode) {
-        import(`primereact/resources/themes/lara-dark-indigo/theme.css`);
-      } else {
-        import(`primereact/resources/themes/lara-light-indigo/theme.css`);
-      }
-    } else if (colorMode === 'light') {
-      import('primereact/resources/themes/lara-light-indigo/theme.css');
-    } else if (colorMode === 'dark') {
-      import('primereact/resources/themes/lara-dark-indigo/theme.css');
-    }
-  }, [colorMode]);
-
-  // const [roles, setRoles] = useState([]);
-
+  const { screens } = useScreens();
   const [isEditing, setIsEditing] = useState(false);
+  const [nodes, setNodes] = useState(null);
+  const [selectedNodeKeys, setSelectedNodeKeys] = useState(null);
   const [formData, setFormData] = useState({
     password: user?.password,
     userId: {
       userId: user.userId
     }
   });
-  const [selectedScreens, setSelectedScreens] = useState(null);
-  const { screens } = useScreens();
-  // const [checkedCount, setCheckedCount] = useState(0);
 
   useEffect(() => {
-    // console.dir(user);
-    // Update formData when user data changes
-    let tempScreens = []; // need optimized
-    user?.accountDTO?.screenIds?.forEach(element => {
-      for (let screen of screens) {
-        if (screen.screenId === element.screenId) {
-          tempScreens.push(screen);
-          break;
-        };
-      }
-    });
-    setSelectedScreens(tempScreens);
-    setFormData({
-      password: user?.password,
-      userId: {
-        userId: user.userId
-      }
-    });
-    // const initialRoles = formData.roleOfDoanTruong ? [formData.roleOfDoanTruong] : [];
-    // setRoles(initialRoles);
-    // setCheckedCount(initialRoles.length);
+    apiClient.get(`/api/screens/get-all-tree-nodes`)
+      .then(response => setNodes(response.data.data))
+      .catch(error => console.error(error));
+  }, [])
+
+  useEffect(() => {
+    handleUserDataChanged();
   }, [user]);
 
-  // useEffect(() => {
-  //   // console.dir(selectedScreens);
-  //   // setFormData({ ...formData, screenIds: convertSelectedScreensToListScreens() });
-  //   // console.dir({ ...formData, screenIds: convertSelectedScreensToListScreens() });
-  // }, [selectedScreens]);
+  const handleUserDataChanged = () => {
+    let tempSelectedNodeKeys = {};
+    user?.accountDTO?.screenIds?.forEach(element => {
+      screens.forEach(ele => {
+        if (ele.screenId?.startsWith(element.screenId)) {
+          tempSelectedNodeKeys = {
+            ...tempSelectedNodeKeys,
+            [ele.screenId]: {
+              checked: true,
+              partialChecked: false
+            }
+          }
+        } else if (element.screenId?.startsWith(ele.screenId)) {
+          tempSelectedNodeKeys = {
+            ...tempSelectedNodeKeys,
+            [ele.screenId]: {
+              checked: false,
+              partialChecked: true
+            }
+          }
+        }
+      })
+    });
+    setSelectedNodeKeys(tempSelectedNodeKeys);
+    setFormData({
+      password: user?.password,
+      userId: user.userId
+    });
+  }
+
+  const getOptimizedSelectedNodes = () => {
+    if (!selectedNodeKeys) return [];
+    let partialCheckeds = [];
+    let keys = Object.keys(selectedNodeKeys);
+    for (let key of keys) {
+      let keyObj = selectedNodeKeys[key];
+      if (key === '*' && keyObj.checked) return ['*'];
+      if (!keyObj.checked && keyObj.partialChecked) {
+        partialCheckeds.push(key);
+      }
+    }
+    return keys?.map(key => {
+      if (selectedNodeKeys[key].checked
+        && partialCheckeds.some(element => key.startsWith(element)
+          && key.split('.').length - 1 === element.split('.').length))
+        return key;
+    }).filter(Boolean);
+  }
 
   const convertSelectedScreensToListScreens = () => {
-    return selectedScreens?.map(element => {
+    return getOptimizedSelectedNodes()?.map(key => {
       return {
         accountId: user?.accountDTO?.accountId,
-        screenId: element?.screenId
+        screenId: key
       }
     });
   }
@@ -89,36 +99,9 @@ function UserModal({ show, handleClose, user, setUpdated }) {
     }
   }
 
-  // const addChildScreens = (screen) => {
-  //   setSelectedScreens(screen);
-  //   screens.forEach(element => {
-  //     if (element.screenId.startsWith(screen.screenId)) {
-  //       // console.dir(element);
-  //       setSelectedScreens(element);
-  //     }
-  //   });
-  // }
-
-  // const handleCheck = (event) => {
-  //   const { id, checked } = event.target;
-  //   const roleId = parseInt(id.replace('check', ''), 10);
-
-  //   let newCheckedCount = checkedCount;
-
-  //   if (checked) {
-  //     newCheckedCount += 1;
-  //     setRoles([...roles, roleId]);
-  //   } else {
-  //     newCheckedCount -= 1;
-  //     setRoles(roles.filter(role => role !== roleId));
-  //   }
-
-  //   setCheckedCount(newCheckedCount);
-  // };
-
   const handleEditToggle = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
-  };
+    setIsEditing(!isEditing);
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -126,10 +109,10 @@ function UserModal({ show, handleClose, user, setUpdated }) {
       ...formData,
       [name]: value,
     });
-  };
+  }
 
   const handleSave = async () => {
-    setIsEditing(false); // Disable editing mode after saving
+    setIsEditing(false);
     const payload = getAccountPayload();
     Swal.fire({
       icon: 'question',
@@ -143,45 +126,39 @@ function UserModal({ show, handleClose, user, setUpdated }) {
       if (result.isConfirmed) {
         try {
           const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
-          setUpdated(response.data.data);
+          let timerInterval;
           Swal.fire({
-            icon: 'success',
-            title: 'Cập nhật thành công!'
+            title: "Vui lòng đợi xử lý thông tin!",
+            html: "Tự động đóng sau <b></b> mili giây.",
+            timer: 2000,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          }).then(() => {
+            setUpdated(response.data.data);
+            Swal.fire({
+              icon: 'success',
+              title: 'Cập nhật thành công!'
+            }).then(() => {
+              handleClose();
+            })
           });
         } catch (error) {
           console.error(error);
         }
       }
-    })
-    // try {
-    //   // console.dir(payload);
-    //   const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
-    //   // const response = await apiClient.put(`/api/accounts/199`, payload);
-    //   // console.dir(response.data);
-    //   setUpdated(response.data.data);
-    // } catch (error) {
-    //   console.error('Error update account:', error);
-    // }
-  };
-
-  // const rolesMapping = {
-  //   ROLE_ADMIN: "Admin",
-  //   ROLE_THUKY: "Thư ký",
-  //   ROLE_THUQUY: "Thủ quỹ",
-  //   ROLE_DOANTRUONG: "Đoàn trưởng",
-  //   ROLE_DOANTRUONG_OANHVUNAM: "Đoàn trưởng Oanh Vũ Nam",
-  //   ROLE_DOANTRUONG_OANHVUNU: "Đoàn trưởng Oanh Vũ Nữ",
-  //   ROLE_DOANTRUONG_THIEUNAM: "Đoàn trưởng Thiếu Nam",
-  //   ROLE_DOANTRUONG_THIEUNU: "Đoàn trưởng Thiếu Nữ",
-  //   ROLE_DOANTRUONG_NGANHTHANH: "Đoàn trưởng Ngành Thanh"
-  // };
-
-  // const handleGenderChange = (value) => {
-  //   setFormData({
-  //     ...formData,
-  //     gender: value ? "Male" : "Female",
-  //   });
-  // };
+    });
+  }
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -209,71 +186,26 @@ function UserModal({ show, handleClose, user, setUpdated }) {
           <input id="password" name="password" class="form-control" type="password" value={formData.password}
             onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
-          {/* <label for="exampleFormControlInput1">Email</label>
-          <input id="email" name="email" class="form-control" type="email" value={formData.email}
-            onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} /> */}
-
-
-          {/* <label>Giới Tính</label>
-
-          <div className="radio-group">
-            <label className="radio-inline">
-              <input type="radio" name="gender" value="Male"
-                checked={formData.gender === "Male"}
-                onChange={() => handleGenderChange(true)}
-                disabled={!isEditing} />
-              Nam
-            </label>
-            <label className="radio-inline">
-              <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"}
-                onChange={() => handleGenderChange(false)}
-                disabled={!isEditing} />
-              Nữ
-            </label>
-          </div> */}
-
           <label htmlFor="roles">Cấp quyền màn hình</label>
           <div className="card flex justify-content-center">
-            <MultiSelect
+            <TreeSelect
+              value={selectedNodeKeys}
               disabled={!isEditing}
-              value={selectedScreens}
-              options={screens}
-              onChange={(e) => setSelectedScreens(e.value)}
-              optionLabel="screenName"
-              placeholder="Chọn màn hình truy cập"
-              display="chip"
+              onChange={(e) => setSelectedNodeKeys(e.value)}
+              options={nodes}
+              metaKeySelection={false}
+              className="md:w-20rem w-full"
               filter
-              className="w-full md:w-20rem"
-              appendTo="self" // Ensure dropdown is within the modal
-            />
+              selectionMode="checkbox"
+              display="chip"
+              appendTo="self"
+              placeholder="Chọn màn hình">
+            </TreeSelect>
           </div>
-
-          {/* <label htmlFor="roles">Chức Vụ</label>
-          <div className="checkbox-container">
-            {Object.keys(rolesMapping).map(key => (
-              <div className="form-check" key={key}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id={`check${key}`}
-                  checked={roles.includes(key)}
-                  onChange={handleCheck}
-                  disabled={!isEditing || (checkedCount >= 2 && !roles.includes(key))}
-                />
-                <label className="form-check-label" htmlFor={`check${key}`}>
-                  {rolesMapping[key]}
-                </label>
-              </div>
-            ))}
-          </div> */}
-
-
           <label for="exampleFormControlInput1">Ngày tạo</label>
           <input id="registered" name="registered" class="form-control" type="date" value={user.registered}
             readOnly />
         </div>
-
       </Modal.Body>
       <Modal.Footer>
         <div className="footer-container">
@@ -282,14 +214,8 @@ function UserModal({ show, handleClose, user, setUpdated }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>
-              Save
-            </Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
-
-              Close
-            </Button>
+            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>Save</Button>
+            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>Close</Button>
           </div>
         </div>
       </Modal.Footer>

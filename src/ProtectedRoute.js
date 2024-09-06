@@ -2,7 +2,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { authorize } from '../GlobalVariable';
-import { useScreen } from './ScreenContext';
+import { useScreen } from './AuthorizationContext';
 
 const ProtectedRoute = ({ element: Component, requiredScreen }) => {
     const { screen } = useScreen();

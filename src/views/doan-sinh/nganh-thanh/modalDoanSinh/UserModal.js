@@ -22,7 +22,7 @@ function UserModal({show, handleClose, user, handleGenderChange }) {
       try {
         const response = await axios.get(`${env.apiUrl}/api/role/get-all`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         if (response.data.status === 'OK') {
@@ -44,7 +44,7 @@ function UserModal({show, handleClose, user, handleGenderChange }) {
       try {
         const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         if (response.data.status === 'OK') {
@@ -107,7 +107,7 @@ console.log(formData.tenchucvu1);
         const response = await axios.post(`${env.apiUrl}/api/file/upload-img?userId=${user.id}`, uploadData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           }
         });
         Swal.fire({
