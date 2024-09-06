@@ -33,7 +33,7 @@ const DSNganhThanh = () => {
       try {
         const response = await axios.get(`${env.apiUrl}/api/users/getListUserWithIDoan?doanId=1`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
@@ -41,7 +41,7 @@ const DSNganhThanh = () => {
           try {
             const imageResponse = await axios.get(`${env.apiUrl}/api/file/get-img?userId=${item.userId}&t=${Date.now()}`, {
               headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
               },
               responseType: 'blob', // Đảm bảo nhận về dạng blob
             });
@@ -148,7 +148,7 @@ const DSNganhThanh = () => {
             activeUser: newStatus === 'Active',
           },
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
   

@@ -100,7 +100,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
           await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bac_hoc_id=${idBacHoc}`, fileFormData, {
             headers: {
               'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
         } catch (fileUploadError) {
