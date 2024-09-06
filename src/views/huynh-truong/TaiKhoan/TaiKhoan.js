@@ -150,7 +150,7 @@ const getBadgeClass = (status) => {
   }
 }
 
-const DSNganhThanh = () => {
+const TaiKhoanHuynhTruong = () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -320,4 +320,4 @@ const DSNganhThanh = () => {
   )
 }
 
-export default DSNganhThanh
+export default TaiKhoanHuynhTruong
