@@ -17,8 +17,8 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import Swal from 'sweetalert2'
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'
+import apiClient from '../../apiClient'
 
 const ChangePass = ({ modalVisible, onCloseModal }) => {
     const [passwordType, setPasswordType] = useState('password');
@@ -56,7 +56,7 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
         }
     
         try {
-            const token = sessionStorage.getItem('token');
+            const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error("Token không tồn tại");
             }
@@ -65,13 +65,9 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
             const userId = decodedToken.user_id;
     
             // Gửi yêu cầu đổi mật khẩu đến API với token trong header
-            const response = await axios.post('/api/password-change-requests', {
+            const response = await apiClient.post('/api/password-change-requests', {
                 userId: userId,
                 newPassword: newPassword
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}` // Thêm token vào header
-                }
             });
     
             if (userId===1 || userId===2) {

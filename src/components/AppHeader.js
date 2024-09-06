@@ -20,10 +20,9 @@ import {
   cilSun,
 } from '@coreui/icons'
 import { jwtDecode } from 'jwt-decode'
-import axios from 'axios'
-
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import apiClient from '../apiClient'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -39,7 +38,7 @@ const AppHeader = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = sessionStorage.getItem('token')
+        const token = localStorage.getItem('token')
         if (!token) {
           throw new Error("Token không tồn tại")
         }
@@ -52,11 +51,7 @@ const AppHeader = () => {
         const url = isAdminUser
           ? `/api/notifications/admin/${userId}/unread`
           : `/api/notifications/user/${userId}/unread`
-
-        const response = await axios.get(url, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-
+        const response = await apiClient.get(url)
         setNotifications(response.data)
         setUnreadCount(response.data.length)
       } catch (error) {
@@ -69,10 +64,8 @@ const AppHeader = () => {
 
   const markAsRead = async (notificationId) => {
     try {
-      const token = sessionStorage.getItem('token')
-      await axios.post(`/api/notifications/${notificationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const token = localStorage.getItem('token')
+      await apiClient.post(`/api/notifications/${notificationId}/read`, {})
 
       setNotifications(notifications.filter(notification => notification.id !== notificationId))
       setUnreadCount(prev => prev - 1)

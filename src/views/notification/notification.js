@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2'; // Import SweetAlert2
 import {
@@ -16,6 +15,7 @@ import {
   CTableRow,
   CAlert
 } from '@coreui/react';
+import apiClient from '../../apiClient';
 
 const Notification = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,7 +25,7 @@ const Notification = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         if (!token) {
           throw new Error("Token không tồn tại");
         }
@@ -38,13 +38,7 @@ const Notification = () => {
         const endpoint = isAdminUser
           ? `/api/notifications/admin/${userId}`
           : `/api/notifications/user/${userId}`;
-
-        const response = await axios.get(endpoint, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        // Kiểm tra dữ liệu nhận được và đảm bảo `passwordChangeRequestId` có trong mỗi thông báo
-        console.log('Notifications:', response.data);
+        const response = await apiClient.get(endpoint);
         setNotifications(response.data);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -56,7 +50,7 @@ const Notification = () => {
 
   const fetchNotifications = async () => {
     try {
-      const token = sessionStorage.getItem('token');
+      const token = localStorage.getItem('token');
       if (!token) {
         throw new Error("Token không tồn tại");
       }
@@ -70,12 +64,7 @@ const Notification = () => {
         ? `/api/notifications/admin/${userId}`
         : `/api/notifications/user/${userId}`;
 
-      const response = await axios.get(endpoint, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // Kiểm tra dữ liệu nhận được và đảm bảo `passwordChangeRequestId` có trong mỗi thông báo
-      console.log('Notifications:', response.data);
+      const response = await apiClient.get(endpoint);
       setNotifications(response.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -89,10 +78,8 @@ const Notification = () => {
     }
 
     try {
-      const token = sessionStorage.getItem('token');
-      await axios.post(`/api/password-change-requests/approve/${passwordChangeRequestId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const token = localStorage.getItem('token');
+      await apiClient.post(`/api/password-change-requests/approve/${passwordChangeRequestId}`, {});
 
       // Hiển thị thông báo thành công và gọi lại API
       Swal.fire({
@@ -121,10 +108,8 @@ const Notification = () => {
     }
 
     try {
-      const token = sessionStorage.getItem('token');
-      await axios.post(`/api/password-change-requests/reject/${passwordChangeRequestId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const token = localStorage.getItem('token');
+      await apiClient.post(`/api/password-change-requests/reject/${passwordChangeRequestId}`, {});
 
       // Hiển thị thông báo thành công và gọi lại API
       Swal.fire({
