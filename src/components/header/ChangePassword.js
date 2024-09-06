@@ -17,10 +17,14 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import Swal from 'sweetalert2'
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'
 
 const ChangePass = ({ modalVisible, onCloseModal }) => {
     const [passwordType, setPasswordType] = useState('password');
     const [confirmPasswordType, setConfirmPasswordType] = useState('password');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const togglePasswordVisibility = () => {
         setPasswordType((prevType) => prevType === 'password' ? 'text' : 'password');
@@ -30,21 +34,77 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
         setConfirmPasswordType((prevType) => prevType === 'password' ? 'text' : 'password');
     }
 
-    const handleConfirmChange = () => {
-        // Hiển thị thông báo đang chờ xét duyệt
-        Swal.fire({
-            title: "Thông báo từ hệ thống!",
-            text: "Đang chờ được xét duyệt...",
-            icon: "info",
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            timer: 3000, // Tự động tắt sau 3 giây
-            timerProgressBar: true,
-        }).then(() => {
-            onCloseModal();  // Đóng modal đổi mật khẩu sau khi thông báo kết thúc
-        });
+    const handleConfirmChange = async () => {
+        if (!newPassword || !confirmPassword) {
+            Swal.fire({
+                title: "Lỗi!",
+                text: "Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu!",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            Swal.fire({
+                title: "Lỗi!",
+                text: "Mật khẩu và xác nhận mật khẩu không khớp!",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+            return;
+        }
+    
+        try {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                throw new Error("Token không tồn tại");
+            }
+    
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.user_id;
+    
+            // Gửi yêu cầu đổi mật khẩu đến API với token trong header
+            const response = await axios.post('/api/password-change-requests', {
+                userId: userId,
+                newPassword: newPassword
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Thêm token vào header
+                }
+            });
+    
+            if (userId===1 || userId===2) {
+                Swal.fire({
+                    title: "Thành công.",
+                    text: "Đổi mật khẩu thành công",
+                    icon: "success"
+                  });
+            }else{
+                Swal.fire({
+                    title: "Thông báo từ hệ thống!",
+                    text: "Đang chờ được xét duyệt, vào phần thông báo để chờ phản hồi từ admin...",
+                    icon: "info",
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                }).then(() => {
+                    onCloseModal();
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: "Lỗi!",
+                text: "Không thể gửi yêu cầu đổi mật khẩu!",
+                icon: "error",
+                confirmButtonText: "OK"
+            });
+        }
     }
+    
+    
 
     return (
         <>
@@ -60,6 +120,8 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
                                 type={passwordType}
                                 id="newPassword"
                                 placeholder="Nhập mật khẩu mới"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
                             />
                             <CInputGroupText onClick={togglePasswordVisibility}>
                                 <CIcon icon={passwordType === 'password' ? cilLowVision : cilXCircle} />
@@ -74,6 +136,8 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
                                 type={confirmPasswordType}
                                 id="confirmPassword"
                                 placeholder="Xác nhận mật khẩu mới"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                             />
                             <CInputGroupText onClick={toggleConfirmPasswordVisibility}>
                                 <CIcon icon={confirmPasswordType === 'password' ? cilLowVision : cilXCircle} />
