@@ -1,76 +1,377 @@
-import 'primeicons/primeicons.css';
-import { MultiSelect } from 'primereact/multiselect';
-import 'primereact/resources/primereact.css';
-import 'primereact/resources/themes/lara-dark-indigo/theme.css';
-import React, { useEffect, useState } from 'react';
-import './MultiSelectScreen.css';
-import { useScreens } from '../../../ScreenContext';
+// export const NodeService = {
+//   getTreeNodesData() {
+//     return [
+//       {
+//         key: 'doan-sinh',
+//         label: 'Danh sách đoàn sinh',
+//         children: [
+//           {
+//             key: 'doan-sinh.doan-thieu-nam',
+//             label: 'Đoàn Thiếu Nam',
+//             children: []
+//           }]
+//       }
+//     ];
+//   },
 
+//   getTreeTableNodesData() {
+//     return [
+//       {
+//         key: '0',
+//         data: {
+//           name: 'Applications',
+//           size: '100kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '0-0',
+//             data: {
+//               name: 'React',
+//               size: '25kb',
+//               type: 'Folder'
+//             },
+//             children: [
+//               {
+//                 key: '0-0-0',
+//                 data: {
+//                   name: 'react.app',
+//                   size: '10kb',
+//                   type: 'Application'
+//                 }
+//               },
+//               {
+//                 key: '0-0-1',
+//                 data: {
+//                   name: 'native.app',
+//                   size: '10kb',
+//                   type: 'Application'
+//                 }
+//               },
+//               {
+//                 key: '0-0-2',
+//                 data: {
+//                   name: 'mobile.app',
+//                   size: '5kb',
+//                   type: 'Application'
+//                 }
+//               }
+//             ]
+//           },
+//           {
+//             key: '0-1',
+//             data: {
+//               name: 'editor.app',
+//               size: '25kb',
+//               type: 'Application'
+//             }
+//           },
+//           {
+//             key: '0-2',
+//             data: {
+//               name: 'settings.app',
+//               size: '50kb',
+//               type: 'Application'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '1',
+//         data: {
+//           name: 'Cloud',
+//           size: '20kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '1-0',
+//             data: {
+//               name: 'backup-1.zip',
+//               size: '10kb',
+//               type: 'Zip'
+//             }
+//           },
+//           {
+//             key: '1-1',
+//             data: {
+//               name: 'backup-2.zip',
+//               size: '10kb',
+//               type: 'Zip'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '2',
+//         data: {
+//           name: 'Desktop',
+//           size: '150kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '2-0',
+//             data: {
+//               name: 'note-meeting.txt',
+//               size: '50kb',
+//               type: 'Text'
+//             }
+//           },
+//           {
+//             key: '2-1',
+//             data: {
+//               name: 'note-todo.txt',
+//               size: '100kb',
+//               type: 'Text'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '3',
+//         data: {
+//           name: 'Documents',
+//           size: '75kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '3-0',
+//             data: {
+//               name: 'Work',
+//               size: '55kb',
+//               type: 'Folder'
+//             },
+//             children: [
+//               {
+//                 key: '3-0-0',
+//                 data: {
+//                   name: 'Expenses.doc',
+//                   size: '30kb',
+//                   type: 'Document'
+//                 }
+//               },
+//               {
+//                 key: '3-0-1',
+//                 data: {
+//                   name: 'Resume.doc',
+//                   size: '25kb',
+//                   type: 'Resume'
+//                 }
+//               }
+//             ]
+//           },
+//           {
+//             key: '3-1',
+//             data: {
+//               name: 'Home',
+//               size: '20kb',
+//               type: 'Folder'
+//             },
+//             children: [
+//               {
+//                 key: '3-1-0',
+//                 data: {
+//                   name: 'Invoices',
+//                   size: '20kb',
+//                   type: 'Text'
+//                 }
+//               }
+//             ]
+//           }
+//         ]
+//       },
+//       {
+//         key: '4',
+//         data: {
+//           name: 'Downloads',
+//           size: '25kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '4-0',
+//             data: {
+//               name: 'Spanish',
+//               size: '10kb',
+//               type: 'Folder'
+//             },
+//             children: [
+//               {
+//                 key: '4-0-0',
+//                 data: {
+//                   name: 'tutorial-a1.txt',
+//                   size: '5kb',
+//                   type: 'Text'
+//                 }
+//               },
+//               {
+//                 key: '4-0-1',
+//                 data: {
+//                   name: 'tutorial-a2.txt',
+//                   size: '5kb',
+//                   type: 'Text'
+//                 }
+//               }
+//             ]
+//           },
+//           {
+//             key: '4-1',
+//             data: {
+//               name: 'Travel',
+//               size: '15kb',
+//               type: 'Text'
+//             },
+//             children: [
+//               {
+//                 key: '4-1-0',
+//                 data: {
+//                   name: 'Hotel.pdf',
+//                   size: '10kb',
+//                   type: 'PDF'
+//                 }
+//               },
+//               {
+//                 key: '4-1-1',
+//                 data: {
+//                   name: 'Flight.pdf',
+//                   size: '5kb',
+//                   type: 'PDF'
+//                 }
+//               }
+//             ]
+//           }
+//         ]
+//       },
+//       {
+//         key: '5',
+//         data: {
+//           name: 'Main',
+//           size: '50kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '5-0',
+//             data: {
+//               name: 'bin',
+//               size: '50kb',
+//               type: 'Link'
+//             }
+//           },
+//           {
+//             key: '5-1',
+//             data: {
+//               name: 'etc',
+//               size: '100kb',
+//               type: 'Link'
+//             }
+//           },
+//           {
+//             key: '5-2',
+//             data: {
+//               name: 'var',
+//               size: '100kb',
+//               type: 'Link'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '6',
+//         data: {
+//           name: 'Other',
+//           size: '5kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '6-0',
+//             data: {
+//               name: 'todo.txt',
+//               size: '3kb',
+//               type: 'Text'
+//             }
+//           },
+//           {
+//             key: '6-1',
+//             data: {
+//               name: 'logo.png',
+//               size: '2kb',
+//               type: 'Picture'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '7',
+//         data: {
+//           name: 'Pictures',
+//           size: '150kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '7-0',
+//             data: {
+//               name: 'barcelona.jpg',
+//               size: '90kb',
+//               type: 'Picture'
+//             }
+//           },
+//           {
+//             key: '7-1',
+//             data: {
+//               name: 'primeng.png',
+//               size: '30kb',
+//               type: 'Picture'
+//             }
+//           },
+//           {
+//             key: '7-2',
+//             data: {
+//               name: 'prime.jpg',
+//               size: '30kb',
+//               type: 'Picture'
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         key: '8',
+//         data: {
+//           name: 'Videos',
+//           size: '1500kb',
+//           type: 'Folder'
+//         },
+//         children: [
+//           {
+//             key: '8-0',
+//             data: {
+//               name: 'primefaces.mkv',
+//               size: '1000kb',
+//               type: 'Video'
+//             }
+//           },
+//           {
+//             key: '8-1',
+//             data: {
+//               name: 'intro.avi',
+//               size: '500kb',
+//               type: 'Video'
+//             }
+//           }
+//         ]
+//       }
+//     ];
+//   },
 
-export function FilterDemo({ isEditable, selectedScreens, setSelectedScreens }) {
+//   getTreeTableNodes() {
+//     return Promise.resolve(this.getTreeTableNodesData());
+//   },
 
-  useEffect(() => {
-    // console.dir(selectedScreens);
-  }, [isEditable]);
-
-  const { screens } = useScreens();
-
-  // const screens = [
-  //   { name: 'Bậc Học', code: 'bac-hoc' },
-  //   { name: 'Chức Vụ', code: 'chuc-vu' },
-  //   { name: 'Danh Sách Đoàn Sinh', code: 'doan-sinh' },
-  //   { name: 'Đoàn Oanh Vũ Nam', code: 'doan-sinh.doan-oanh-vu-nam' },
-  //   { name: 'Danh Sách', code: 'doan-sinh.doan-oanh-vu-nam.danh-sach' },
-  //   { name: 'Điểm Danh', code: 'doan-sinh.doan-oanh-vu-nam.diem-danh' },
-  //   { name: 'Đoàn Phả', code: 'doan-sinh.doan-oanh-vu-nam.doan-pha' },
-  //   { name: 'Quỹ Đoàn', code: 'doan-sinh.doan-oanh-vu-nam.quy-doan' },
-  //   { name: 'Đoàn Oanh Vũ Nữ', code: 'doan-sinh.doan-oanh-vu-nu' },
-  //   { name: 'Danh Sách', code: 'doan-sinh.doan-oanh-vu-nu.danh-sach' },
-  //   { name: 'Điểm Danh', code: 'doan-sinh.doan-oanh-vu-nu.diem-danh' },
-  //   { name: 'Đoàn Phả', code: 'doan-sinh.doan-oanh-vu-nu.doan-pha' },
-  //   { name: 'Quỹ Đoàn', code: 'doan-sinh.doan-oanh-vu-nu.quy-doan' },
-  //   { name: 'Đoàn Thiếu Nam', code: 'doan-sinh.doan-thieu-nam' },
-  //   { name: 'Danh Sách', code: 'doan-sinh.doan-thieu-nam.danh-sach' },
-  //   { name: 'Điểm Danh', code: 'doan-sinh.doan-thieu-nam.diem-danh' },
-  //   { name: 'Đoàn Phả', code: 'doan-sinh.doan-thieu-nam.doan-pha' },
-  //   { name: 'Quỹ Đoàn', code: 'doan-sinh.doan-thieu-nam.quy-doan' },
-  //   { name: 'Đoàn Thiếu Nữ', code: 'doan-sinh.doan-thieu-nu' },
-  //   { name: 'Danh Sách', code: 'doan-sinh.doan-thieu-nu.danh-sach' },
-  //   { name: 'Điểm Danh', code: 'doan-sinh.doan-thieu-nu.diem-danh' },
-  //   { name: 'Đoàn Phả', code: 'doan-sinh.doan-thieu-nu.doan-pha' },
-  //   { name: 'Quỹ Đoàn', code: 'doan-sinh.doan-thieu-nu.quy-doan' },
-  //   { name: 'Ngành Thanh', code: 'doan-sinh.nganh-thanh' },
-  //   { name: 'Danh Sách', code: 'doan-sinh.nganh-thanh.danh-sach' },
-  //   { name: 'Điểm Danh', code: 'doan-sinh.nganh-thanh.diem-danh' },
-  //   { name: 'Đoàn Phả', code: 'doan-sinh.nganh-thanh.doan-pha' },
-  //   { name: 'Quỹ Đoàn', code: 'doan-sinh.nganh-thanh.quy-doan' },
-  //   { name: 'File Lưu Trữ', code: 'file-luu-tru' },
-  //   { name: 'Hệ Thống', code: 'he-thong' },
-  //   { name: 'Huynh Trưởng', code: 'huynh-truong' },
-  //   { name: 'Chức Vụ', code: 'huynh-truong.chuc-vu' },
-  //   { name: 'Danh Sách', code: 'huynh-truong.danh-sach' },
-  //   { name: 'Tài Khoản', code: 'huynh-truong.tai-khoan' },
-  //   { name: 'Quản Lý', code: 'quan-ly' },
-  //   { name: 'Quỹ Gia Đình', code: 'quy-gia-dinh' },
-  //   { name: 'Tài Liệu', code: 'tai-lieu' },
-  //   { name: 'Thông Báo', code: 'thong-bao' },
-  //   { name: 'Trang Chủ', code: 'trang-chu' },
-  // ];
-
-  return (
-    <div className="card flex justify-content-center">
-      <MultiSelect
-        disabled={!isEditable}
-        value={selectedScreens}
-        options={screens}
-        onChange={(e) => setSelectedScreens(e.value)}
-        optionLabel="screenName"
-        placeholder="Chọn màn hình truy cập"
-        display="chip"
-        filter
-        className="w-full md:w-20rem"
-        appendTo="self" // Ensure dropdown is within the modal
-      />
-    </div>
-  );
-}
+//   getTreeNodes() {
+//     return Promise.resolve(this.getTreeNodesData());
+//   }
+// };

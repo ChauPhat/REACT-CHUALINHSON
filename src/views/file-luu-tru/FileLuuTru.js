@@ -10,8 +10,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { authorizeRole } from '../../AuthorizationContext';
 import env from '../../env';
-import { authorizeRole } from '../../ScreenContext';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../table/Table';
 
@@ -20,8 +20,6 @@ const formatDate = (dateString) => {
     const [day, month, year] = dateString.split('-').map(Number)
     return new Date(year, month - 1, day)
 }
-
-
 
 const FileLuuTru = () => {
     const MySwal = withReactContent(Swal);
@@ -58,7 +56,6 @@ const FileLuuTru = () => {
         }
     };
 
-
     const filteredData = fileData.filter((user) => {
         const registeredDate = formatDate(user.registered);
         const searchDate = searchRegistered ? searchRegistered.split('-') : [];
@@ -94,7 +91,6 @@ const FileLuuTru = () => {
             (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
         );
     });
-
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen)
@@ -274,8 +270,7 @@ const FileLuuTru = () => {
         </>
     );
 
-    const currentUser = JSON.parse(localStorage.getItem('user'));
-    const isAllowed = authorizeRole(["Thư Ký"], [currentUser?.role_name1, currentUser?.role_name2]);
+    const isAuthorized = authorizeRole(["Thư Ký"]);
 
     return (
         <div>
@@ -285,7 +280,7 @@ const FileLuuTru = () => {
                         <h3>File lưu trữ</h3>
                     </CCol>
                     <CCol className="d-flex justify-content-end">
-                        {isAllowed && <CButton  variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
+                        {isAuthorized && <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
                     </CCol>
                 </CRow>
 

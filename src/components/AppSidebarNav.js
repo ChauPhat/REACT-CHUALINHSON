@@ -6,12 +6,9 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
-import { authorize } from '../GlobalVariable'
-import { authorizeScreen, useScreen } from '../ScreenContext'
+import { authorize } from '../AuthorizationContext'
 
 export const AppSidebarNav = ({ items }) => {
-
-  const { screen } = useScreen();
 
   const navLink = (name, icon, badge, indent = false) => {
     return (
@@ -55,7 +52,7 @@ export const AppSidebarNav = ({ items }) => {
     return (
       <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
         {item.items?.map((item, index) =>
-          !(!item?.screen_id || authorizeScreen(item.screen_id, screen)) ? null : item.items ? navGroup(item, index) : navItem(item, index, true),
+          !(authorize(item?.screen_id, item?.role)) ? null : item.items ? navGroup(item, index) : navItem(item, index, true),
         )}
       </Component>
     )
@@ -64,7 +61,7 @@ export const AppSidebarNav = ({ items }) => {
   return (
     <CSidebarNav as={SimpleBar}>
       {items &&
-        items.map((item, index) => (!(!item?.screen_id || authorizeScreen(item.screen_id, screen)) ? null : item.items ? navGroup(item, index) : navItem(item, index)))}
+        items.map((item, index) => (!(authorize(item?.screen_id, item?.role)) ? null : item.items ? navGroup(item, index) : navItem(item, index)))}
     </CSidebarNav>
   )
 }
