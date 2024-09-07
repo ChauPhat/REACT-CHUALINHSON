@@ -1,62 +1,112 @@
-import React, { useState } from 'react'
 import {
-    CBadge,
-    CFormSelect,
-    CAvatar,
-    CTable,
-    CTableBody,
-    CTableDataCell,
-    CTableHead,
-    CTableHeaderCell,
-    CTableRow,
-    CContainer,
-    CRow,
-    CPagination,
-    CPaginationItem,
-    CForm,
-    CFormInput,
     CButton,
     CCol,
-} from '@coreui/react'
-import Table from '../../table/Table'
+    CFormInput,
+    CFormSelect,
+    CRow,
+    CTableDataCell
+} from '@coreui/react';
+import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import Swal from 'sweetalert2';
+import apiClient from '../../../apiClient';
+import env from '../../../env';
+import Table from '../../table/Table';
+import '../DoanSinhCss/DanhSach.css';
 import './DiemDanh.css';
-import '../DoanSinhCss/DanhSach.css'
 
 const DDNganhThanh = () => {
-    // Dữ liệu mẫu
-    const [data, setData] = useState([
-        { ishd_id: 1, doan_id: 101, user_update: 1001, ngay_sinh_hoat: "2024-08-20", nam: 2024, stt_tuan: 1 },
-        { ishd_id: 2, doan_id: 102, user_update: 1002, ngay_sinh_hoat: "2024-08-27", nam: 2024, stt_tuan: 2 },
-        { ishd_id: 3, doan_id: 103, user_update: 1003, ngay_sinh_hoat: "2024-09-03", nam: 2024, stt_tuan: 3 },
-        { ishd_id: 4, doan_id: 104, user_update: 1004, ngay_sinh_hoat: "2024-09-10", nam: 2024, stt_tuan: 4 },
-        { ishd_id: 5, doan_id: 105, user_update: 1005, ngay_sinh_hoat: "2024-09-17", nam: 2024, stt_tuan: 5 },
-        { ishd_id: 6, doan_id: 106, user_update: 1006, ngay_sinh_hoat: "2024-08-20", nam: 2024, stt_tuan: 6 },
-        { ishd_id: 7, doan_id: 107, user_update: 1007, ngay_sinh_hoat: "2024-08-27", nam: 2024, stt_tuan: 7 },
-        { ishd_id: 8, doan_id: 108, user_update: 1008, ngay_sinh_hoat: "2024-09-03", nam: 2024, stt_tuan: 8 },
-        { ishd_id: 9, doan_id: 109, user_update: 1009, ngay_sinh_hoat: "2024-09-10", nam: 2024, stt_tuan: 9 },
-        { ishd_id: 10, doan_id: 110, user_update: 1010, ngay_sinh_hoat: "2024-09-17", nam: 2024, stt_tuan: 10 }
-        // Thêm dữ liệu mẫu nếu cần
-    ]);
-
     const [searchTerm, setSearchTerm] = useState({
         tuan: '',
         ngaySinhHoat: '',
         nam: ''
     });
     const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 4 }, (_, index) => currentYear + index);  
+    const years = Array.from({ length: 4 }, (_, index) => currentYear + index);
+    const [doanId, setDoanId] = useState(5);
+    const [lichSinhHoatDoan, setLichSinhHoatDoan] = useState([]);
+    const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [selectedLichSinhHoatDoan, setSelectedLichSinhHoatDoan] = useState();
+
+    const handleYearChange = (event) => {
+        setSelectedYear(event.target.value);
+    };
+
+    const addLichSinhHoatDoan = () => {
+        Swal.fire({
+            icon: 'question',
+            title: `Bạn có muốn tạo lịch sinh hoạt năm ${selectedYear} cho đoàn này?`,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await apiClient.post(`/api/lichSinhHoatDoan/tao_lich_sinh_hoat`, null, {
+                        params: {
+                            doan_id: doanId,
+                            year: selectedYear
+                        }
+                    });
+                    let timerInterval;
+                    Swal.fire({
+                        title: "Vui lòng đợi xử lý thông tin!",
+                        html: "Tự động đóng sau <b></b> mili giây.",
+                        timer: 2000,
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            getLichSinhHoatDoan();
+                            Swal.showLoading();
+                            const timer = Swal.getPopup().querySelector("b");
+                            timerInterval = setInterval(() => {
+                                timer.textContent = `${Swal.getTimerLeft()}`;
+                            }, 100);
+                        },
+                        willClose: () => {
+                            clearInterval(timerInterval);
+                        }
+                    }).then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.data.message
+                        })
+                    });
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        })
+    }
+
+    useEffect(() => {
+        getLichSinhHoatDoan();
+    }, [])
+
+    const getLichSinhHoatDoan = () => {
+        apiClient.get(`/api/lichSinhHoatDoan/tim_kiem_theo_doan_id?`, {
+            params: {
+                doanId: doanId
+            }
+        }).then(response => {
+            setLichSinhHoatDoan(response.data.data);
+        }).catch(error => {
+            console.error(error);
+        })
+    }
 
     const formatDate = (dateString) => {
         const [year, month, day] = dateString.split("-");
         return `${day}-${month}-${year}`;
     };
 
-    // Hàm lọc dữ liệu dựa trên tìm kiếm
-    const filteredData = data.filter(item => {
-        const formattedDate = formatDate(item.ngay_sinh_hoat); 
-
+    const filteredData = lichSinhHoatDoan?.filter(item => {
+        const formattedDate = formatDate(item.ngaySinhHoat);
         return (
-            (searchTerm.tuan === '' || item.stt_tuan.toString().includes(searchTerm.tuan)) &&
+            (searchTerm.tuan === '' || item.sttTuan.toString().includes(searchTerm.tuan)) &&
             (searchTerm.ngaySinhHoat === '' || formattedDate.includes(searchTerm.ngaySinhHoat)) &&
             (searchTerm.nam === '' || item.nam.toString().includes(searchTerm.nam))
         );
@@ -90,288 +140,213 @@ const DDNganhThanh = () => {
         ''
     ];
 
+    const checkDiemDanhDTOS = (item) => {
+        var tempFormData = {};
+        let userId = JSON.parse(localStorage.getItem('user'))?.user_id;
+        item.diemDanhDTOS.forEach(diemDanhDTO => {
+            tempFormData = {
+                ...tempFormData,
+                [diemDanhDTO.diemDanhId]: {
+                    diemDanhId: diemDanhDTO.diemDanhId,
+                    coMat: diemDanhDTO.coMat,
+                    lichSinhHoatDoanId: diemDanhDTO.lichSinhHoatDoanId,
+                    userUpdate: userId,
+                    doanSinhDetailId: diemDanhDTO.doanSinhDetailDTO.doanSinhDetailId
+                }
+            }
+        });
+        setFormData(tempFormData);
+        if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
+            setSelectedLichSinhHoatDoan(item)
+        } else {
+            apiClient.put(`/api/lichSinhHoatDoan/updateDiemDanh/${item.lichSinhHoatDoanId}`)
+                .then(response => {
+                    getLichSinhHoatDoan();
+                    setSelectedLichSinhHoatDoan(response.data.data);
+                })
+                .catch(error => {
+                    console.error(error);
+                })
+        }
+    }
+
+    const [formData, setFormData] = useState({});
+
+    const handleCoMatChange = (checked, diemDanhDTO) => {
+        setFormData({
+            ...formData,
+            [diemDanhDTO.diemDanhId]: {
+                ...formData[diemDanhDTO.diemDanhId],
+                coMat: checked
+            }
+        });
+    }
+
+    const getFormData = () => {
+        var keys = Object.keys(formData);
+        return keys?.map(key => {
+            return {
+                diemDanhId: key,
+                coMat: formData[key].coMat,
+                lichSinhHoatDoanId: formData[key].lichSinhHoatDoanId,
+                userUpdate: formData[key].userUpdate,
+                doanSinhDetailId: formData[key].doanSinhDetailId
+            }
+        })
+    }
+
+    const handleSaveDiemDanh = async () => {
+        try {
+            handleEditToggle();
+            const payload = getFormData();
+            const response = await apiClient.post(`/api/diem_danh/luu_hoac_cap_nhat_diem_danh`, payload);
+            let timerInterval;
+            Swal.fire({
+                title: "Vui lòng đợi xử lý thông tin!",
+                html: "Tự động đóng sau <b></b> mili giây.",
+                timer: 2000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    getLichSinhHoatDoan();
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                        timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Điểm danh thành công!'
+                }).then(() => {
+                    handleClose();
+                })
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    const [isEditing, setIsEditing] = useState(false);
+    const handleEditToggle = () => {
+        setIsEditing(!isEditing);
+    }
     const renderRow = (item) => (
         <>
-            <CTableDataCell>{item.stt_tuan}</CTableDataCell>
-            <CTableDataCell>{formatDate(item.ngay_sinh_hoat)}</CTableDataCell>
+            <CTableDataCell>{item.sttTuan}</CTableDataCell>
+            <CTableDataCell>{formatDate(item.ngaySinhHoat)}</CTableDataCell>
             <CTableDataCell>{item.nam}</CTableDataCell>
             <CTableDataCell>
-                <CButton color="info" variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <CButton color="info"
+                    disabled={getTodayDateString() !== item.ngaySinhHoat}
+                    onClick={() => { checkDiemDanhDTOS(item); setShow(true); }}
+                    variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Điểm danh
                 </CButton>
             </CTableDataCell>
         </>
     );
+    const getTodayDateString = () => {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => {
+        setShow(false);
+        setIsEditing(false);
+    }
 
     return (
         <div className="container-fluid">
             <CRow className="mb-3 d-flex">
-            <CCol className="d-flex align-items-center flex-grow-1">
-            <h3>Danh sách Đoàn Sinh</h3>
-            </CCol>
-            <CCol className="d-flex justify-content-end">
-            <CFormSelect className="small-select me-2" 
-                style={{ width: 'auto' }}aria-label="Chọn năm" >
-                {years.map((year) => (
-                <option key={year} value={year}>{year}
-                </option>
-              ))}
-            </CFormSelect>
-                <CButton color="secondary">Thêm</CButton>
+                <CCol className="d-flex align-items-center flex-grow-1">
+                    <h3>Lịch sinh hoạt đoàn Ngành Thanh</h3>
+                </CCol>
+                <CCol className="d-flex justify-content-end">
+                    <CFormSelect className="small-select me-2" onChange={handleYearChange}
+                        style={{ width: 'auto' }} aria-label="Chọn năm" >
+                        {years.map((year) => (
+                            <option key={year} value={year}>{year}
+                            </option>
+                        ))}
+                    </CFormSelect>
+                    <CButton color="secondary" onClick={addLichSinhHoatDoan}>Thêm</CButton>
                 </CCol>
             </CRow>
 
             <Table
                 headers={headers}
                 headerCells={headerCells}
-                items={filteredData}
+                items={filteredData || []}
                 renderRow={renderRow}
                 searchCriteria={{ searchTerm }}
             />
 
-            {/* Modal */}
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-scrollable">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Điểm danh</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className='table-responsive'>
-                            <table className='table table-border table-striped table-hover'>
-                                <thead>
-                                    <tr className=' align-items-center'>
-                                        <th className='fixed-width-column'>Ảnh</th>
-                                        <th className='fixed-width-column'>Tên</th>
-                                        <th className='fixed-width-column'>Ngày sinh hoạt</th>
-                                        <th className='fixed-width-column'>Đoàn</th>
-                                        <th className='fixed-width-column'>Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr className='align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td className='fixed-width-column'>Người dùng</td>
-                                        <td className='fixed-width-column'>27-08-2004</td>
-                                        <td className='fixed-width-column'>Ngành Thanh</td>
-                                        <td className=''>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr className=' align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr className='  align-items-center'>
-                                        <td>
-                                            <img
-                                                src="/src/assets/images/avatars/8.jpg"
-                                                alt="Ảnh"
-                                                className="rounded-image"
-                                                width="50"
-                                                height="50"
-                                            />
-                                        </td>
-                                        <td>Người dùng</td>
-                                        <td>27-08-2004</td>
-                                        <td>Ngành Thanh</td>
-                                        <td className=' '>
-                                            <div className="checkbox-con">
-                                                <input id="checkbox" type="checkbox"></input>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Thoát</button>
-                            <button type="button" className="btn btn-primary">Lưu</button>
-                        </div>
+            <Modal show={show} onHide={handleClose} centered className='modal-lg'>
+                <Modal.Header closeButton>
+                    <Modal.Title className="modal-title">Điểm danh</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className='table-responsive'>
+                        <table className='table table-border table-striped table-hover'>
+                            <thead>
+                                <tr className=' align-items-center'>
+                                    <th >Ảnh</th>
+                                    <th >Tên</th>
+                                    <th >Ngày sinh hoạt</th>
+                                    <th >Đoàn</th>
+                                    <th >Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
+                                        let doanSinh = element.doanSinhDetailDTO;
+                                        return (<tr className='align-items-center'>
+                                            <td>
+                                                <img
+                                                    src={`${env.apiUrl}/api/file/get-img?userId=${doanSinh.userId}&t=${Date.now()}`}
+                                                    alt="Ảnh"
+                                                    className="rounded-image"
+                                                    width="50"
+                                                    height="50"
+                                                />
+                                            </td>
+                                            <td>{doanSinh.hoTen}</td>
+                                            <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
+                                            <td>{doanSinh.tenDoan}</td>
+                                            <td className=''>
+                                                <div className="checkbox-con">
+                                                    <input
+                                                        id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                                                        checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}></input>
+                                                </div>
+                                            </td>
+                                        </tr>);
+                                    })
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            </div>
-
+                </Modal.Body>
+                <Modal.Footer>
+                    <div className="form-check form-switch" >
+                        <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked={isEditing} onChange={handleEditToggle} />
+                        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
+                    </div>
+                    <div className="footer-buttons">
+                        <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
+                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

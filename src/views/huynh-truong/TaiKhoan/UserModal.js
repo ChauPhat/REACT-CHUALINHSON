@@ -111,7 +111,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
     });
   }
 
-  const handleSave = async () => {
+  const handleSave = () => {
     setIsEditing(false);
     const payload = getAccountPayload();
     Swal.fire({
