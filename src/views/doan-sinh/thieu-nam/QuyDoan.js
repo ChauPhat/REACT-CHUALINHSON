@@ -63,16 +63,16 @@ const QuyGD = () => {
 
     const fetchFundData = async () => {
         try {
-            const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?quyDoanId=5`, {
+            const response = await axios.get(`${env.apiUrl}/api/quydoan/getLichSuQuyDoan?quyDoanId=3`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
             const apiData = response.data.data;
-            // console.log(apiData);
+            console.log(apiData);
 
             const formattedData = apiData.flatMap((fund) =>
-                fund.lichSuQuyDoans.map((item) => ({
+                fund.lichSuQuyDoanDTOS.map((item) => ({
                     lichSuQuyDoanId: item.lichSuQuyDoanId,
                     tenThuChi: item.tenThuChi || 'Chưa có tên quỹ',
                     moTa: item.moTa || 'Không có mô tả',
@@ -84,7 +84,7 @@ const QuyGD = () => {
             );
 
             const uniqueYears = [...new Set(apiData.flatMap((fund) =>
-                fund.lichSuQuyDoans.map((item) => item.year)
+                fund.lichSuQuyDoanDTOS.map((item) => item.year)
             ))].sort((a, b) => b - a);
 
             setFundData(formattedData);
@@ -111,12 +111,13 @@ const QuyGD = () => {
 
         filteredData.forEach(item => {
             const amount = item.soTien || 0;
-            totalAmount += amount;
 
             if (item.thuOrChi) {
                 totalIncome += amount;
+                totalAmount += amount;
             } else {
                 totalExpense += amount;
+                totalAmount -= amount;
             }
         });
 
@@ -157,12 +158,33 @@ const QuyGD = () => {
             });
             return;
         }
-        newFund.quyDoanId = 5;
-        newFund.doanId = 5;
+        if (newFund.soTien < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải lớn hơn hoặc bằng 0.',
+                showConfirmButton: true,
+            });
+            r
+            return;
+        }
+        if (isNaN(newFund.soTien)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải là số.',
+                showConfirmButton: true,
+            });
+            return;
+        }
+
+        newFund.quyDoanId = 3;
         newFund.quy = parseInt(newFund.quy);
-        newFund.userId = null;
+        let user = localStorage.getItem('user');
+        let userObj = JSON.parse(user);
+        newFund.userId = userObj.user_id;
         newFund.soTien = parseInt(newFund.soTien);
-        // console.log(newFund);
+        console.log(newFund);
         try {
             await axios.post(`${env.apiUrl}/api/lichsuquydoan/insertLichSuQuyDoan`, newFund, {
                 headers: {
