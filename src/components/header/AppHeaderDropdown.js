@@ -27,6 +27,7 @@ import axios from 'axios';
 import ChangePass from './ChangePassword'
 import React, { useEffect, useRef, useState } from 'react'
 import apiClient from '../../apiClient'
+import { data } from 'autoprefixer';
 
 
 
@@ -70,45 +71,53 @@ const AppHeaderDropdown = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Token not found');
+          return;
+        }
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.user_id;
-        setImageUrl(`${env.apiUrl}/api/file/get-img?userId=${userId}&t=${Date.now()}`)
+        setIdUser(userId);
+        const response = await apiClient.get('/api/file/get-img', {
+          params: { userid: userId }
+        });
+        if (response.status === 200) {
+          const newImageUrl = response.data.data;
+          setImageUrl(newImageUrl);
+        } else {
+          console.error('Failed to fetch image URL, status:', response.status);
+        }
       } catch (error) {
-        console.error('Error fetching image:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
   }, []);
 
-
   const handleProfileClick = async () => {
     setModalVisible(true);
-
     try {
       const token = localStorage.getItem('token');
-      // Giải mã token để lấy user_id
+      if (!token) {
+        console.error('Token not found');
+        return;
+      }
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
       setIdUser(userId);
-
-      const response = await fetch(`${env.apiUrl}/api/users/get_thong_tin_doan_sinh?user_id=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+      const response = await apiClient.get(`/api/users/get_thong_tin_doan_sinh`, {
+        params: { user_id: userId }
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserProfile(data.data);
+      if (response.status === 200) {
+        setUserProfile(response.data.data);
       } else {
-        console.error('Failed to load profile');
+        console.error('Failed to load profile, status:', response.status);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error occurred while fetching profile:', error);
     }
-  }
+  };
 
   const handleCloseModal = () => {
     setModalVisible(false)
@@ -145,59 +154,95 @@ const AppHeaderDropdown = () => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-
+    
         const tempImageUrl = URL.createObjectURL(file); // Tạo URL tạm thời cho hình ảnh
-
+    
         axios.post(`${env.apiUrl}/api/file/upload-img?userId=${iduser}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm Authorization header
           }
         })
-          .then(response => {
-            let timerInterval;
-            Swal.fire({
-              title: "Thông báo từ hệ thống!",
-              html: "Đang cập nhật hình ảnh<b></b>s",
-              timer: 2500,
-              timerProgressBar: true,
-              allowOutsideClick: false, // Ngăn người dùng nhấn ra ngoài để tắt bảng
-              allowEscapeKey: false, // Ngăn người dùng nhấn phím Escape để tắt bảng
-              didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerInterval = setInterval(() => {
-                  timer.textContent = `${Swal.getTimerLeft()}`;
-                }, 100);
-              },
-              willClose: () => {
-                clearInterval(timerInterval);
-              }
-            }).then((result) => {
-              /* Read more about handling dismissals below */
-              if (result.dismiss === Swal.DismissReason.timer) {
-                URL.revokeObjectURL(tempImageUrl); // Giải phóng URL tạm thời nếu cần
-                const newImageUrl = `${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`;
+        .then(() => {
+          let timerInterval;
+          return Swal.fire({
+            title: "Thông báo từ hệ thống!",
+            html: "Đang cập nhật hình ảnh<b></b>s",
+            timer: 2500,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          });
+        })
+        .then(async (result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            URL.revokeObjectURL(tempImageUrl);
+            const token = localStorage.getItem('token');
+            if (!token) {
+              console.error('Token not found');
+              return;
+            }
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.user_id;
+            setIdUser(userId);
+            try {
+              const response = await apiClient.get(`/api/file/get-img`, {
+                params: { userid: userId },
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                }
+              });
+    
+              if (response.status === 200) {
+                const newImageUrl = response.data.data;
                 setImageUrl(newImageUrl);
-                Swal.fire({
-                  title: "Thông báo từ hệ thông!",
+    
+                await Swal.fire({
+                  title: "Thông báo từ hệ thống!",
                   text: "Cập nhật ảnh thành công",
                   icon: "success"
                 });
+              } else {
+                console.error('Failed to fetch new image URL, status:', response.status);
+                await Swal.fire({
+                  title: "Thông báo từ hệ thống!",
+                  text: "Cập nhật ảnh không thành công.",
+                  icon: "error"
+                });
               }
-            });
-          })
-          .catch(error => {
-            Swal.fire({
-              title: "Thông báo từ hệ thống!",
-              text: "Cập nhật ảnh thất bại.",
-              icon: "error"
-            });
+            } catch (error) {
+              console.error('Error fetching new image URL:', error);
+              await Swal.fire({
+                title: "Thông báo từ hệ thống!",
+                text: "Đã xảy ra lỗi khi lấy ảnh.",
+                icon: "error"
+              });
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error during image upload:', error);
+          Swal.fire({
+            title: "Thông báo từ hệ thống!",
+            text: "Cập nhật ảnh thất bại.",
+            icon: "error"
           });
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
+        });
+    
+    } catch (error) {
+      console.error('Error uploading image:', error);
     }
+  }    
   }
 
   return (
@@ -240,8 +285,7 @@ const AppHeaderDropdown = () => {
               <>
                 <div className="text-center mb-3">
                   <img
-                    src={`${env.apiUrl}/api/file/get-img?userId=${iduser}&t=${Date.now()}`}
-                    alt="User Avatar"
+                    src={imageUrl || 'http://103.15.222.65/images/999.jpg'} alt="User Avatar"
                     style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
                     onClick={handleAvatarClick}
                   />
@@ -254,45 +298,46 @@ const AppHeaderDropdown = () => {
                     accept=".jpg,.jpeg,.png"
                   />
                 </div>
+
                 <CFormInput
                   type="text"
                   label="Họ tên"
-                  value={userProfile.hoTen}
+                  value={userProfile[0].hoTen || "Nên đọc Chú Đại Bi"}
                   disabled
                   className="mb-3"
                 />
                 <CFormInput
                   type="text"
                   label="Pháp Danh"
-                  value={userProfile.phapDanh}
+                  value={userProfile[0].phapDanh || "Chưa cập nhật"}
                   disabled
                   className="mb-3"
                 />
                 <CFormInput
                   type="text"
                   label="Giới tính"
-                  value={userProfile.gioiTinh ? "Nam" : "Nữ"}
+                  value={userProfile[0].gioiTinh ? "Nam" : "Nữ"}
                   disabled
                   className="mb-3"
                 />
                 <CFormInput
                   type="email"
                   label="Email"
-                  value={userProfile.email}
+                  value={userProfile[0].email || "Nên đọc Chú Đại Bi"}
                   disabled
                   className="mb-3"
                 />
                 <CFormInput
                   type="tel"
                   label="Số điện thoại"
-                  value={userProfile.sdt}
+                  value={userProfile[0].sdt || "Nên đọc Chú Đại Bi"}
                   disabled
                   className="mb-3"
                 />
                 <CFormInput
                   type="text"
                   label="Địa chỉ"
-                  value={userProfile.diaChi}
+                  value={userProfile[0].diaChi || "Nên đọc Chú Đại Bi"}
                   disabled
                   className="mb-3"
                 />
@@ -301,6 +346,7 @@ const AppHeaderDropdown = () => {
               <p>Loading...</p>
             )}
           </CModalBody>
+
           <CModalFooter>
             <CButton color="outline-secondary" onClick={handleCloseModal}>
               Đóng
