@@ -110,12 +110,13 @@ const QuyGD = () => {
 
         filteredData.forEach(item => {
             const amount = item.soTien || 0;
-            totalAmount += amount;
 
             if (item.thuOrChi) {
                 totalIncome += amount;
+                totalAmount += amount;
             } else {
                 totalExpense += amount;
+                totalAmount -= amount;
             }
         });
 
@@ -152,6 +153,25 @@ const QuyGD = () => {
                 icon: 'error',
                 title: 'Vui lòng nhập đầy đủ thông tin',
                 text: 'Tên thu chi và số tiền không được để trống.',
+                showConfirmButton: true,
+            });
+            return;
+        }
+        if (newFund.soTien < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải lớn hơn hoặc bằng 0.',
+                showConfirmButton: true,
+            });
+            r
+            return;
+        }
+        if (isNaN(newFund.soTien)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải là số.',
                 showConfirmButton: true,
             });
             return;
