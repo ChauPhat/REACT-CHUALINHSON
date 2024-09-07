@@ -69,7 +69,8 @@
   .form-check {
     display: flex;
     align-items: center;
-    width: calc(33.33% - 7px); /* Three items per row, accounting for gaps */
+    /* width: calc(33.33% - 7px);  */
+    /* Three items per row, accounting for gaps */
     box-sizing: border-box;
   }
   
@@ -81,7 +82,6 @@
     flex: 1;
   }
   
-
   .footer-container {
     display: flex;
     justify-content: space-between;
@@ -94,6 +94,4 @@
     gap: 10px; /* Adjust spacing between buttons */
   }
   
-  .form-check {
-    margin-right: auto; /* Pushes the form-switch to the left */
-  }
+  

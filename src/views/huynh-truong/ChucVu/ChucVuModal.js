@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './ChucVuModal.css';
 import env from '../../../env'
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-function ChucVuModal({ show, handleClose, ChucVu }) {
+function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: ChucVu.name || '',
-    role: ChucVu.role || '',
-    mota: ChucVu.mota || '',
   });
+  const [isHuynhTruong, setIsHuynhTruong] = useState(ChucVu.role === 'Huynh Trưởng' ? true : false);
+
+  const handleCheckboxChange = () => {
+    setIsHuynhTruong((prevValue) => !prevValue); // Toggle giá trị checkbox
+  };
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing); // Toggle edit mode
@@ -23,11 +28,40 @@ function ChucVuModal({ show, handleClose, ChucVu }) {
     });
   };
 
-  const handleSave = () => {
-    // Implement save logic here
-    // console.log('Saving data:', formData);
-    setIsEditing(false); // Disable editing mode after saving
+  const handleSave = async () => {
+    const updatedRole = {
+      roleName: formData.name,
+      isHuynhTruong: isHuynhTruong, // Set role based on checkbox
+      isActive: ChucVu.stasus === 'Active' ? true : false,
+    };
+    try {
+      const response = await axios.put(`${env.apiUrl}/api/role/${ChucVu.id}`, updatedRole, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const updatedData = {
+        ...ChucVu,
+        name: formData.name,
+        role: isHuynhTruong ? 'Huynh Trưởng' : 'Đoàn Sinh',
+      };
+      onUpdateChucVu(updatedData);
+      Swal.fire({
+        title: 'Thông báo từ hệ thống!',
+        text: 'Cập nhật chức vụ thành công!',
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      setIsEditing(false);
+      handleClose();
+    } catch (error) {
+      console.error('Lỗi khi cập nhật:', error);
+      alert('Cập nhật chức vụ thất bại.');
+    }
   };
+
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -35,24 +69,24 @@ function ChucVuModal({ show, handleClose, ChucVu }) {
         <Modal.Title className="modal-title">Thông Tin Chức Vụ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      
-
         <div className="form-group">
           <label htmlFor="name">Tên Bậc Học</label>
-          <input id="name" name="name"  className="form-control"
-            type="text"  value={formData.name} onChange={handleInputChange}
-            disabled={!isEditing}/>
-            
-          <label htmlFor="role">Cấp Bậc</label>
-          <input name="role" className="form-control"
-            type="text" value={formData.role} onChange={handleInputChange}
-            disabled={!isEditing}/>
+          <input id="name" name="name" className="form-control"
+            type="text" value={formData.name} onChange={handleInputChange}
+            disabled={!isEditing} />
 
-          <label htmlFor="mota">Mô Tả</label>
-          <textarea name="mota" className="form-control" rows="3"
-            value={formData.mota} onChange={handleInputChange}
-            disabled={!isEditing}
-          ></textarea>
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="isHuynhTruong"
+              checked={isHuynhTruong}
+              onChange={handleCheckboxChange}
+              disabled={!isEditing}
+            />
+            <label className="form-check-label" htmlFor="isHuynhTruong" >Huynh Trưởng?
+            </label>
+          </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
