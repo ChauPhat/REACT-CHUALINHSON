@@ -6,31 +6,16 @@ import {
     CRow,
     CTableDataCell
 } from '@coreui/react';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
 import env from '../../../env';
 import Table from '../../table/Table';
 import '../DoanSinhCss/DanhSach.css';
 import './DiemDanh.css';
-import { Button, Modal } from 'react-bootstrap';
 
 const DDNganhThanh = () => {
-    // Dữ liệu mẫu
-    const [data, setData] = useState([
-        { lichSinhHoatDoanId: 1, doanId: 101, userUpdate: 1001, ngaySinhHoat: "2024-08-20", nam: 2024, sttTuan: 1 },
-        { lichSinhHoatDoanId: 2, doanId: 102, userUpdate: 1002, ngaySinhHoat: "2024-08-27", nam: 2024, sttTuan: 2 },
-        { lichSinhHoatDoanId: 3, doanId: 103, userUpdate: 1003, ngaySinhHoat: "2024-09-03", nam: 2024, sttTuan: 3 },
-        { lichSinhHoatDoanId: 4, doanId: 104, userUpdate: 1004, ngaySinhHoat: "2024-09-10", nam: 2024, sttTuan: 4 },
-        { lichSinhHoatDoanId: 5, doanId: 105, userUpdate: 1005, ngaySinhHoat: "2024-09-17", nam: 2024, sttTuan: 5 },
-        { lichSinhHoatDoanId: 6, doanId: 106, userUpdate: 1006, ngaySinhHoat: "2024-08-20", nam: 2024, sttTuan: 6 },
-        { lichSinhHoatDoanId: 7, doanId: 107, userUpdate: 1007, ngaySinhHoat: "2024-08-27", nam: 2024, sttTuan: 7 },
-        { lichSinhHoatDoanId: 8, doanId: 108, userUpdate: 1008, ngaySinhHoat: "2024-09-03", nam: 2024, sttTuan: 8 },
-        { lichSinhHoatDoanId: 9, doanId: 109, userUpdate: 1009, ngaySinhHoat: "2024-09-10", nam: 2024, sttTuan: 9 },
-        { lichSinhHoatDoanId: 10, doanId: 110, userUpdate: 1010, ngaySinhHoat: "2024-09-17", nam: 2024, sttTuan: 10 }
-        // Thêm dữ liệu mẫu nếu cần
-    ]);
-
     const [searchTerm, setSearchTerm] = useState({
         tuan: '',
         ngaySinhHoat: '',
@@ -40,13 +25,11 @@ const DDNganhThanh = () => {
     const years = Array.from({ length: 4 }, (_, index) => currentYear + index);
     const [doanId, setDoanId] = useState(5);
     const [lichSinhHoatDoan, setLichSinhHoatDoan] = useState([]);
-    const [selectedYear, setSelectedYear] = useState('');
+    const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedLichSinhHoatDoan, setSelectedLichSinhHoatDoan] = useState();
-
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
-        console.log("Selected Year:", event.target.value);
     };
 
     const addLichSinhHoatDoan = () => {
@@ -76,7 +59,7 @@ const DDNganhThanh = () => {
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
-                            setSelectedLichSinhHoatDoan();
+                            getLichSinhHoatDoan();
                             Swal.showLoading();
                             const timer = Swal.getPopup().querySelector("b");
                             timerInterval = setInterval(() => {
@@ -95,7 +78,6 @@ const DDNganhThanh = () => {
                 } catch (error) {
                     console.error(error);
                 }
-
             }
         })
     }
@@ -111,7 +93,6 @@ const DDNganhThanh = () => {
             }
         }).then(response => {
             setLichSinhHoatDoan(response.data.data);
-            console.dir(response.data.data);
         }).catch(error => {
             console.error(error);
         })
@@ -122,10 +103,8 @@ const DDNganhThanh = () => {
         return `${day}-${month}-${year}`;
     };
 
-    // Hàm lọc dữ liệu dựa trên tìm kiếm
     const filteredData = lichSinhHoatDoan?.filter(item => {
         const formattedDate = formatDate(item.ngaySinhHoat);
-
         return (
             (searchTerm.tuan === '' || item.sttTuan.toString().includes(searchTerm.tuan)) &&
             (searchTerm.ngaySinhHoat === '' || formattedDate.includes(searchTerm.ngaySinhHoat)) &&
@@ -176,40 +155,14 @@ const DDNganhThanh = () => {
                 }
             }
         });
-        console.dir(tempFormData);
         setFormData(tempFormData);
         if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
             setSelectedLichSinhHoatDoan(item)
         } else {
-            // let timerInterval;
-            // Swal.fire({
-            //     icon: 'info',
-            //     title: 'Dữ liệu chưa có sẵn, đang tự động tạo...',
-            //     timer: 2000,
-            //     timerProgressBar: true,
-            //     allowOutsideClick: false,
-            //     allowEscapeKey: false,
-            //     didOpen: () => {
-            //       Swal.showLoading();
-            //       const timer = Swal.getPopup().querySelector("b");
-            //       timerInterval = setInterval(() => {
-            //         timer.textContent = `${Swal.getTimerLeft()}`;
-            //       }, 100);
-            //     },
-            //     willClose: () => {
-            //       clearInterval(timerInterval);
-            //     }
-            // })
             apiClient.put(`/api/lichSinhHoatDoan/updateDiemDanh/${item.lichSinhHoatDoanId}`)
                 .then(response => {
                     getLichSinhHoatDoan();
                     setSelectedLichSinhHoatDoan(response.data.data);
-                    // let newElement = response.data.data;
-                    // lichSinhHoatDoan.splice(index, 1, item);
-                    // setLichSinhHoatDoan(lichSinhHoatDoan?.map((e, i) => {
-                    //     return i === index ? item : e;
-                    // }));
-                    // console.dir(response.data.data);
                 })
                 .catch(error => {
                     console.error(error);
@@ -220,15 +173,6 @@ const DDNganhThanh = () => {
     const [formData, setFormData] = useState({});
 
     const handleCoMatChange = (checked, diemDanhDTO) => {
-        // let userId = JSON.parse(localStorage.getItem('user'))?.user_id;
-        // var temp = formData
-        console.dir({
-            ...formData,
-            [diemDanhDTO.diemDanhId]: {
-                ...formData[diemDanhDTO.diemDanhId],
-                coMat: checked
-            }
-        });
         setFormData({
             ...formData,
             [diemDanhDTO.diemDanhId]: {
@@ -236,7 +180,6 @@ const DDNganhThanh = () => {
                 coMat: checked
             }
         });
-
     }
 
     const getFormData = () => {
@@ -256,7 +199,6 @@ const DDNganhThanh = () => {
         try {
             handleEditToggle();
             const payload = getFormData();
-            console.dir(payload);
             const response = await apiClient.post(`/api/diem_danh/luu_hoac_cap_nhat_diem_danh`, payload);
             let timerInterval;
             Swal.fire({
@@ -278,7 +220,6 @@ const DDNganhThanh = () => {
                     clearInterval(timerInterval);
                 }
             }).then(() => {
-                console.dir(response.data.data);
                 Swal.fire({
                     icon: 'success',
                     title: 'Điểm danh thành công!'
@@ -303,7 +244,7 @@ const DDNganhThanh = () => {
             <CTableDataCell>{item.nam}</CTableDataCell>
             <CTableDataCell>
                 <CButton color="info"
-                    // disabled={getTodayDateString() !== item.ngaySinhHoat}
+                    disabled={getTodayDateString() !== item.ngaySinhHoat}
                     onClick={() => { checkDiemDanhDTOS(item); setShow(true); }}
                     variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Điểm danh
@@ -312,7 +253,7 @@ const DDNganhThanh = () => {
         </>
     );
     const getTodayDateString = () => {
-        return new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+        return new Date().toISOString().split('T')[0];
     }
 
     const [show, setShow] = useState(false);
@@ -326,7 +267,7 @@ const DDNganhThanh = () => {
         <div className="container-fluid">
             <CRow className="mb-3 d-flex">
                 <CCol className="d-flex align-items-center flex-grow-1">
-                    <h3>Danh sách Đoàn Sinh</h3>
+                    <h3>Lịch sinh hoạt đoàn Ngành Thanh</h3>
                 </CCol>
                 <CCol className="d-flex justify-content-end">
                     <CFormSelect className="small-select me-2" onChange={handleYearChange}
@@ -343,7 +284,7 @@ const DDNganhThanh = () => {
             <Table
                 headers={headers}
                 headerCells={headerCells}
-                items={filteredData}
+                items={filteredData || []}
                 renderRow={renderRow}
                 searchCriteria={{ searchTerm }}
             />
@@ -379,7 +320,7 @@ const DDNganhThanh = () => {
                                                 />
                                             </td>
                                             <td>{doanSinh.hoTen}</td>
-                                            <td>{formatDate(element.ngaySinhHoat)}</td>
+                                            <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
                                             <td>{doanSinh.tenDoan}</td>
                                             <td className=''>
                                                 <div className="checkbox-con">
@@ -406,72 +347,6 @@ const DDNganhThanh = () => {
                     </div>
                 </Modal.Footer>
             </Modal>
-            {/* Modal */}
-            {/* <div className="modal fade" id="exampleModal" tabIndex="-1" ref={modalRef}
-                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-scrollable modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">Điểm danh</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className='table-responsive'>
-                                <table className='table table-border table-striped table-hover'>
-                                    <thead>
-                                        <tr className=' align-items-center'>
-                                            <th >Ảnh</th>
-                                            <th >Tên</th>
-                                            <th >Ngày sinh hoạt</th>
-                                            <th >Đoàn</th>
-                                            <th >Trạng thái</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
-                                                let doanSinh = element.doanSinhDetailDTO;
-                                                return (<tr className='align-items-center'>
-                                                    <td>
-                                                        <img
-                                                            src={`${env.apiUrl}/api/file/get-img?userId=${doanSinh.userId}&t=${Date.now()}`}
-                                                            alt="Ảnh"
-                                                            className="rounded-image"
-                                                            width="50"
-                                                            height="50"
-                                                        />
-                                                    </td>
-                                                    <td>{doanSinh.hoTen}</td>
-                                                    <td>{formatDate(element.ngaySinhHoat)}</td>
-                                                    <td>{doanSinh.tenDoan}</td>
-                                                    <td className=''>
-                                                        <div className="checkbox-con">
-                                                            <input
-                                                                id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
-                                                                checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}></input>
-                                                        </div>
-                                                    </td>
-                                                </tr>);
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
-                            <div className="form-check form-switch" >
-                                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked={isEditing} onChange={handleEditToggle} />
-                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
-                            </div>
-                            <div className="footer-buttons">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeModal}>Thoát</button>
-                                <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
-
         </div>
     );
 }
