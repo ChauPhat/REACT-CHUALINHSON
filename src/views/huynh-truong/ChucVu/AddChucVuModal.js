@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -7,9 +7,28 @@ import env from '../../../env'
 
 function AddChucVuModal({ show, handleClose, onAddChucVu }) {
   const [name, setName] = useState('');
-  const [isHuynhTruong, setIsHuynhTruong] = useState(false); // State mới cho checkbox
-  const [mota, setMota] = useState('');
+  const [isHuynhTruong, setIsHuynhTruong] = useState(false);
+  const [doanId, setDoanId] = useState(''); // State để lưu id của đoàn
+  const [doanList, setDoanList] = useState([]); // State để lưu danh sách đoàn
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    // Gọi API lấy danh sách đoàn
+    const fetchDoanList = async () => {
+      try {
+        const response = await axios.get(`${env.apiUrl}/api/doan/getAllDoan`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setDoanList(response.data.data);
+      } catch (error) {
+        console.error('Lỗi khi gọi API lấy danh sách đoàn:', error);
+      }
+    };
+
+    fetchDoanList();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +40,10 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
     setIsHuynhTruong((prevValue) => !prevValue); // Toggle giá trị checkbox
   };
 
+  const handleSelectChange = (e) => {
+    setDoanId(e.target.value); // Cập nhật doanId khi người dùng chọn
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!name.trim()) newErrors.name = 'Tên Chức Vụ không được để trống.';
@@ -30,10 +53,12 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
 
   const handleSave = async () => {
     if (!validateForm()) return;
+    
     const formData = {
       roleName: name,
       isHuynhTruong,
-      isActive : true,
+      doanId,
+      isActive: true,
     };
 
     try {
@@ -58,6 +83,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
       });
       setName('');
       setIsHuynhTruong(false);
+      setDoanId('');
       handleClose();
     } catch (error) {
       console.error('Lỗi khi gọi API:', error);
@@ -98,6 +124,25 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
             />
             <label className="form-check-label" htmlFor="isHuynhTruong" >Huynh Trưởng?
             </label>
+          </div>
+
+          {/* Thêm Select để chọn Đoàn */}
+          <div className="form-group mt-3">
+            <label htmlFor="doanSelect">Chọn Đoàn</label>
+            <select
+              id="doanSelect"
+              className="form-control"
+              value={doanId}
+              onChange={handleSelectChange}
+              required
+            >
+              <option value=''>-- Chọn Đoàn --</option>
+              {doanList.map((doan) => (
+                <option key={doan.doanId} value={doan.doanId}>
+                  {doan.tenDoan}
+                </option>
+              ))}
+            </select>
           </div>
 
         </div>
