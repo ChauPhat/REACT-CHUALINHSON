@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './ChucVuModal.css';
-import env from '../../../env'
+import env from '../../../env';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -11,6 +11,26 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
     name: ChucVu.name || '',
   });
   const [isHuynhTruong, setIsHuynhTruong] = useState(ChucVu.role === 'Huynh Trưởng' ? true : false);
+  const [doanId, setDoanId] = useState(ChucVu.doanId || ''); // Lưu id đoàn
+  const [doanList, setDoanList] = useState([]); // Lưu danh sách đoàn
+
+  // Gọi API lấy danh sách đoàn
+  useEffect(() => {
+    const fetchDoanList = async () => {
+      try {
+        const response = await axios.get(`${env.apiUrl}/api/doan/getAllDoan`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setDoanList(response.data.data);
+      } catch (error) {
+        console.error('Lỗi khi gọi API lấy danh sách đoàn:', error);
+      }
+    };
+
+    fetchDoanList();
+  }, []);
 
   const handleCheckboxChange = () => {
     setIsHuynhTruong((prevValue) => !prevValue); // Toggle giá trị checkbox
@@ -28,12 +48,18 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
     });
   };
 
+  const handleSelectChange = (e) => {
+    setDoanId(e.target.value); // Cập nhật doanId khi người dùng chọn
+  };
+
   const handleSave = async () => {
     const updatedRole = {
       roleName: formData.name,
       isHuynhTruong: isHuynhTruong, // Set role based on checkbox
+      doanId, // Gửi id đoàn cùng với dữ liệu
       isActive: ChucVu.stasus === 'Active' ? true : false,
     };
+
     try {
       const response = await axios.put(`${env.apiUrl}/api/role/${ChucVu.id}`, updatedRole, {
         headers: {
@@ -45,7 +71,9 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
         ...ChucVu,
         name: formData.name,
         role: isHuynhTruong ? 'Huynh Trưởng' : 'Đoàn Sinh',
+        doanId,
       };
+
       onUpdateChucVu(updatedData);
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
@@ -54,6 +82,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
         timer: 2000,
         timerProgressBar: true,
       });
+
       setIsEditing(false);
       handleClose();
     } catch (error) {
@@ -61,7 +90,6 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
       alert('Cập nhật chức vụ thất bại.');
     }
   };
-
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -71,9 +99,15 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
       <Modal.Body>
         <div className="form-group">
           <label htmlFor="name">Tên Bậc Học</label>
-          <input id="name" name="name" className="form-control"
-            type="text" value={formData.name} onChange={handleInputChange}
-            disabled={!isEditing} />
+          <input
+            id="name"
+            name="name"
+            className="form-control"
+            type="text"
+            value={formData.name}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          />
 
           <div className="form-check">
             <input
@@ -84,17 +118,42 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
               onChange={handleCheckboxChange}
               disabled={!isEditing}
             />
-            <label className="form-check-label" htmlFor="isHuynhTruong" >Huynh Trưởng?
+            <label className="form-check-label" htmlFor="isHuynhTruong">
+              Huynh Trưởng?
             </label>
           </div>
+
+          {/* Thêm Select để chọn Đoàn */}
+          <div className="form-group mt-3">
+            <label htmlFor="doanSelect">Chọn Đoàn</label>
+            <select
+              id="doanSelect"
+              className="form-control"
+              value={doanId}
+              onChange={handleSelectChange}
+              disabled={!isEditing}
+            >
+              <option value="">-- Chọn Đoàn --</option>
+              {doanList.map((doan) => (
+                <option key={doan.doanId} value={doan.doanId}>
+                  {doan.tenDoan}
+                </option>
+              ))}
+            </select>
+          </div>
+          
         </div>
       </Modal.Body>
       <Modal.Footer>
         <div className="footer-container">
           <div className="form-check form-switch">
-            <input className="form-check-input"
-              type="checkbox" id="flexSwitchCheckDefault"
-              checked={isEditing} onChange={handleEditToggle} />
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckDefault"
+              checked={isEditing}
+              onChange={handleEditToggle}
+            />
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
               Chỉnh Sửa
             </label>

@@ -51,6 +51,7 @@ const ChucVu = () => {
         name: item.roleName,
         role: item.isHuynhTruong ? 'Huynh Trưởng' : 'Đoàn Sinh',
         status: item.isActive ? 'Active' : 'Inactive',
+        doanId : item.doanId
       }));
 
       setChucVuData(fetchedData);
@@ -175,12 +176,10 @@ const ChucVu = () => {
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem variant="outline" onClick={() => handleShowModal(ChucVu)}>
-              <CButton  >
                 Thông tin
-              </CButton>
             </CDropdownItem>
             <CDropdownItem onClick={() => toggleStatus(ChucVu)}>
-              <CButton>{ChucVu.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
+              {ChucVu.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
