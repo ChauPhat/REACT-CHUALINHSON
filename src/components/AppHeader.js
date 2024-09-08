@@ -129,8 +129,12 @@ const AppHeader = () => {
                   notifications.map(notification => (
                     <CDropdownItem
                       key={notification.id}
-                      href="http://localhost:3000/login/thong-bao"
-                      onClick={() => markAsRead(notification.id)} 
+                      
+                      onClick={() => {
+                        markAsRead(notification.id)
+                        window.location.href = '/#/thong-bao' 
+                      }}
+                      
                     >
                       {notification.message}
                     </CDropdownItem>
