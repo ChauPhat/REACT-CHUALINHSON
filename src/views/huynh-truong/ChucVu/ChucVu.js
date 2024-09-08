@@ -6,6 +6,11 @@ import {
   CFormInput,
   CButton,
   CCol,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+
 } from '@coreui/react';
 import Table from '../../table/Table';
 import CategoryCarousel from "../CategoryCarousel";
@@ -32,12 +37,12 @@ const ChucVu = () => {
   useEffect(() => {
     fetchData();
   }, []);
-    
+
   const fetchData = async () => {
     try {
       const response = await axios.get(`${env.apiUrl}/api/role/get-all`, {
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
@@ -46,7 +51,7 @@ const ChucVu = () => {
         name: item.roleName,
         role: item.isHuynhTruong ? 'Huynh Trưởng' : 'Đoàn Sinh',
         status: item.isActive ? 'Active' : 'Inactive',
-        createdDate: item.createdDate
+        doanId : item.doanId
       }));
 
       setChucVuData(fetchedData);
@@ -57,6 +62,14 @@ const ChucVu = () => {
 
   const handleAddChucVu = (newChucVu) => {
     setChucVuData((prevData) => [...prevData, newChucVu]);
+    fetchData();
+  };
+
+  const handleUpdateChucVu = (updatedChucVu) => {
+    setChucVuData((prevData) =>
+      prevData.map((item) => (item.id === updatedChucVu.id ? updatedChucVu : item))
+    );
+    fetchData();
   };
 
   const filteredData = ChucVuData.filter((ChucVu) => {
@@ -75,7 +88,7 @@ const ChucVu = () => {
     setShowModal(false);
     setSelectedChucVu(null);
   };
-  
+
   const getBadgeClass = (status) => {
     switch (status) {
       case 'Active':
@@ -84,14 +97,14 @@ const ChucVu = () => {
         return 'custom-badge-danger';
     }
   }
-  
+
 
   const headers = [
     <CTableDataCell width={'40%'} className="fixed-width-column">
       Tên Chức Vụ
     </CTableDataCell>,
     <CTableDataCell width={'20%'} className="fixed-width-column">
-      Cấp Bật
+      Cấp Bậc
     </CTableDataCell>,
     <CTableDataCell width={'20%'} className="fixed-width-column">
       Trạng Thái
@@ -100,9 +113,9 @@ const ChucVu = () => {
       Thao tác
     </CTableDataCell>,
   ];
-  
+
   const headerCells = [
-   
+
     <CFormInput
       className="fixed-width-input"
       type="search"
@@ -121,20 +134,55 @@ const ChucVu = () => {
     '',
   ];
 
+  const toggleStatus = async (ChucVu) => {
+    try {
+      // Gọi API để cập nhật trạng thái
+      const newStatus = ChucVu.status === 'Active' ? 'Inactive' : 'Active';
+
+      await axios.put(
+        `${env.apiUrl}/api/role/${ChucVu.id}`,
+        {
+          roleName: ChucVu.name,
+          isHuynhTruong: ChucVu.role === 'Huynh Trưởng',
+          isActive: newStatus === 'Active'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      // Cập nhật lại danh sách sau khi API thành công
+      
+      fetchData();
+    } catch (error) {
+      console.error('Lỗi khi cập nhật trạng thái:', error);
+    }
+  };
+
   const renderRow = (ChucVu) => (
     <>
- 
+
       <CTableDataCell>{ChucVu.name}</CTableDataCell>
       <CTableDataCell>{ChucVu.role}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(ChucVu.status)}>
-        {ChucVu.status}
+          {ChucVu.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(ChucVu)}>
-          Show
-        </CButton>
+        <CDropdown>
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(ChucVu)}>
+                Thông tin
+            </CDropdownItem>
+            <CDropdownItem onClick={() => toggleStatus(ChucVu)}>
+              {ChucVu.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
       </CTableDataCell>
     </>
   );
@@ -161,13 +209,13 @@ const ChucVu = () => {
       />
 
       {selectedChucVu && (
-        <ChucVuModal show={showModal} handleClose={handleCloseModal} ChucVu={selectedChucVu} />
+        <ChucVuModal show={showModal} handleClose={handleCloseModal} ChucVu={selectedChucVu} onUpdateChucVu={handleUpdateChucVu} />
       )}
 
       {showAddModal && (
-        <AddChucVuModal show={showAddModal} 
-        handleClose={handleCloseAddModal}
-        onAddChucVu={handleAddChucVu} />
+        <AddChucVuModal show={showAddModal}
+          handleClose={handleCloseAddModal}
+          onAddChucVu={handleAddChucVu} />
       )}
 
     </div>

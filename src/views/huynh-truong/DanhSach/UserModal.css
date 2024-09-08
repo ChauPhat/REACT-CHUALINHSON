@@ -1,6 +1,10 @@
-.modal-title {
+  .modal-title {
     text-align: center;
     width: 100%;
+  }
+  .modal-body-scroll {
+    max-height: 60vh; /* Adjust the height to your preference */
+    overflow-y: auto;
   }
   
   .avatar-container {

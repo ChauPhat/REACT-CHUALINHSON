@@ -68,7 +68,7 @@ const handleSave = async () => {
     // First API call to add Bac Hoc
     const response = await axios.post(`${env.apiUrl}/api/bac-hoc/insert`, formData, {
       headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
 
@@ -76,12 +76,12 @@ const handleSave = async () => {
       try {
         const fileFormData = new FormData();
         fileFormData.append('file', selectedFile);
-        const iduser = response.data.data.bacHocId
+        const idBacHoc = response.data.data.bacHocId
         // Second API call to upload the file
-        await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bac_hoc_id=${iduser}`, fileFormData, {
+        await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bac_hoc_id=${idBacHoc}`, fileFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
       } catch (fileUploadError) {

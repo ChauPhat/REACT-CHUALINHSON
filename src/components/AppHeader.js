@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   CContainer,
@@ -10,23 +9,20 @@ import {
   CHeader,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
-  CNavItem,
   useColorModes,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
   cilBell,
   cilContrast,
-  cilEnvelopeOpen,
-  cilList,
   cilMenu,
   cilMoon,
   cilSun,
 } from '@coreui/icons'
-
+import { jwtDecode } from 'jwt-decode'
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import apiClient from '../apiClient'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -35,11 +31,58 @@ const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const [notifications, setNotifications] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [isAdmin, setIsAdmin] = useState(false)
+
   useEffect(() => {
-    document.addEventListener('scroll', () => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          throw new Error("Token không tồn tại")
+        }
+
+        const decodedToken = jwtDecode(token)
+        const userId = decodedToken.user_id
+        const isAdminUser = [1, 2].includes(userId)
+        setIsAdmin(isAdminUser)
+
+        const url = isAdminUser
+          ? `/api/notifications/admin/${userId}/unread`
+          : `/api/notifications/user/${userId}/unread`
+        const response = await apiClient.get(url)
+        setNotifications(response.data)
+        setUnreadCount(response.data.length)
+      } catch (error) {
+        console.error('Failed to fetch notifications', error.response ? error.response.data : error.message)
+      }
+    }
+
+    fetchNotifications()
+  }, [])
+
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem('token')
+      await apiClient.post(`/api/notifications/${notificationId}/read`, {})
+
+      setNotifications(notifications.filter(notification => notification.id !== notificationId))
+      setUnreadCount(prev => prev - 1)
+    } catch (error) {
+      console.error('Failed to mark notification as read', error)
+    }
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
       headerRef.current &&
         headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    })
+    }
+    document.addEventListener('scroll', handleScroll)
+    return () => {
+      document.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   return (
@@ -52,34 +95,60 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex">
-          {/* <CNavItem>
-            <CNavLink to="/" as={NavLink}>
-              Trang Chủ
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Profile</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem> */}
+          {/* Navigation items can go here */}
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
-          <CNavItem>
-            <CNavLink href="#">
+          <CDropdown variant="nav-item" direction="dropup-center">
+            <CDropdownToggle caret={false}>
               <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-         {/*  <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
-            </CNavLink>
-          </CNavItem> */}
+              {unreadCount > 0 && (
+                <span
+                  className="position-absolute top-0 end-0 rounded-circle"
+                  style={{ backgroundColor: 'red', color: 'white', padding: '0.2em 0.6em', fontSize: '0.5em' }}
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </CDropdownToggle>
+
+            <CDropdownMenu className="p-0" style={{ minWidth: '300px' }}>
+              {/* Header */}
+              <div className="dropdown-header bg-light text-center font-weight-bold">
+                Thông Báo
+              </div>
+
+              {/* Body with Scroll */}
+              <div
+                className="p-2"
+                style={{
+                  maxHeight: '250px',
+                  overflowY: 'auto',
+                }}
+              >
+                {notifications.length > 0 ? (
+                  notifications.map(notification => (
+                    <CDropdownItem
+                      key={notification.id}
+                      
+                      onClick={() => {
+                        markAsRead(notification.id)
+                        window.location.href = '/#/thong-bao' 
+                      }}
+                      
+                    >
+                      {notification.message}
+                    </CDropdownItem>
+                  ))
+                ) : (
+                  <CDropdownItem disabled>
+                    Không có thông báo
+                  </CDropdownItem>
+                )}
+              </div>
+            </CDropdownMenu>
+          </CDropdown>
+
+          {/* Other header items */}
         </CHeaderNav>
         <CHeaderNav>
           <li className="nav-item py-1">

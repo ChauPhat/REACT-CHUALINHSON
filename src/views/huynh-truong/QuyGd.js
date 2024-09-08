@@ -65,7 +65,7 @@ const QuyGD = () => {
         try {
             const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
             const apiData = response.data.data;
@@ -98,7 +98,7 @@ const QuyGD = () => {
         const matchesName = searchName === '' || fund.tenThuChi.toLowerCase().includes(searchName.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        console.log(searchName, selectedYear, selectedQuarter);
+        // console.log(searchName, selectedYear, selectedQuarter);
 
         return matchesName && matchesYear && matchesQuarter;
     }), [fundData, searchName, selectedYear, selectedQuarter]);
@@ -110,12 +110,13 @@ const QuyGD = () => {
 
         filteredData.forEach(item => {
             const amount = item.soTien || 0;
-            totalAmount += amount;
 
             if (item.thuOrChi) {
                 totalIncome += amount;
+                totalAmount += amount;
             } else {
                 totalExpense += amount;
+                totalAmount -= amount;
             }
         });
 
@@ -156,15 +157,34 @@ const QuyGD = () => {
             });
             return;
         }
+        if (newFund.soTien < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải lớn hơn hoặc bằng 0.',
+                showConfirmButton: true,
+            });
+            r
+            return;
+        }
+        if (isNaN(newFund.soTien)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số tiền không hợp lệ',
+                text: 'Số tiền phải là số.',
+                showConfirmButton: true,
+            });
+            return;
+        }
         newFund.quyGiaDinhId = 1;
         newFund.quy = parseInt(newFund.quy);
         newFund.userId = null;
         newFund.soTien = parseInt(newFund.soTien);
-        console.log(newFund);
+        // console.log(newFund);
         try {
             await axios.post(`${env.apiUrl}/api/quygiadinh/insertLichSuQuyGiaDinh`, newFund, {
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
             Swal.fire({
@@ -190,13 +210,13 @@ const QuyGD = () => {
 
     const handleUpdateMoTa = async () => {
         try {
-            console.log(selectedMoTa);
-            console.log(selectedLichSuQuyId);
+            // console.log(selectedMoTa);
+            // console.log(selectedLichSuQuyId);
 
             const response = await fetch(`${env.apiUrl}/api/quygiadinh/updateMotaLichSuQuyGiaDinh?lich_su_quy_gia_dinh_id=${selectedLichSuQuyId}&mo_ta=${selectedMoTa}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 }
             });
 

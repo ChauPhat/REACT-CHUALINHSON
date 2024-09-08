@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CBadge,
   CAvatar,
@@ -7,26 +7,25 @@ import {
   CFormInput,
   CButton,
   CCol,
+  CDropdownItem,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
 } from '@coreui/react'
 
 import './DanhSach.css'
 import Table from '../../table/Table'
 import CategoryCarousel from "../CategoryCarousel";
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import axios from 'axios'
 import env from '../../../env'
+import apiClient from '../../../apiClient';
+import Swal from 'sweetalert2';
+import AddHuynhTruongModal from './AddHuynhTruongModal';
 
-
-
-
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-const formatDate = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
 
 const getBadgeClass = (status) => {
   switch (status) {
@@ -50,44 +49,55 @@ const DSNganhThanh = () => {
   const [searchRole, setSearchRole] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const handleShowAddModal = () => setShowAddModal(true);
+  const handleCloseAddModal = () => setShowAddModal(false);
 
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/users/getListHuyTruong?is_huy_truonng=1`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          }
-        });
+        const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
 
-          const fetchedData = response.data.data.map(item => {
-          // const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
-          // const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
-          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
- 
+        console.log('Dữ liệu nhận được:', response.data.data);
+
+        let imageUrl;
+
+        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
+          const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
+          const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
+          const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
+
+          try {
+            const imageResponse = await apiClient.get(`/api/file/get-img?userid=${item.userId}`
+            );
+            imageUrl = (imageResponse.data.data)
+          } catch (error) {
+            console.error('Lỗi khi tải ảnh:', error);
+          }
           return {
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
-            avatar: item.avatar,
-            registered: item.createDate,
-            // role1, 
-            // role2, 
+            avatar: imageUrl,
+            registered: item.createdDate,
+            role1: item?.roleId1?.roleName,
+            role2: item?.roleId2?.roleName,
+            idrole1: item?.roleId1?.roleId,
+            idrole2: item?.roleId2?.roleId,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
-            gender: item.gioiTinh ,
+            gender: item.gioiTinh,
             address: item.diaChi,
             phone: item.sdt,
             birthDate: item.ngaySinh,
-            admissionDate: item.ngayGiaNhapDoan, 
-            group: item.doan ? item.doan.tenDoan : 'N/A', 
+            admissionDate: item.ngayGiaNhapDoan,
+            group: item.doan ? item.doan.tenDoan : 'N/A',
             phapdanh: item.phapDanh,
-            roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
+            bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null,
           };
-        });
-
+        }));
         setUsersData(fetchedData);
-   
+        console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -96,6 +106,62 @@ const DSNganhThanh = () => {
     layDuLieu();
   }, []);
 
+  const handleAddHuynhTruong = (newHuynhTruong) => {
+    setUsersData((prevData) => [...prevData, newHuynhTruong]);
+  };
+
+  const handleToggleStatus = async (user) => {
+    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+
+    // Hiển thị hộp thoại xác nhận
+    const result = await Swal.fire({
+      title: 'Bạn có chắc chắn?',
+      text: `Bạn có muốn ${newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Có, thay đổi nó!',
+      cancelButtonText: 'Hủy'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
+          params: {
+            userId: user.id,
+            activeUser: newStatus === 'Active',
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        // Cập nhật trạng thái người dùng trong dữ liệu local state
+        setUsersData(prevUsersData =>
+          prevUsersData.map(u =>
+            u.id === user.id ? { ...u, status: newStatus } : u
+          )
+        );
+
+        // Hiển thị thông báo thành công
+        Swal.fire(
+          'Thành công!',
+          `Trạng thái người dùng đã được cập nhật.`,
+          'success'
+        );
+
+      } catch (error) {
+        console.error('Lỗi khi cập nhật trạng thái:', error);
+        // Hiển thị thông báo lỗi
+        Swal.fire(
+          'Thất bại!',
+          'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
+          'error'
+        );
+      }
+    }
+  };
 
 
   const formatDateToDDMMYYYY = (dateString) => {
@@ -166,55 +232,67 @@ const DSNganhThanh = () => {
       value={searchStatus}
       onChange={(e) => setSearchStatus(e.target.value)}
     />,
-    
+
     '',
   ];
 
   const renderRow = (user) => (
     <>
-      <CTableDataCell>  
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
+      <CTableDataCell>
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
-        <CTableDataCell>{user.name}</CTableDataCell>
-        <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
-        <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>{user.phapdanh} || {user.name}</CTableDataCell>
+      <CTableDataCell>{user.role1}</CTableDataCell>
+      <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-      <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
-       >Show</CButton>
+
+        <CDropdown>
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+              Thông tin
+            </CDropdownItem>
+            <CDropdownItem
+              onClick={() => handleToggleStatus(user)}>
+            {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+
       </CTableDataCell>
     </>
   );
 
   return (
-    
+
     <div className="container-fluid">
-    <CategoryCarousel categories={usersData} />
-    <br/>
+      <CategoryCarousel categories={usersData} />
+      <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-        <CButton  variant="outline" color="info">Thêm</CButton>
-        
+          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+
         </CCol>
       </CRow>
 
-            <Table
-                headers={headers}
-                headerCells={headerCells}
-                items={filteredData}
-                renderRow={renderRow}
-                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }} 
-            />
-   
+      <Table
+        headers={headers}
+        headerCells={headerCells}
+        items={filteredData}
+        renderRow={renderRow}
+        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+      />
 
-   {selectedUser && (
+
+      {selectedUser && (
         <UserModal
           show={showModal}
           handleClose={handleCloseModal}
@@ -223,8 +301,13 @@ const DSNganhThanh = () => {
         />
       )}
 
+      {showAddModal && (
+        <AddHuynhTruongModal show={showAddModal}
+          handleClose={handleCloseAddModal}
+          onAddHuynhTruong={handleAddHuynhTruong} />
+      )}
 
-   
+
     </div>
   )
 }

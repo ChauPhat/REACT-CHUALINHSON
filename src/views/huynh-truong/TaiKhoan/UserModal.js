@@ -1,45 +1,107 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import 'primeicons/primeicons.css';
+import 'primereact/resources/primereact.css';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import { TreeSelect } from 'primereact/treeselect';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import Swal from 'sweetalert2';
+import apiClient from '../../../apiClient';
+import { useScreens } from '../../../AuthorizationContext';
+import env from '../../../env';
+import './MultiSelectScreen.css';
 import './UserModal.css';
-import env from '../../../env'
 
+function UserModal({ show, handleClose, user, setUpdated }) {
 
-function UserModal({ show, handleClose, user, handleRoleChange }) {
-
-  const [checkedCount, setCheckedCount] = useState(0);
+  const { screens } = useScreens();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
-  const [roles, setRoles] = useState([]);
+  const [nodes, setNodes] = useState(null);
+  const [selectedNodeKeys, setSelectedNodeKeys] = useState(null);
+  const [formData, setFormData] = useState({
+    password: user?.password,
+    userId: {
+      userId: user.userId
+    }
+  });
 
   useEffect(() => {
-    // Update formData when user data changes
-    setFormData({ ...user, gender: user.gender ? "Male" : "Female" });
-    const initialRoles = formData.roleOfDoanTruong ? [formData.roleOfDoanTruong] : [];
-    setRoles(initialRoles);
-    setCheckedCount(initialRoles.length);
+    apiClient.get(`/api/screens/get-all-tree-nodes`)
+      .then(response => setNodes(response.data.data))
+      .catch(error => console.error(error));
+  }, [])
+
+  useEffect(() => {
+    handleUserDataChanged();
   }, [user]);
 
+  const handleUserDataChanged = () => {
+    let tempSelectedNodeKeys = {};
+    user?.accountDTO?.screenIds?.forEach(element => {
+      screens.forEach(ele => {
+        if (ele.screenId?.startsWith(element.screenId)) {
+          tempSelectedNodeKeys = {
+            ...tempSelectedNodeKeys,
+            [ele.screenId]: {
+              checked: true,
+              partialChecked: false
+            }
+          }
+        } else if (element.screenId?.startsWith(ele.screenId)) {
+          tempSelectedNodeKeys = {
+            ...tempSelectedNodeKeys,
+            [ele.screenId]: {
+              checked: false,
+              partialChecked: true
+            }
+          }
+        }
+      })
+    });
+    setSelectedNodeKeys(tempSelectedNodeKeys);
+    setFormData({
+      password: user?.password,
+      userId: user.userId
+    });
+  }
 
-  const handleCheck = (event) => {
-    const { id, checked } = event.target;
-    const roleId = parseInt(id.replace('check', ''), 10);
-
-    let newCheckedCount = checkedCount;
-
-    if (checked) {
-      newCheckedCount += 1;
-      setRoles([...roles, roleId]);
-    } else {
-      newCheckedCount -= 1;
-      setRoles(roles.filter(role => role !== roleId));
+  const getOptimizedSelectedNodes = () => {
+    if (!selectedNodeKeys) return [];
+    let partialCheckeds = [];
+    let keys = Object.keys(selectedNodeKeys);
+    for (let key of keys) {
+      let keyObj = selectedNodeKeys[key];
+      if (key === '*' && keyObj.checked) return ['*'];
+      if (!keyObj.checked && keyObj.partialChecked) {
+        partialCheckeds.push(key);
+      }
     }
+    return keys?.map(key => {
+      if (selectedNodeKeys[key].checked
+        && partialCheckeds.some(element => key.startsWith(element)
+          && key.split('.').length - 1 === element.split('.').length))
+        return key;
+    }).filter(Boolean);
+  }
 
-    setCheckedCount(newCheckedCount);
-  };
+  const convertSelectedScreensToListScreens = () => {
+    return getOptimizedSelectedNodes()?.map(key => {
+      return {
+        accountId: user?.accountDTO?.accountId,
+        screenId: key
+      }
+    });
+  }
+
+  const getAccountPayload = () => {
+    return {
+      ...formData,
+      screenIds: convertSelectedScreensToListScreens()
+    }
+  }
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
-  };
+    setIsEditing(!isEditing);
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,33 +109,56 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
       ...formData,
       [name]: value,
     });
-  };
+  }
 
   const handleSave = () => {
-    // Save logic goes here (e.g., API call or local state update)
-    setIsEditing(false); // Disable editing mode after saving
-    // You might want to call handleRoleChange or other handlers here to save changes
-  };
-
-  const rolesMapping = {
-    ROLE_ADMIN: "Admin",
-    ROLE_THUKY: "Thư ký",
-    ROLE_THUQUY: "Thủ quỹ",
-    ROLE_DOANTRUONG: "Đoàn trưởng",
-    ROLE_DOANTRUONG_OANHVUNAM: "Đoàn trưởng Oanh Vũ Nam",
-    ROLE_DOANTRUONG_OANHVUNU: "Đoàn trưởng Oanh Vũ Nữ",
-    ROLE_DOANTRUONG_THIEUNAM: "Đoàn trưởng Thiếu Nam",
-    ROLE_DOANTRUONG_THIEUNU: "Đoàn trưởng Thiếu Nữ",
-    ROLE_DOANTRUONG_NGANHTHANH: "Đoàn trưởng Ngành Thanh"
-  };
-
-
-  const handleGenderChange = (value) => {
-    setFormData({
-      ...formData,
-      gender: value ? "Male" : "Female",
+    setIsEditing(false);
+    const payload = getAccountPayload();
+    Swal.fire({
+      icon: 'question',
+      title: 'Bạn có đồng ý cập nhật?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
+          let timerInterval;
+          Swal.fire({
+            title: "Vui lòng đợi xử lý thông tin!",
+            html: "Tự động đóng sau <b></b> mili giây.",
+            timer: 2000,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          }).then(() => {
+            setUpdated(response.data.data);
+            Swal.fire({
+              icon: 'success',
+              title: 'Cập nhật thành công!'
+            }).then(() => {
+              handleClose();
+            })
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
     });
-  };
+  }
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -82,73 +167,45 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} alt="Avatar" className="user-avatar" />
+          <img src={`${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()}`} alt="Avatar" className="user-avatar" />
         </div>
 
         <div class="form-group">
-          <label for="exampleFormControlInput1">Họ Và Tên</label>
+          <label for="exampleFormControlInput1">Họ và tên</label>
           <div class="input-group">
-            <input id="name" name="name" class="form-control" type="text" value={formData.name}
-              onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
+            <input id="name" name="name" class="form-control" type="text" value={user.name}
+              readOnly />
             <span class="input-group-text " id="basic-addon2">{user.idUX}</span>
           </div>
 
-          <label for="exampleFormControlInput1">User Name</label>
-          <input id="userName" name="userName" class="form-control" type="text" value={formData.userName}
-            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
+          <label for="exampleFormControlInput1">Tên người dùng</label>
+          <input id="userName" name="userName" class="form-control" type="text" value={user.userName}
+            readOnly />
 
-          <label for="exampleFormControlInput1">Password</label>
+          <label for="exampleFormControlInput1">Mật khẩu</label>
           <input id="password" name="password" class="form-control" type="password" value={formData.password}
-            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
+            onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
-          <label for="exampleFormControlInput1">Email</label>
-          <input id="email" name="email" class="form-control" type="email" value={formData.email}
-            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
-
-
-          <label>Giới Tính</label>
-          <div className="radio-group">
-            <label className="radio-inline">
-              <input type="radio" name="gender" value="Male"
-                checked={formData.gender === "Male"}
-                onChange={() => handleGenderChange(true)}
-                disabled={!isEditing} />
-              Nam
-            </label>
-            <label className="radio-inline">
-              <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"}
-                onChange={() => handleGenderChange(false)}
-                disabled={!isEditing} />
-              Nữ
-            </label>
+          <label htmlFor="roles">Cấp quyền màn hình</label>
+          <div className="card flex justify-content-center">
+            <TreeSelect
+              value={selectedNodeKeys}
+              disabled={!isEditing}
+              onChange={(e) => setSelectedNodeKeys(e.value)}
+              options={nodes}
+              metaKeySelection={false}
+              className="md:w-20rem w-full"
+              filter
+              selectionMode="checkbox"
+              display="chip"
+              appendTo="self"
+              placeholder="Chọn màn hình">
+            </TreeSelect>
           </div>
-
-          <label htmlFor="roles">Chức Vụ</label>
-          <div className="checkbox-container">
-            {Object.keys(rolesMapping).map(key => (
-              <div className="form-check" key={key}>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id={`check${key}`}
-                  checked={roles.includes(key)}
-                  onChange={handleCheck}
-                  disabled={!isEditing || (checkedCount >= 2 && !roles.includes(key))}
-                />
-                <label className="form-check-label" htmlFor={`check${key}`}>
-                  {rolesMapping[key]}
-                </label>
-              </div>
-            ))}
-          </div>
-
-          <label for="exampleFormControlInput1">Ngày Tạo</label>
-          <input id="registered" name="registered" class="form-control" type="date" value={formData.registered}
-            onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}
-      /*định dạng YYYY-MM-DD*/ />
+          <label for="exampleFormControlInput1">Ngày tạo</label>
+          <input id="registered" name="registered" class="form-control" type="date" value={user.registered}
+            readOnly />
         </div>
-
       </Modal.Body>
       <Modal.Footer>
         <div className="footer-container">
@@ -157,12 +214,8 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>
-              Save
-            </Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
+            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>Save</Button>
+            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>Close</Button>
           </div>
         </div>
       </Modal.Footer>

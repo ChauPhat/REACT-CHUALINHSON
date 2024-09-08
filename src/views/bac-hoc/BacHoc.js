@@ -37,7 +37,7 @@
       try {
         const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
   
@@ -76,6 +76,10 @@
       setSelectedBacHoc(null);
     };
 
+    const onReloadTable = () => {
+      fetchData(); // Reload the data table after editing
+    };
+
     
 
 
@@ -87,7 +91,7 @@
         Tên Bậc Học
       </CTableDataCell>,
       <CTableDataCell width={'20%'} className="fixed-width-column">
-        Cấp Bật
+        Cấp Bậc
       </CTableDataCell>,
       <CTableDataCell width={'20%'} className="fixed-width-column">
         Thao tác
@@ -153,7 +157,8 @@
         />
 
         {selectedBacHoc && (
-          <BacHocModal show={showModal} handleClose={handleCloseModal} bachoc={selectedBacHoc} />
+          <BacHocModal show={showModal} handleClose={handleCloseModal} 
+          bachoc={selectedBacHoc}  onReloadTable={onReloadTable}/>
         )}
 
         {showAddModal && (

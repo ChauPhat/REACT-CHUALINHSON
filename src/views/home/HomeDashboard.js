@@ -1,4 +1,3 @@
-import  React, { useState } from 'react'
 import {
   CAvatar,
   CCol,
@@ -11,8 +10,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
- 
-import CIcon from '@coreui/icons-react'
+import React from 'react'
+
 import {
   cibCcAmex,
   cibCcApplePay,
@@ -28,6 +27,7 @@ import {
   cifUs,
   cilPeople,
 } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -37,7 +37,7 @@ import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
 
-import FiltersBarChart from "../charts/ChartBar";
+import FiltersBarChart from "../charts/ChartBar"
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
 
@@ -164,64 +164,65 @@ const Home = () => {
       payment: { name: 'Amex', icon: cibCcAmex },
       activity: 'Last week',
     },
-    
-  ]
+
+  ];
+
   return (
-    <>  
-    
+    <>
+
       <CRow xs={{ gutter: 3 }}>
         <CCol sm={6} md={8}>
-        <CTable align="middle" className="mb-0 border table-scroll" hover responsive rai > 
-                <CTableHead className="text-nowrap">
-                  <CTableRow>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Pháp Danh || Tên</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Vai Trò </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Vai Trò 2</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Trạng Thái</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableExample.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div>{item.user.name}</div>
-                        <div className="small text-body-secondary text-nowrap">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex justify-content-between text-nowrap">
-                          <div className="fw-semibold">{item.usage.value}%</div>
-                          <div className="ms-3">
-                            <small className="text-body-secondary">{item.usage.period}</small>
-                          </div>
-                        </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-body-secondary text-nowrap">Last login</div>
-                        <div className="fw-semibold text-nowrap">{item.activity}</div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
+          <CTable align="middle" className="mb-0 border table-scroll" hover responsive rai >
+            <CTableHead className="text-nowrap">
+              <CTableRow>
+                <CTableHeaderCell className="bg-body-tertiary text-center">
+                  <CIcon icon={cilPeople} />
+                </CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Pháp Danh || Tên</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Vai Trò </CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Vai Trò 2</CTableHeaderCell>
+                <CTableHeaderCell className="bg-body-tertiary">Trạng Thái</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {tableExample.map((item, index) => (
+                <CTableRow v-for="item in tableItems" key={index}>
+                  <CTableDataCell className="text-center">
+                    <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div>{item.user.name}</div>
+                    <div className="small text-body-secondary text-nowrap">
+                      <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
+                      {item.user.registered}
+                    </div>
+                  </CTableDataCell>
+                  <CTableDataCell className="text-center">
+                    <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="d-flex justify-content-between text-nowrap">
+                      <div className="fw-semibold">{item.usage.value}%</div>
+                      <div className="ms-3">
+                        <small className="text-body-secondary">{item.usage.period}</small>
+                      </div>
+                    </div>
+                    <CProgress thin color={item.usage.color} value={item.usage.value} />
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <div className="small text-body-secondary text-nowrap">Last login</div>
+                    <div className="fw-semibold text-nowrap">{item.activity}</div>
+                  </CTableDataCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
         </CCol>
         <CCol sm={6} md={4} >
-         <WidgetsDropdown className="d-flex flex-column " />
+          <WidgetsDropdown className="d-flex flex-column " />
         </CCol>
       </CRow>
-        <br/>
+      <br />
       <FiltersBarChart />
 
     </>

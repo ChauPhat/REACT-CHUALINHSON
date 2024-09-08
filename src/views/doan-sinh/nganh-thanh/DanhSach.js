@@ -38,7 +38,7 @@ const DSNganhThanh = () => {
       try {
         const response = await axios.get(`${env.apiUrl}/api/users/getListUserWithIDoan?doanId=5`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
@@ -47,7 +47,7 @@ const DSNganhThanh = () => {
           try {
             const imageResponse = await axios.get(`${env.apiUrl}/api/file/get-img?userid=${item.userId}`, {
               headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
               },
             });
             imageUrl = (imageResponse.data.data)
@@ -173,7 +173,7 @@ const DSNganhThanh = () => {
             activeUser: newStatus === 'Active',
           },
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
