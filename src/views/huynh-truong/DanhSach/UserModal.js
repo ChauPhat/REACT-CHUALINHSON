@@ -23,7 +23,6 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
     bacHoc: user.bacHoc || '',
   });
 
-
   useEffect(() => {
   const fetchRoles = async () => {
     try {
@@ -69,7 +68,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       gender: user.gender ? 'Male' : 'Female',
       role1: user.idrole1 || '',
       role2: user.idrole2 || '',
-      bacHoc: user.bacHoc.bacHocId || '',
+      bacHoc: user.bacHoc ? user.bacHoc.bacHocId : '',
     }
     );
     
@@ -207,7 +206,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
                 {bacHoc.tenBacHoc}
               </option>
             ))}
-          </CFormSelect>  
+          </CFormSelect> 
 
           <label htmlFor="email">Email</label>
           <input name="email" className="form-control" type="email"

@@ -166,13 +166,11 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       isActive: true,
       roleId1:  role1 ? { roleId: role1 } : null, // Assume role1 comes from a select input
       roleId2:  role2 ? { roleId: role2 } : null, // Assume role2 comes from a select input
-      // lichSuHocs: bacHoc ? [{ bacHocId: bacHoc }] : [], // Assume bacHoc comes from a select input 
+      lichSuHocs: bacHoc ? [{ bacHocId: bacHoc }] : [], // Assume bacHoc comes from a select input 
       accountDTO: null
     };
     console.log(formData)
-    console.log(gender === 'Male')
-    console.log(role1)
-    console.log(gender)
+
     try {
       // First API call to add Bac Hoc
       const response = await axios.post(`${env.apiUrl}/api/users/createUser`, formData, {

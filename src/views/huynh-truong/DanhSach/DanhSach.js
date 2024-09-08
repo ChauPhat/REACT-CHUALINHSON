@@ -59,7 +59,7 @@ const DSNganhThanh = () => {
         const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
 
         const fetchedData = response.data.data.map(item => {
-          const latestBacHoc = item.lichSuHocs.length > 0 ? item.lichSuHocs[0] : null;
+          const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
           const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
           const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
           return {
@@ -81,11 +81,11 @@ const DSNganhThanh = () => {
             admissionDate: item.ngayGiaNhapDoan,
             group: item.doan ? item.doan.tenDoan : 'N/A',
             phapdanh: item.phapDanh,
-            bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null, 
+            bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null,
           };
         });
         setUsersData(fetchedData);
-
+        console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -227,7 +227,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
+        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userid=${user.id} `} />
       </CTableDataCell>
       <CTableDataCell>{user.phapdanh} || {user.name}</CTableDataCell>
       <CTableDataCell>{user.role1}</CTableDataCell>
@@ -251,9 +251,7 @@ const DSNganhThanh = () => {
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-
-
-
+        
       </CTableDataCell>
     </>
   );
