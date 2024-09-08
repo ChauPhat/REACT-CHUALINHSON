@@ -15,40 +15,51 @@ import {
 import axios from 'axios';
 import '../DoanSinhCss/DanhSach.css';
 import Table from '../../table/Table';
+import InsertModal from './modalDoanSinh/InsertModal'
 import UserModal from './modalDoanSinh/UserModal';
 import env from '../../../env';
 import Swal from 'sweetalert2';
+import CategoryCarousel from "./modalDoanSinh/CategoryCarousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const DSNganhThanh = () => {
   const [searchName, setSearchName] = useState('');
-  const [searchRegistered, setSearchRegistered] = useState('');
+  const [searchChucVuMatch, setSearchChucVuMatch] = useState('');
   const [searchRole, setSearchRole] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [usersData, setUsersData] = useState([]);
+  const [showInsertModal, setShowInsertModal] = useState(false);
 
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/users/getListUserWithIDoan?doanId=1`, {
+        const response = await axios.get(`${env.apiUrl}/api/users/getListUserWithIDoan?doanId=5`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
+
+        let imageUrl;
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
-          let imageUrl = '';
           try {
-            const imageResponse = await axios.get(`${env.apiUrl}/api/file/get-img?userId=${item.userId}&t=${Date.now()}`, {
+            const imageResponse = await axios.get(`${env.apiUrl}/api/file/get-img?userid=${item.userId}`, {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
               },
-              responseType: 'blob', // Đảm bảo nhận về dạng blob
             });
-            imageUrl = URL.createObjectURL(imageResponse.data); // Tạo URL từ blob
+            imageUrl = (imageResponse.data.data)
           } catch (error) {
             console.error('Lỗi khi tải ảnh:', error);
           }
+
+          const doanSinhDetails = item.doanSinhDetails || [];
+          const lichSuHocs = item.lichSuHocs || [];
+          const roleId1 = item.roleId1 || {};
+          const roleId2 = item.roleId1 || {};
+
           return {
             id: item.userId,
             idUX: item.userIdUx,
@@ -58,22 +69,27 @@ const DSNganhThanh = () => {
             phapDanh: item.phapDanh,
             ngaysinh: item.ngaySinh,
             phone: item.sdt,
-            idchucvu1: item.roleId1.roleId,
-            tenchucvu1: item.roleId1.roleName,
-            chucvu2: item.roleId2?.roleName,
+            idchucvu1: roleId1.roleId,
+            tenchucvu1: roleId1.roleName,
+            idchucvu2: roleId2.roleName,
+            tenchucvu2: roleId2.roleName,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
             gender: item.gioiTinh ? "Male" : "Female",
             address: item.diaChi,
-            vaitro: item.role,
-            sdtgd: item.sdtNguoiGiamHo,
-            ngayGiaNhapDoan: item.joinDate,
-            ngayRoiDoan: item.leftDate,
-            mota: item.moTa,
-            doan: item.tenDoan,
+            vaitro: doanSinhDetails[0]?.role,
+            sdtgd: item.sdtGd,
+            doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
+            ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
+            ngayRoiDoan: doanSinhDetails[0]?.leftDate,
+            mota: doanSinhDetails[0]?.moTa,
+            tendoan: doanSinhDetails[0]?.tenDoan,
+            tenBacHoc: lichSuHocs[0]?.tenBacHoc,
+            bacHocId: lichSuHocs[0]?.bacHocId
           };
         }));
         setUsersData(fetchedData);
+        
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
@@ -94,16 +110,19 @@ const DSNganhThanh = () => {
     setShowModal(true);
   };
 
-  const handleGenderChange = (newGender) => {
-    setUser(prevUser => ({
-      ...prevUser,
-      gender: newGender
-    }));
-  };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedUser(null);
+  };
+
+  // Hàm để mở modal
+  const handleOpenInsertModal = () => {
+    setShowInsertModal(true);
+  };
+
+  // Hàm để đóng modal
+  const handleCloseInsertModal = () => {
+    setShowInsertModal(false);
   };
 
   const getBadgeClass = (status) => {
@@ -119,15 +138,21 @@ const DSNganhThanh = () => {
 
   const filteredData = usersData.filter((user) => {
     const nameMatch = (user.name || '').toLowerCase().includes(searchName.toLowerCase());
-    const registeredMatch = formatDateToDDMMYYYY(user.registered).includes(searchRegistered);
-    const roleMatch = (user.role || '').toLowerCase().includes(searchRole.toLowerCase());
+
+    // Thêm điều kiện lọc cho cả hai trường chức vụ
+    const chucVuMatch = (user.tenchucvu1 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase()) ||
+      (user.tenchucvu2 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
+
+    const roleMatch = (user.vaitro || '').toLowerCase().includes(searchRole.toLowerCase());
     const statusMatch = (user.status || '').toLowerCase().includes(searchStatus.toLowerCase());
-    return nameMatch && registeredMatch && roleMatch && statusMatch;
+
+    return nameMatch && chucVuMatch && roleMatch && statusMatch;
   });
+
 
   const handleToggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-  
+
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
@@ -139,7 +164,7 @@ const DSNganhThanh = () => {
       confirmButtonText: 'Có, thay đổi nó!',
       cancelButtonText: 'Hủy'
     });
-  
+
     if (result.isConfirmed) {
       try {
         await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
@@ -151,21 +176,21 @@ const DSNganhThanh = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-  
+
         // Cập nhật trạng thái người dùng trong dữ liệu local state
-        setUsersData(prevUsersData => 
-          prevUsersData.map(u => 
+        setUsersData(prevUsersData =>
+          prevUsersData.map(u =>
             u.id === user.id ? { ...u, status: newStatus } : u
           )
         );
-  
+
         // Hiển thị thông báo thành công
         Swal.fire(
           'Thành công!',
           `Trạng thái người dùng đã được cập nhật.`,
           'success'
         );
-  
+
       } catch (error) {
         console.error('Lỗi khi cập nhật trạng thái:', error);
         // Hiển thị thông báo lỗi
@@ -177,28 +202,28 @@ const DSNganhThanh = () => {
       }
     }
   };
-  
+
 
   const renderRow = (user) => (
     <>
       <CTableDataCell>
         <CImage
-          src={user.avatar || '/path/to/default/avatar.png'} // Hiển thị avatar của người dùng, nếu không có thì dùng ảnh mặc định
+          src={user.avatar || '/path/to/default/avatar.png'}
           size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
         />
       </CTableDataCell>
       <CTableDataCell>
-      <div>{user.name} || {user.phapDanh}</div>
+        <div>{user.name} || {user.phapDanh}</div>
       </CTableDataCell>
       <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
-      <CTableDataCell>{user.role}</CTableDataCell>
+      <CTableDataCell>{user.vaitro}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CDropdown>
+        <CDropdown variant="btn-group" direction="center">
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
@@ -208,7 +233,7 @@ const DSNganhThanh = () => {
               onClick={() => handleToggleStatus(user)}
             >
               <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
-              
+
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -235,9 +260,9 @@ const DSNganhThanh = () => {
     />,
     <CFormInput className='fixed-width-input'
       type="search"
-      placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
-      value={searchRegistered}
-      onChange={(e) => setSearchRegistered(e.target.value)}
+      placeholder="Tìm theo chức vụ"
+      value={searchChucVuMatch}
+      onChange={(e) => setSearchChucVuMatch(e.target.value)}
     />,
     <CFormInput className='fixed-width-input'
       type="search"
@@ -256,12 +281,13 @@ const DSNganhThanh = () => {
 
   return (
     <div className="container-fluid">
+      <CategoryCarousel categories={usersData} />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info">Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
         </CCol>
       </CRow>
 
@@ -270,7 +296,7 @@ const DSNganhThanh = () => {
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+        searchCriteria={{ searchName, searchChucVuMatch, searchRole, searchStatus }}
       />
 
       {selectedUser && (
@@ -278,9 +304,16 @@ const DSNganhThanh = () => {
           show={showModal}
           handleClose={handleCloseModal}
           user={selectedUser}
-          handleGenderChange={handleGenderChange}
         />
       )}
+
+      {showInsertModal && (
+        <InsertModal
+          show={showInsertModal}
+          handleClose={handleCloseInsertModal}
+      />
+      )}
+
     </div>
   );
 };
