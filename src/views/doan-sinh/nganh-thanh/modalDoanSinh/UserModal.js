@@ -6,57 +6,49 @@ import { CFormInput, CFormSelect } from '@coreui/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-function UserModal({show, handleClose, user, handleGenderChange }) {
+function UserModal({ show, handleClose, user }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    ...user,
-    gender: user.gioiTinh ? "Male" : "Female",
-  });
+  const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
   const [roles, setRoles] = useState([]);
   const [bacHoc, setBacHoc] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const layRoles = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/role/get-all`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          },
-        });
-        if (response.data.status === 'OK') {
-          const filteredRoles = response.data.data.filter(role => !role.isHuynhTruong);
-          setRoles(filteredRoles);
-          // setRoles(response.data.data);
-        } else {
-          console.error('Lỗi khi lấy dữ liệu roles:', response.data.message);
-        }
-      } catch (error) {
-        console.error('Lỗi khi gọi API:', error);
-      }
-    };
-    layRoles();
-  }, []);
+        const [rolesResponse, bacHocResponse] = await Promise.all([
+          axios.get(`${env.apiUrl}/api/role/get-all`, {
+            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
+          }),
+          axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
+            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
+          })
+        ]);
 
-  useEffect(() => {
-    const layBacHoc = async () => {
-      try {
-        const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          },
-        });
-        if (response.data.status === 'OK') {
-          setBacHoc(response.data.data);
+        if (rolesResponse.data.status === 'OK') {
+          const filteredRoles = rolesResponse.data.data.filter(
+            (role) => !role.isHuynhTruong && role.doanId === 5
+          );
+          setRoles(filteredRoles);
         } else {
-          console.error('Lỗi khi lấy dữ liệu Bậc Học:', response.data.message);
+          console.error('Lỗi khi lấy dữ liệu roles:', rolesResponse.data.message);
+        }
+
+        if (bacHocResponse.data.status === 'OK') {
+          const filteredBacHoc = bacHocResponse.data.data.filter(
+            (bac) => bac.capBac === "Đoàn Sinh"
+          );
+          setBacHoc(filteredBacHoc);
+        } else {
+          console.error('Lỗi khi lấy dữ liệu Bậc Học:', bacHocResponse.data.message);
         }
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
     };
-    layBacHoc();
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -69,7 +61,14 @@ function UserModal({show, handleClose, user, handleGenderChange }) {
   const handleEditToggle = () => {
     setIsEditing(prevState => !prevState);
   };
-console.log(formData.tenchucvu1);
+
+  const handleGenderChange = (value) => {
+    setFormData({
+      ...formData,
+      gender: value ? "Male" : "Female",
+    });
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({
@@ -186,7 +185,7 @@ console.log(formData.tenchucvu1);
           <label>Đoàn</label>
           <input
             id="doan" name="doan" className="form-control" type="text"
-            value={formData.doan}
+            value={formData.tendoan}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
@@ -194,7 +193,6 @@ console.log(formData.tenchucvu1);
           <label>Chức Vụ</label>
           <CFormSelect
             name="roleId1"
-            value={formData.roleId1?.roleName}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           >
@@ -235,21 +233,17 @@ console.log(formData.tenchucvu1);
           <label>Giới Tính</label>
           <div className="radio-group">
             <label className="radio-inline">
-              <input
-                type="radio" name="gender" value="Male"
+              <input type="radio" name="gender" value="Male"
                 checked={formData.gender === "Male"}
                 onChange={() => handleGenderChange(true)}
-                disabled={!isEditing}
-              />
+                disabled={!isEditing} />
               Nam
             </label>
             <label className="radio-inline">
-              <input
-                type="radio" name="gender" value="Female"
+              <input type="radio" name="gender" value="Female"
                 checked={formData.gender === "Female"}
                 onChange={() => handleGenderChange(false)}
-                disabled={!isEditing}
-              />
+                disabled={!isEditing} />
               Nữ
             </label>
           </div>
@@ -257,18 +251,20 @@ console.log(formData.tenchucvu1);
           <label>Bậc Học</label>
           <CFormSelect
             name="bacHoc"
-            value={formData.bacHoc}
             onChange={handleInputChange}
-            readOnly={!isEditing} disabled={!isEditing}
+            readOnly={!isEditing}
+            disabled={!isEditing}
           >
-            <option>Chọn Bậc Học</option>
+            <option value={formData.bacHocId} >
+              {formData.tenBacHoc || 'Chọn Chức Vụ'}
+            </option>
             {bacHoc.map((bac) => (
               <option key={bac.bacHocId} value={bac.bacHocId}>
                 {bac.tenBacHoc}
               </option>
             ))}
-
           </CFormSelect>
+
 
           <label for="exampleFormControlInput1">Địa Chỉ</label>
           <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.address}
