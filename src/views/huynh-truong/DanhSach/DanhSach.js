@@ -10,7 +10,7 @@ import {
   CDropdownItem,
   CDropdown,
   CDropdownToggle,
-  CDropdownMenu ,
+  CDropdownMenu,
 } from '@coreui/react'
 
 import './DanhSach.css'
@@ -58,15 +58,27 @@ const DSNganhThanh = () => {
       try {
         const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
 
-        const fetchedData = response.data.data.map(item => {
+        console.log('Dữ liệu nhận được:', response.data.data);
+
+        let imageUrl;
+
+        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
           const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
           const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
+
+          try {
+            const imageResponse = await apiClient.get(`/api/file/get-img?userid=${item.userId}`
+            );
+            imageUrl = (imageResponse.data.data)
+          } catch (error) {
+            console.error('Lỗi khi tải ảnh:', error);
+          }
           return {
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
-            avatar: item.avatar,
+            avatar: imageUrl,
             registered: item.createdDate,
             role1: item?.roleId1?.roleName,
             role2: item?.roleId2?.roleName,
@@ -83,7 +95,7 @@ const DSNganhThanh = () => {
             phapdanh: item.phapDanh,
             bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null,
           };
-        });
+        }));
         setUsersData(fetchedData);
         console.log(fetchedData)
       } catch (error) {
@@ -97,10 +109,10 @@ const DSNganhThanh = () => {
   const handleAddHuynhTruong = (newHuynhTruong) => {
     setUsersData((prevData) => [...prevData, newHuynhTruong]);
   };
-  
+
   const handleToggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-  
+
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
@@ -112,7 +124,7 @@ const DSNganhThanh = () => {
       confirmButtonText: 'Có, thay đổi nó!',
       cancelButtonText: 'Hủy'
     });
-  
+
     if (result.isConfirmed) {
       try {
         await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
@@ -124,21 +136,21 @@ const DSNganhThanh = () => {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-  
+
         // Cập nhật trạng thái người dùng trong dữ liệu local state
-        setUsersData(prevUsersData => 
-          prevUsersData.map(u => 
+        setUsersData(prevUsersData =>
+          prevUsersData.map(u =>
             u.id === user.id ? { ...u, status: newStatus } : u
           )
         );
-  
+
         // Hiển thị thông báo thành công
         Swal.fire(
           'Thành công!',
           `Trạng thái người dùng đã được cập nhật.`,
           'success'
         );
-  
+
       } catch (error) {
         console.error('Lỗi khi cập nhật trạng thái:', error);
         // Hiển thị thông báo lỗi
@@ -227,7 +239,7 @@ const DSNganhThanh = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userid=${user.id} `} />
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
       <CTableDataCell>{user.phapdanh} || {user.name}</CTableDataCell>
       <CTableDataCell>{user.role1}</CTableDataCell>
@@ -239,19 +251,19 @@ const DSNganhThanh = () => {
       </CTableDataCell>
       <CTableDataCell>
 
-      <CDropdown>
+        <CDropdown>
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
-              <CButton>Thông tin</CButton>
+              Thông tin
             </CDropdownItem>
             <CDropdownItem
               onClick={() => handleToggleStatus(user)}>
-              <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
+            {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-        
+
       </CTableDataCell>
     </>
   );
@@ -290,10 +302,10 @@ const DSNganhThanh = () => {
       )}
 
       {showAddModal && (
-          <AddHuynhTruongModal show={showAddModal} 
+        <AddHuynhTruongModal show={showAddModal}
           handleClose={handleCloseAddModal}
           onAddHuynhTruong={handleAddHuynhTruong} />
-        )}
+      )}
 
 
     </div>
