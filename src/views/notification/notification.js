@@ -168,10 +168,15 @@ const Notification = () => {
                 {isAdmin && <CTableHeaderCell>Hành động</CTableHeaderCell>}
               </CTableRow>
             </CTableHead>
-            <CTableBody>
+            <CTableBody style={{
+                    
+                          alignItems: 'center', // Căn giữa theo chiều dọc
+                          justifyContent: 'center', // Căn giữa theo chiều ngang
+                          whiteSpace: 'nowrap', // Ngăn ngắt dòng trong ô bảng
+                        }}>
               {filteredNotifications.length === 0 ? (
                 <CTableRow>
-                  <CTableDataCell  colSpan={isAdmin ? 5 : 3}style={{ textAlign: 'center' }}><CAlert color="warning">
+                  <CTableDataCell colSpan={isAdmin ? 5 : 3} style={{ textAlign: 'center' }}><CAlert color="warning">
                     Không có thông báo nào.
                   </CAlert></CTableDataCell>
                 </CTableRow>
@@ -179,13 +184,46 @@ const Notification = () => {
                 filteredNotifications.map((notification, index) => (
                   <CTableRow key={notification.id}>
                     <CTableDataCell>{index + 1}</CTableDataCell>
-                    <CTableDataCell>{notification.message}</CTableDataCell>
-                    <CTableDataCell>{notification.createdAt}</CTableDataCell>
-                    {isAdmin && <CTableDataCell>{notification.status}</CTableDataCell>}
+                    <CTableDataCell style={{ minWidth: '250px' }}>{notification.message}</CTableDataCell>
+                    <CTableDataCell style={{ minWidth: '100px' }}>{notification.createdAt}</CTableDataCell>
                     {isAdmin && (
-                      <CTableDataCell>
-                        <CButton color="success" variant="outline" size="sm" shape="rounded-pill" onClick={() => handleApprove(notification.id, notification.passwordChangeRequest.id)}>Chấp nhận</CButton>
-                        <CButton color="danger" variant="outline" size="sm" shape="rounded-pill" onClick={() => handleReject(notification.id, notification.passwordChangeRequest.id)}>Từ chối</CButton>
+                      <CTableDataCell
+                        style={{
+                          minWidth: '100px'
+                        }}
+                      >
+                        {notification.status}
+                      </CTableDataCell>
+                    )}
+                    {isAdmin && (
+                      <CTableDataCell
+                        style={{
+                          minWidth: '170px',
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          whiteSpace: 'nowrap', 
+                        }}
+                      >
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <CButton
+                            color="success"
+                            variant="outline"
+                            size="sm"
+                            shape="rounded-pill"
+                            onClick={() => handleApprove(notification.id, notification.passwordChangeRequest.id)}
+                          >
+                            Chấp nhận
+                          </CButton>
+                          <CButton
+                            color="danger"
+                            variant="outline"
+                            size="sm"
+                            shape="rounded-pill"
+                            onClick={() => handleReject(notification.id, notification.passwordChangeRequest.id)}
+                          >
+                            Từ chối
+                          </CButton>
+                        </div>
                       </CTableDataCell>
                     )}
                   </CTableRow>
