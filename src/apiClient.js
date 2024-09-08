@@ -29,7 +29,9 @@ apiClient.interceptors.response.use(
         icon: 'error',
         title: 'Đã có người đăng nhập vào tài khoản này!'
       }).then(() => {
-        localStorage.clear();
+        localStorage.clear();    
+        const event = new Event('storage');
+        window.dispatchEvent(event);
         window.location.href = '/#login';
       })
     } else if (error.response) {

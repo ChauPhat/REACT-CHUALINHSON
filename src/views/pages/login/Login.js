@@ -50,7 +50,7 @@ const Login = () => {
     localStorage.setItem('user', JSON.stringify(decodedToken));
 
     // Tạo và phát sự kiện tùy chỉnh để thông báo rằng localStorage đã được cập nhật
-    const event = new Event('sessionUpdated');
+    const event = new Event('storage');
     window.dispatchEvent(event);
   };
 

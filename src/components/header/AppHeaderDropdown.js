@@ -1,5 +1,11 @@
 
 import {
+  cilLockLocked,
+  cilSettings,
+  cilUser
+} from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+import {
   CButton,
   CDropdown,
   CDropdownDivider,
@@ -13,20 +19,14 @@ import {
   CModalFooter,
   CModalHeader,
   CModalTitle
-} from '@coreui/react'
-import {
-  cilLockLocked,
-  cilUser,
-  cilSettings
-} from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
-import { jwtDecode } from 'jwt-decode'
-import Swal from "sweetalert2";
-import env from '../../env';
+} from '@coreui/react';
 import axios from 'axios';
-import ChangePass from './ChangePassword'
-import React, { useEffect, useRef, useState } from 'react'
-import apiClient from '../../apiClient'
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useRef, useState } from 'react';
+import Swal from "sweetalert2";
+import apiClient from '../../apiClient';
+import env from '../../env';
+import ChangePass from './ChangePassword';
 
 
 
@@ -48,6 +48,8 @@ const logout = async () => {
           title: 'Đăng xuất thành công!'
         }).then(() => {
           localStorage.clear();
+          const event = new Event('storage');
+          window.dispatchEvent(event);
           window.location.href = '/#login';
         });
       } catch (error) {

@@ -23,14 +23,18 @@ export const AuthorizationProvider = ({ children }) => {
         }
     }
 
-    useEffect(() => {
-        { localStorage.getItem('token') && fetchScreens() }
-        const handleLocalStorageUpdate = () => {
-            const user = JSON.parse(localStorage.getItem('user'));
-            setScreen(user?.screen_ids?.split(','));
-            setRole([user?.role_name1, user?.role_name2]);
+    const handleLocalStorageUpdate = () => {
+        if (localStorage.getItem('token') && localStorage.getItem('user')) {
             fetchScreens();
-        };
+            const user = JSON.parse(localStorage.getItem('user'));
+            setScreen(user.screen_ids?.split(','));
+            setRole([user.role_name1, user.role_name2]);
+        }
+    };
+
+    useEffect(() => {
+        handleLocalStorageUpdate();
+
         window.addEventListener('storage', handleLocalStorageUpdate);
         return () => {
             window.removeEventListener('storage', handleLocalStorageUpdate);
