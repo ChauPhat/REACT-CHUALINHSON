@@ -7,6 +7,10 @@ import {
   CFormInput,
   CButton,
   CCol,
+  CDropdownItem,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu ,
 } from '@coreui/react'
 
 import './DanhSach.css'
@@ -19,15 +23,9 @@ import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import axios from 'axios'
 import env from '../../../env'
 import apiClient from '../../../apiClient';
+import Swal from 'sweetalert2';
+import AddHuynhTruongModal from './AddHuynhTruongModal';
 
-
-
-
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-const formatDate = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
 
 const getBadgeClass = (status) => {
   switch (status) {
@@ -51,26 +49,29 @@ const DSNganhThanh = () => {
   const [searchRole, setSearchRole] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const handleShowAddModal = () => setShowAddModal(true);
+  const handleCloseAddModal = () => setShowAddModal(false);
 
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get(`/api/users?is_huynh_truong=true`);
+        const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
 
         const fetchedData = response.data.data.map(item => {
-          // const roles = item.roles.split(',').map(role1 => roleMapping[role1.trim()] || role1);
-          // const [role1, role2] = roles.length > 1 ? roles : [roles[0], ''];
-          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
-
+          const latestBacHoc = item.lichSuHocs.length > 0 ? item.lichSuHocs[0] : null;
+          const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
+          const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
           return {
-            // ...item,
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
             avatar: item.avatar,
-            registered: item.createDate,
+            registered: item.createdDate,
             role1: item?.roleId1?.roleName,
             role2: item?.roleId2?.roleName,
+            idrole1: item?.roleId1?.roleId,
+            idrole2: item?.roleId2?.roleId,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
             gender: item.gioiTinh,
@@ -80,10 +81,9 @@ const DSNganhThanh = () => {
             admissionDate: item.ngayGiaNhapDoan,
             group: item.doan ? item.doan.tenDoan : 'N/A',
             phapdanh: item.phapDanh,
-            roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
+            bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null, 
           };
         });
-
         setUsersData(fetchedData);
 
       } catch (error) {
@@ -94,6 +94,62 @@ const DSNganhThanh = () => {
     layDuLieu();
   }, []);
 
+  const handleAddHuynhTruong = (newHuynhTruong) => {
+    setUsersData((prevData) => [...prevData, newHuynhTruong]);
+  };
+  
+  const handleToggleStatus = async (user) => {
+    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+  
+    // Hiển thị hộp thoại xác nhận
+    const result = await Swal.fire({
+      title: 'Bạn có chắc chắn?',
+      text: `Bạn có muốn ${newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Có, thay đổi nó!',
+      cancelButtonText: 'Hủy'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
+          params: {
+            userId: user.id,
+            activeUser: newStatus === 'Active',
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+  
+        // Cập nhật trạng thái người dùng trong dữ liệu local state
+        setUsersData(prevUsersData => 
+          prevUsersData.map(u => 
+            u.id === user.id ? { ...u, status: newStatus } : u
+          )
+        );
+  
+        // Hiển thị thông báo thành công
+        Swal.fire(
+          'Thành công!',
+          `Trạng thái người dùng đã được cập nhật.`,
+          'success'
+        );
+  
+      } catch (error) {
+        console.error('Lỗi khi cập nhật trạng thái:', error);
+        // Hiển thị thông báo lỗi
+        Swal.fire(
+          'Thất bại!',
+          'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
+          'error'
+        );
+      }
+    }
+  };
 
 
   const formatDateToDDMMYYYY = (dateString) => {
@@ -173,8 +229,8 @@ const DSNganhThanh = () => {
       <CTableDataCell>
         <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
       </CTableDataCell>
-      <CTableDataCell>{user.name}</CTableDataCell>
-      <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
+      <CTableDataCell>{user.phapdanh} || {user.name}</CTableDataCell>
+      <CTableDataCell>{user.role1}</CTableDataCell>
       <CTableDataCell>{user.role2}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
@@ -182,8 +238,22 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}
-        >Show</CButton>
+
+      <CDropdown>
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+              <CButton>Thông tin</CButton>
+            </CDropdownItem>
+            <CDropdownItem
+              onClick={() => handleToggleStatus(user)}>
+              <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+
+
+
       </CTableDataCell>
     </>
   );
@@ -198,12 +268,7 @@ const DSNganhThanh = () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-
-        <CButton  variant="outline" color="info">Thêm</CButton>
-        
-
-          <CButton color="secondary" >Thêm</CButton>
-
+          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
 
         </CCol>
       </CRow>
@@ -226,6 +291,11 @@ const DSNganhThanh = () => {
         />
       )}
 
+      {showAddModal && (
+          <AddHuynhTruongModal show={showAddModal} 
+          handleClose={handleCloseAddModal}
+          onAddHuynhTruong={handleAddHuynhTruong} />
+        )}
 
 
     </div>
