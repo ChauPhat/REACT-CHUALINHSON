@@ -185,7 +185,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
           fileFormData.append('file', selectedFile);
           const userId = response.data.data.userId
           // Second API call to upload the file
-          await axios.post(`${env.apiUrl}/api/file/upload-img?bac_hoc_id=${userId}`, fileFormData, {
+          await axios.post(`${env.apiUrl}/api/file/upload-img?userId=${userId}`, fileFormData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${localStorage.getItem('token')}`,

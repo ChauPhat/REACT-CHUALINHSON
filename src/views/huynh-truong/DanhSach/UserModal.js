@@ -1,14 +1,16 @@
-import React, { useState, useEffect,useRef  } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { 
-  CRow , CContainer, 
-  CCol, CFormSelect, 
+import {
+  CRow, CContainer,
+  CCol, CFormSelect,
 } from '@coreui/react'
 import './UserModal.css';
 import env from '../../../env'
+import Swal from 'sweetalert2';
 import axios from 'axios';
+import apiClient from '../../../apiClient';
 
-function UserModal({ show, handleClose, user, handleRoleChange}) {
+function UserModal({ show, handleClose, user, handleRoleChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -16,33 +18,34 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
   const [rolesWithDoanId, setRolesWithDoanId] = useState([]);
   const [rolesWithoutDoanId, setRolesWithoutDoanId] = useState([]);
   const [bacHocList, setBacHocList] = useState([]);
-  const [formData, setFormData] = useState({ ...user,
-    gender: user.gender ? 'Male'   : 'Female',
-    role1: user.role1 || '', 
+  const [formData, setFormData] = useState({
+    ...user,
+    gender: user.gender ? 'Male' : 'Female',
+    role1: user.role1 || '',
     role2: user.role2 || '',
     bacHoc: user.bacHoc || '',
   });
 
   useEffect(() => {
-  const fetchRoles = async () => {
-    try {
-      // Fetch roles as before
-      const response = await axios.get(`${env.apiUrl}/api/role?isHuynhTruong=true`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const fetchedRoles = response.data.data;
-      const rolesWithDoanId = fetchedRoles.filter((role) => role.doanId !== null);
-      const rolesWithoutDoanId = fetchedRoles.filter((role) => role.doanId === null);
+    const fetchRoles = async () => {
+      try {
+        // Fetch roles as before
+        const response = await axios.get(`${env.apiUrl}/api/role?isHuynhTruong=true`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const fetchedRoles = response.data.data;
+        const rolesWithDoanId = fetchedRoles.filter((role) => role.doanId !== null);
+        const rolesWithoutDoanId = fetchedRoles.filter((role) => role.doanId === null);
 
-      setRolesWithDoanId(rolesWithDoanId);
-      setRolesWithoutDoanId(rolesWithoutDoanId);
-    } catch (error) {
-      console.error('Error fetching roles:', error);
-    }
-  };
-  // Fetch Bac Hoc
+        setRolesWithDoanId(rolesWithDoanId);
+        setRolesWithoutDoanId(rolesWithoutDoanId);
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
+    };
+    // Fetch Bac Hoc
     const fetchBacHoc = async () => {
       try {
         const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
@@ -55,7 +58,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
         console.error('Error fetching Bac Hoc:', error);
       }
     };
-  
+
     fetchRoles();
     fetchBacHoc();
   }, []);
@@ -71,14 +74,14 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       bacHoc: user.bacHoc ? user.bacHoc.bacHocId : '',
     }
     );
-    
+
   }, [user]);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    
+
     const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
-  
+
     if (file && validExtensions.includes(file.type)) {
       setSelectedFile(file);
     } else {
@@ -89,12 +92,12 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       });
       fileInputRef.current.value = ''; // Reset file input if invalid
     }
-  
+
   };
 
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing); 
+    setIsEditing(!isEditing);
   };
 
   const handleInputChange = (e) => {
@@ -112,13 +115,67 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
     });
   };
 
-  const handleSave = () => {
-    // Implement save logic here
-    // Example: Call handleRoleChange or update state with new formData
-    // console.log('Saving data:', formData);
+  const handleSave = async () => {
+    console.log('Saving user:', formData);
 
-    setIsEditing(false); // Disable editing mode after saving
+    try {
+      // Chuẩn bị dữ liệu cần gửi
+      const updateData = {
+        userId: formData.id,
+        userIdUx: formData.idUX,
+        hoTen: formData.name,
+        ngaySinh: formData.birthDate,
+        sdt: formData.phone,
+        email: formData.email,
+        phapDanh: formData.phapdanh,
+        gioiTinh: formData.gender === "Male",
+        createdDate: user.createdDate, // Giữ nguyên ngày tạo
+        updatedDate: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
+        diaChi: formData.address,
+        sdtGd: formData.phone || "", // Thêm sdtGd nếu cần
+        avatar: selectedFile ? selectedFile.name : user.avatar, // Lấy tên file ảnh
+        isActive: user.isActive,
+        isHuynhTruong: user.isHuynhTruong,
+        roleId1: {
+          roleId: formData.role1,
+        },
+        roleId2: formData.role2 ? { roleId: formData.role2 } : null,
+        lichSuHocs: [
+          {
+            bacHocId: formData.bacHoc,
+          },
+        ],
+      };
+
+      return;
+
+      // Thực hiện gọi API
+      const response = await axios.put(
+        `${env.apiUrl}/api/users/updateUser?nkd_id=&dsdt_id=`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        // Thông báo thành công
+        Swal.fire({
+          title: 'Thành công!',
+          text: 'Cập nhật thông tin người dùng thành công!',
+          icon: 'success',
+        });
+        handleClose(); // Đóng modal sau khi lưu thành công
+      } else {
+        console.error('Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
   };
+
 
   return (
     <Modal show={show} onHide={handleClose} centered>
@@ -126,14 +183,14 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
         <Modal.Title className="modal-title">Thông Tin Huynh Trưởng</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <div className="avatar-container">
-          <img
+        <div className="avatar-container">
+          <img width={100}
             src={selectedFile ? URL.createObjectURL(selectedFile) : initialImageUrl}
             alt="Avatar"
             className="bachoc-avatar"
           />
-           {isEditing && (
-            <input type="file" onChange={handleFileChange}  accept=".jpg,.jpeg,.png" className="form-control mt-2" />
+          {isEditing && (
+            <input type="file" onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control mt-2" />
           )}
         </div>
 
@@ -143,10 +200,10 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
             <input
               id="name" name="name" className="form-control" type="text"
               value={formData.name} onChange={handleInputChange}
-              readOnly={!isEditing} disabled={!isEditing}/>
+              readOnly={!isEditing} disabled={!isEditing} />
             <span className="input-group-text" id="basic-addon2">{user.idUX}</span>
           </div>
-         
+
           <label htmlFor="role">Chức Vụ</label>
           <CContainer className="px-1">
             <CRow>
@@ -190,7 +247,7 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
           <label htmlFor="phapdanh">Pháp Danh</label>
           <input name="phapdanh" className="form-control" type="text"
             value={formData.phapdanh} onChange={handleInputChange}
-            readOnly={!isEditing} disabled={!isEditing}/>
+            readOnly={!isEditing} disabled={!isEditing} />
 
 
           <label htmlFor="bacHoc">Bậc Học</label>
@@ -206,30 +263,30 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
                 {bacHoc.tenBacHoc}
               </option>
             ))}
-          </CFormSelect> 
+          </CFormSelect>
 
           <label htmlFor="email">Email</label>
           <input name="email" className="form-control" type="email"
             value={formData.email} onChange={handleInputChange}
-            readOnly={!isEditing} disabled={!isEditing}/>
+            readOnly={!isEditing} disabled={!isEditing} />
 
           <label htmlFor="registered">Ngày Sinh</label>
           <input name="registered" className="form-control" type="date"
             value={formData.birthDate} onChange={handleInputChange}
-            readOnly={!isEditing} disabled={!isEditing}/>
+            readOnly={!isEditing} disabled={!isEditing} />
 
 
           <label htmlFor="registered">Ngày Gia Nhập</label>
           <input name="registered" className="form-control" type="date"
             value={formData.registered} onChange={handleInputChange}
-            readOnly={!isEditing} disabled={!isEditing}/>
+            readOnly={!isEditing} disabled={!isEditing} />
 
           <label htmlFor="phone">Số Điện Thoại</label>
-          <input  name="phone"  className="form-control" type="text" value={formData.phone} 
-          onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}/>
+          <input name="phone" className="form-control" type="text" value={formData.phone}
+            onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
-      <label>Giới Tính</label>
-            <div className="radio-group">
+          <label>Giới Tính</label>
+          <div className="radio-group">
             <label className="radio-inline">
               <input type="radio" name="gender" value="Male"
                 checked={formData.gender === "Male"}
@@ -239,12 +296,12 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
             </label>
             <label className="radio-inline">
               <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"} 
+                checked={formData.gender === "Female"}
                 onChange={() => handleGenderChange(false)}
                 disabled={!isEditing} />
               Nữ
             </label>
-            </div>
+          </div>
 
           <label htmlFor="address">Địa Chỉ</label>
           <textarea name="address" className="form-control" id="exampleFormControlTextarea1" rows="3"
@@ -255,8 +312,8 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       <Modal.Footer>
         <div className="footer-container">
           <div className="form-check form-switch">
-            <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" 
-            checked={isEditing} onChange={handleEditToggle}/>
+            <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
+              checked={isEditing} onChange={handleEditToggle} />
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
