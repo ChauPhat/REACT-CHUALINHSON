@@ -7,6 +7,7 @@ import {
   cilMoney,
   cilPlus,
   cilUserPlus,
+  cilPencil,
 } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react';
@@ -259,10 +260,16 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Ghi Chú',
+    to: '/ghi-chu',
+    icon: <CIcon icon={cilPencil} customClassName='nav-icon' />
+  },
+  {
+    component: CNavItem,
     name: 'Thông Báo',
     to: '/thong-bao',
     icon: <CIcon icon={cilBell} customClassName='nav-icon' />
-  },
+  }, 
 ];
 
 
