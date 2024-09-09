@@ -25,15 +25,20 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 403) {
+      console.error('BITCH fix api usage now!!!')
       Swal.fire({
         icon: 'error',
-        title: 'Đã có người đăng nhập vào tài khoản này!'
-      }).then(() => {
-        localStorage.clear();    
-        const event = new Event('storage');
-        window.dispatchEvent(event);
-        window.location.href = '/#login';
+        title: 'fix api usage now!!!'
       })
+      // Swal.fire({
+      //   icon: 'error',
+      //   title: 'Đã có người đăng nhập vào tài khoản này!'
+      // }).then(() => {
+      //   localStorage.clear();    
+      //   const event = new Event('storage');
+      //   window.dispatchEvent(event);
+      //   window.location.href = '/#login';
+      // })
     } else if (error.response) {
       Swal.fire({
         icon: 'warning',
