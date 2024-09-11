@@ -56,7 +56,7 @@ const DSNganhThanh = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
+        const response = await apiClient.get(`/api/users/get-list-huynh-truong/true`);
 
         console.log('Dữ liệu nhận được:', response.data.data);
 
@@ -254,10 +254,10 @@ const DSNganhThanh = () => {
         <CDropdown>
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+            <CDropdownItem  className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
               Thông tin
             </CDropdownItem>
-            <CDropdownItem
+            <CDropdownItem className="custom-dropdown-item" 
               onClick={() => handleToggleStatus(user)}>
             {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
