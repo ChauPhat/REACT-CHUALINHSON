@@ -254,10 +254,10 @@ const DSNganhThanh = () => {
         <CDropdown>
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+            <CDropdownItem  className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
               Thông tin
             </CDropdownItem>
-            <CDropdownItem
+            <CDropdownItem className="custom-dropdown-item" 
               onClick={() => handleToggleStatus(user)}>
             {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>

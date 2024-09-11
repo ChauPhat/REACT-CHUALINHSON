@@ -223,20 +223,22 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CDropdown variant="btn-group" direction="center">
+
+        <CDropdown  >
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
-              <CButton>Thông tin</CButton>
+            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
+              Thông tin
             </CDropdownItem>
-            <CDropdownItem
+            <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}
             >
-              <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
+              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
 
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
+
       </CTableDataCell>
     </>
   );
