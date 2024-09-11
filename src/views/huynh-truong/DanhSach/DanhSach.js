@@ -56,7 +56,7 @@ const DSNganhThanh = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
+        const response = await apiClient.get(`/api/users/get-list-huynh-truong/true`);
 
         console.log('Dữ liệu nhận được:', response.data.data);
 
