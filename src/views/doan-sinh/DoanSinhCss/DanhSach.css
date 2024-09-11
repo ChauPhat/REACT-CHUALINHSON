@@ -51,3 +51,7 @@
   }
   
 }
+
+.custom-dropdown-item {
+  cursor: pointer;
+}
