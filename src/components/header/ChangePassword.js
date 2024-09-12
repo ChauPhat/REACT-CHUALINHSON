@@ -104,7 +104,7 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
 
     return (
         <>
-            <CModal alignment='center' visible={modalVisible} onClose={onCloseModal}>
+            <CModal alignment='center' scrollable visible={modalVisible} onClose={onCloseModal}>
                 <CModalHeader>
                     <CModalTitle>Đổi mật khẩu</CModalTitle>
                 </CModalHeader>

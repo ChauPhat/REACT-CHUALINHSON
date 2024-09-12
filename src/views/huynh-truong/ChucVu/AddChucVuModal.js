@@ -96,7 +96,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thêm Chức Vụ</Modal.Title>
       </Modal.Header>

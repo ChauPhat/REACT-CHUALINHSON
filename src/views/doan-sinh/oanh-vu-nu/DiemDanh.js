@@ -288,7 +288,7 @@ const DDOanhNu = () => {
                 searchCriteria={{ searchTerm }}
             />
 
-            <Modal show={show} onHide={handleClose} centered className='modal-lg'>
+            <Modal show={show} scrollable onHide={handleClose} centered className='modal-lg'>
                 <Modal.Header closeButton>
                     <Modal.Title className="modal-title">Điểm danh</Modal.Title>
                 </Modal.Header>
