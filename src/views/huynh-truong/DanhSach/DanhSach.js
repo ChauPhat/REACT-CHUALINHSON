@@ -52,6 +52,7 @@ const DSNganhThanh = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
+  const [filename, setFilename] = useState('tanloc.xlsx');
 
   useEffect(() => {
     const layDuLieu = async () => {
@@ -96,7 +97,6 @@ const DSNganhThanh = () => {
           };
         }));
         setUsersData(fetchedData);
-        console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -188,6 +188,43 @@ const DSNganhThanh = () => {
   };
 
 
+  const handleDownloadExtract = async () => {
+    try {
+      // Thay thế đường dẫn mục tiêu với một giá trị mặc định hoặc hợp lệ nếu cần
+      const targetFolder = 'C://Users//Admin//Downloads//'; // Đối với trường hợp thực tế, bạn có thể cần giải pháp khác vì trình duyệt không cho phép chọn thư mục lưu trữ
+
+      // Gọi API với các tham số
+      const response = await axios.get('http://localhost:8080/api/export-excel/is-huynh-truong-is-active', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },  
+      
+      params: {
+          targetFolder: targetFolder,
+          filename: filename
+        },
+        responseType: 'arraybuffer' // Đảm bảo dữ liệu trả về là arraybuffer cho tệp Excel
+      });
+
+      // Tạo Blob từ dữ liệu phản hồi
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+
+      // Tạo phần tử liên kết
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+      document.body.appendChild(a); // Thêm liên kết vào body
+      a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
+      document.body.removeChild(a); // Xóa liên kết khỏi body
+
+      // Giải phóng URL đối tượng
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Lỗi khi tải tệp:', error);
+      alert('Tải tệp không thành công.');
+    }};
 
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
@@ -270,7 +307,10 @@ const DSNganhThanh = () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
+
+
 
         </CCol>
       </CRow>
