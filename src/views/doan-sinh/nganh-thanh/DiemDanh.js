@@ -7,14 +7,12 @@ import {
     CTableDataCell
 } from '@coreui/react';
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
-import env from '../../../env';
 import Table from '../../table/Table';
 import '../DoanSinhCss/DanhSach.css';
 import './DiemDanh.css';
-import { render } from 'react-dom';
 
 const DDNganhThanh = () => {
     const [searchTerm, setSearchTerm] = useState({
@@ -362,8 +360,14 @@ const DDNganhThanh = () => {
                         <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
                     </div>
                     <div className="footer-buttons">
-                        <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
-                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button>
+                        <Button variant="success" disabled={!isEditing} onClick={handleSaveDiemDanh} >
+                            Save
+                        </Button>
+                        <Button variant="danger" onClick={handleClose}>
+                            Close
+                        </Button>
+                        {/* <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
+                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button> */}
                     </div>
                 </Modal.Footer>
             </Modal>

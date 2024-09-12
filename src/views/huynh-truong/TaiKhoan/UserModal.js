@@ -232,8 +232,8 @@ function UserModal({ show, handleClose, user, setUpdated }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>Save</Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>Close</Button>
+            <Button variant="success" disabled={!isEditing} onClick={handleSave}>Save</Button>
+            <Button variant="danger" onClick={handleClose}>Close</Button>
           </div>
         </div>
       </Modal.Footer>
