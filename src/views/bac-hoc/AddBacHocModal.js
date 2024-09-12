@@ -131,7 +131,7 @@ const handleSave = async () => {
 
 
     return (
-        <Modal show={show} onHide={handleClose} centered>
+        <Modal show={show} scrollable onHide={handleClose} centered>
         <Modal.Header closeButton>
             <Modal.Title className="modal-title">Thêm Bậc Học</Modal.Title>
         </Modal.Header>

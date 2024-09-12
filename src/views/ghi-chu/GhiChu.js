@@ -177,7 +177,7 @@ const GhiChu = () => {
           <h3>Ghi Chú</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
         </CCol>
       </CRow>
 

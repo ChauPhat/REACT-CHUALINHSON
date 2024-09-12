@@ -351,7 +351,7 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
-                    <CButton color="secondary" onClick={() => setModalVisible(true)}>
+                    <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
                 </CCol>

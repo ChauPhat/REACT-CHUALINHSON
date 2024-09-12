@@ -276,7 +276,7 @@ const DDOanhNu = () => {
                             </option>
                         ))}
                     </CFormSelect>
-                    <CButton color="secondary" onClick={addLichSinhHoatDoan}>Thêm</CButton>
+                    <CButton variant="outline" color="info" onClick={addLichSinhHoatDoan}>Thêm</CButton>
                 </CCol>
             </CRow>
 

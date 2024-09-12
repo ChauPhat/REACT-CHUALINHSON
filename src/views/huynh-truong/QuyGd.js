@@ -356,7 +356,7 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
-                    <CButton color="secondary" onClick={() => setModalVisible(true)}>
+                    <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
                 </CCol>
@@ -383,10 +383,10 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="primary" onClick={handleUpdateMoTa}>
+                    <CButton variant="success" onClick={handleUpdateMoTa}>
                         Cập nhật
                     </CButton>
-                    <CButton color="secondary" onClick={() => setModalVisible2(false)}>
+                    <CButton variant="danger" onClick={() => setModalVisible2(false)}>
                         Đóng
                     </CButton>
                 </CModalFooter>
@@ -454,11 +454,11 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="secondary" onClick={() => setModalVisible(false)}>
-                        Đóng
-                    </CButton>
-                    <CButton color="primary" onClick={handleAddFund}>
+                    <CButton variant="success" onClick={handleAddFund}>
                         Thêm
+                    </CButton>
+                    <CButton variant="danger" onClick={() => setModalVisible(false)}>
+                        Đóng
                     </CButton>
                 </CModalFooter>
             </CModal>
