@@ -143,7 +143,7 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="outline-secondary" onClick={handleConfirmChange}>
-                        Con muốn thay đổi chứ
+                        Thay đổi mật khẩu
                     </CButton>
                     <CButton color="outline-secondary" onClick={onCloseModal}>
                         Đóng
