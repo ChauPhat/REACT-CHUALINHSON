@@ -5,22 +5,28 @@ import {
   CFormInput,
   CButton,
   CCol,
-} from '@coreui/react';
+  CDropdownItem,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+} from '@coreui/react'
 import Table from '../table/Table';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import GhiChuModal from './GhiChuModal';
 import AddGhiChuModal from './AddGhiChuModal';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
-import axios from 'axios';
-import env from '../../env';
+import { jwtDecode } from 'jwt-decode';
+import apiClient from '../../apiClient';
+import Swal from 'sweetalert2';
 
 const GhiChu = () => {
   const [searchName, setSearchName] = useState('');
-  const [BacHocData, setBacHocData] = useState([]);
+  const [GhiChuData, setGhiChuData] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedBacHoc, setSelectedBacHoc] = useState(null);
+  const [selectedGhiChu, setSelectedGhiChu] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [idAccount, setIdAccount] = useState('');
 
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
@@ -31,45 +37,95 @@ const GhiChu = () => {
     
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('Token not found');
+        return;
+      }
+      const decodedToken = jwtDecode(token);
+      const idAccount = decodedToken.account_id;
+      setIdAccount(idAccount);
+      const response = await apiClient.get(`/api/notes/account/${idAccount}`, {
       });
+      if (response.status === 200) {
 
-      const fetchedData = response.data.data.map((item) => ({
-        name: item.tenBacHoc,
-        mota: item.moTa,
+        const fetchedData = response.data.data.map((item) => ({
+          id: item.noteId,
+          name: item.noteName,
+          mota: item.noteContent,
+        }));
+        setGhiChuData(fetchedData);
 
-      }));
-
-      setBacHocData(fetchedData);
+      } else {
+        console.error('Failed to load profile, status:', response.status);
+      }
     } catch (error) {
-      console.error('Lỗi khi gọi API:', error);
+      console.error('Error occurred while fetching profile:', error);
     }
   };
 
-  const filteredData = BacHocData.filter((bacHoc) => {
+  const filteredData = GhiChuData.filter((ghiChu) => {
     return (
-      (searchName === '' || (bacHoc.name && bacHoc.name.toLowerCase().includes(searchName.toLowerCase()))) 
+      (searchName === '' || (ghiChu.noteName && ghiChu.noteName.toLowerCase().includes(searchName.toLowerCase()))) 
     );
   });
 
-  const handleShowModal = (bacHoc) => {
-    setSelectedBacHoc(bacHoc);
+  const handleShowModal = (ghiChu) => {
+    setSelectedGhiChu(ghiChu);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedBacHoc(null);
+    setSelectedGhiChu(null);
   };
 
   const onReloadTable = () => {
     fetchData(); // Reload the data table after editing
   };
 
-  
+  const handleAddGhiChu = (newGhiChu) => {
+    setGhiChuData((prevData) => [...prevData, newGhiChu]);
+  };
+
+  const handleDeleteGhiChu = async (ghiChu) => {
+    const result = await Swal.fire({
+      title: 'Xác nhận xoá!',
+      text: `Bạn có chắc chắn muốn xoá Ghi Chú "${ghiChu.name}" không?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Có, xoá!',
+      cancelButtonText: 'Hủy',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await apiClient.delete(`/api/notes/${ghiChu.id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        if (response.status === 200) {
+          Swal.fire({
+            title: 'Thông báo từ hệ thống!',
+            text: 'Xoá Ghi Chú thành công!',
+            icon: 'success',
+            timer: 2000,
+            timerProgressBar: true,
+          });
+          // Reload the table data after deletion
+          fetchData();
+        }
+      } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+        Swal.fire({
+          title: 'Thông báo từ hệ thống!',
+          text: 'Xoá Ghi Chú thất bại.',
+          icon: 'error',
+        });
+      }
+    }
+  };
 
 
   const headers = [
@@ -93,14 +149,22 @@ const GhiChu = () => {
     '',
   ];
 
-  const renderRow = (bacHoc) => (
+  const renderRow = (ghiChu) => (
     <>
 
-      <CTableDataCell>{bacHoc.name}</CTableDataCell>
+      <CTableDataCell>{ghiChu.name}</CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(bacHoc)}>
-          Show
-        </CButton>
+      <CDropdown>
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(ghiChu)}>
+              Thông tin
+            </CDropdownItem>
+            <CDropdownItem variant="outline" onClick={() => handleDeleteGhiChu(ghiChu)}>
+              Xoá Ghi Chú
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
       </CTableDataCell>
     </>
   );
@@ -125,13 +189,15 @@ const GhiChu = () => {
         searchCriteria={{ searchName }}
       />
 
-        {selectedBacHoc && (
+        {selectedGhiChu && (
         <GhiChuModal show={showModal} handleClose={handleCloseModal} 
-        bachoc={selectedBacHoc}  onReloadTable={onReloadTable}/>
+        ghiChu={selectedGhiChu}  onReloadTable={onReloadTable}/>
         )}
+
         {showAddModal && (
           <AddGhiChuModal show={showAddModal} 
           handleClose={handleCloseAddModal}
+          onAddGhiChu={handleAddGhiChu}
         />
         )}
   
