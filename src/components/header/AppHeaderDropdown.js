@@ -277,7 +277,7 @@ const AppHeaderDropdown = () => {
           </CDropdownMenu>
         </CDropdown>
 
-        <CModal visible={modalVisible} onClose={handleCloseModal}>
+        <CModal visible={modalVisible} scrollable onClose={handleCloseModal}>
           <CModalHeader>
             <CModalTitle>Hồ sơ người dùng</CModalTitle>
           </CModalHeader>

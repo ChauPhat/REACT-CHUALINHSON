@@ -367,7 +367,7 @@ const QuyGD = () => {
             />
 
             {/* Modal hiển thị mô tả */}
-            <CModal visible={modalVisible2} alignment="center" onClose={() => setModalVisible2(false)}>
+            <CModal visible={modalVisible2} scrollable alignment="center" onClose={() => setModalVisible2(false)}>
                 <CModalHeader>
                     <CModalTitle>Mô tả</CModalTitle>
                 </CModalHeader>
@@ -389,7 +389,7 @@ const QuyGD = () => {
             </CModal>
 
             {/* Modal thêm quỹ mới */}
-            <CModal visible={modalVisible} alignment="center" onClose={() => setModalVisible(false)}>
+            <CModal visible={modalVisible} scrollable alignment="center" onClose={() => setModalVisible(false)}>
                 <CModalHeader>
                     <CModalTitle>Thêm Quỹ Mới</CModalTitle>
                 </CModalHeader>

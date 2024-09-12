@@ -92,7 +92,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Chức Vụ</Modal.Title>
       </Modal.Header>

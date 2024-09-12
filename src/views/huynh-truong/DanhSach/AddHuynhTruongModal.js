@@ -250,7 +250,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Huynh Trưởng</Modal.Title>
       </Modal.Header>

@@ -86,7 +86,7 @@ function GhiChuModal({ show, handleClose, ghiChu, onReloadTable  }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Ghi Chú </Modal.Title>
       </Modal.Header>
