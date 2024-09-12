@@ -23,41 +23,41 @@ const Notification = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error("Token không tồn tại");
-        }
+    fetchNotifications(); // Gọi khi component load
 
-        const decodedToken = jwtDecode(token);
-        const userId = decodedToken.user_id;
-        const isAdminUser = [1, 2].includes(userId);
-        setIsAdmin(isAdminUser);
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!token || !user) {
+      console.error("Token hoặc thông tin người dùng không tồn tại");
+      return;
+    }
 
-        const endpoint = isAdminUser
-          ? `/api/notifications/admin/${userId}`
-          : `/api/notifications/user/${userId}`;
-        const response = await apiClient.get(endpoint);
-        setNotifications(response.data);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
+    const decodedToken = jwtDecode(token);
+    const userId = decodedToken.user_id;
+    const roleName1 = user.role_name1;
+    const roleName2 = user.role_name2;
 
-    fetchNotifications();
+    const isAdminUser = ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName1) || 
+                        ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName2);
+    setIsAdmin(isAdminUser);
   }, []);
 
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error("Token không tồn tại");
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!token || !user) {
+        console.error("Token hoặc thông tin người dùng không tồn tại");
+        return;
       }
 
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
-      const isAdminUser = [1, 2].includes(userId);
+      const roleName1 = user.role_name1;
+      const roleName2 = user.role_name2;
+
+      const isAdminUser = ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName1) || 
+                          ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName2);
       setIsAdmin(isAdminUser);
 
       const endpoint = isAdminUser
@@ -67,7 +67,7 @@ const Notification = () => {
       const response = await apiClient.get(endpoint);
       setNotifications(response.data);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Lỗi khi lấy thông báo:', error);
     }
   };
 
@@ -78,10 +78,8 @@ const Notification = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       await apiClient.post(`/api/password-change-requests/approve/${passwordChangeRequestId}`, {});
-
-      // Hiển thị thông báo thành công và gọi lại API
+      
       Swal.fire({
         title: 'Đã chấp nhận!',
         text: 'Yêu cầu đã được chấp nhận.',
@@ -108,10 +106,8 @@ const Notification = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       await apiClient.post(`/api/password-change-requests/reject/${passwordChangeRequestId}`, {});
-
-      // Hiển thị thông báo thành công và gọi lại API
+      
       Swal.fire({
         title: 'Đã từ chối!',
         text: 'Yêu cầu đã bị từ chối.',
@@ -168,12 +164,7 @@ const Notification = () => {
                 {isAdmin && <CTableHeaderCell>Hành động</CTableHeaderCell>}
               </CTableRow>
             </CTableHead>
-            <CTableBody style={{
-                    
-                          alignItems: 'center', // Căn giữa theo chiều dọc
-                          justifyContent: 'center', // Căn giữa theo chiều ngang
-                          whiteSpace: 'nowrap', // Ngăn ngắt dòng trong ô bảng
-                        }}>
+            <CTableBody>
               {filteredNotifications.length === 0 ? (
                 <CTableRow>
                   <CTableDataCell colSpan={isAdmin ? 5 : 3} style={{ textAlign: 'center' }}><CAlert color="warning">
@@ -187,23 +178,12 @@ const Notification = () => {
                     <CTableDataCell style={{ minWidth: '250px' }}>{notification.message}</CTableDataCell>
                     <CTableDataCell style={{ minWidth: '100px' }}>{notification.createdAt}</CTableDataCell>
                     {isAdmin && (
-                      <CTableDataCell
-                        style={{
-                          minWidth: '100px'
-                        }}
-                      >
+                      <CTableDataCell style={{ minWidth: '100px' }}>
                         {notification.status}
                       </CTableDataCell>
                     )}
                     {isAdmin && (
-                      <CTableDataCell
-                        style={{
-                          minWidth: '170px',
-                          alignItems: 'center', 
-                          justifyContent: 'center', 
-                          whiteSpace: 'nowrap', 
-                        }}
-                      >
+                      <CTableDataCell style={{ minWidth: '170px', whiteSpace: 'nowrap' }}>
                         <div style={{ display: 'flex', gap: '10px' }}>
                           <CButton
                             color="success"

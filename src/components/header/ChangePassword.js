@@ -44,7 +44,7 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
             });
             return;
         }
-    
+
         if (newPassword !== confirmPassword) {
             Swal.fire({
                 title: "Lỗi!",
@@ -54,29 +54,35 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
             });
             return;
         }
-    
+
         try {
             const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error("Token không tồn tại");
             }
-    
+
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.user_id;
-    
+            const user = JSON.parse(localStorage.getItem('user'));
+            const roleName1 = user.role_name1;
+            const roleName2 = user.role_name2;
             // Gửi yêu cầu đổi mật khẩu đến API với token trong header
             const response = await apiClient.post('/api/password-change-requests', {
                 userId: userId,
                 newPassword: newPassword
             });
-    
-            if (userId===1 || userId===2) {
+            
+            if (roleName1 === 'Bác Đoàn Trưởng' || roleName2 === 'Bác Đoàn Trưởng'
+                || roleName1 === 'Liên Đoàn Trưởng' || roleName2 === 'Liên Đoàn Trưởng'
+                || roleName1 === 'Admin' || roleName2 === 'Admin') {
                 Swal.fire({
                     title: "Thành công.",
                     text: "Đổi mật khẩu thành công",
                     icon: "success"
-                  });
-            }else{
+                }).then(() => {
+                    onCloseModal();
+                });
+            } else {
                 Swal.fire({
                     title: "Thông báo từ hệ thống!",
                     text: "Đang chờ được xét duyệt, vào phần thông báo để chờ phản hồi từ admin...",
@@ -99,8 +105,8 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
             });
         }
     }
-    
-    
+
+
 
     return (
         <>
