@@ -23,6 +23,7 @@ import axios from 'axios';
 import env from '../../env';
 import '../doan-sinh/DoanSinhCss/DanhSach.css';
 import Swal from 'sweetalert2';
+import apiClient from '../../apiClient';
 
 const QuyGD = () => {
     const [searchName, setSearchName] = useState('');
@@ -47,6 +48,7 @@ const QuyGD = () => {
         moTa: '',
         thuOrChi: false,
         soTien: 0,
+        ngayThem: new Date(),
         year: new Date().getFullYear(),
         quy: getCurrentQuarter(), // Đặt giá trị quý hiện tại mặc định
     });
@@ -55,6 +57,7 @@ const QuyGD = () => {
     const [years, setYears] = useState([]);
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedQuarter, setSelectedQuarter] = useState('0'); // Khởi tạo với giá trị mặc định '0'
+    const [selectedNgayThem, setSelectedNgayThem] = useState('');
 
     useEffect(() => {
         fetchFundData();
@@ -63,19 +66,19 @@ const QuyGD = () => {
 
     const fetchFundData = async () => {
         try {
-            const response = await axios.get(`${env.apiUrl}/api/quygiadinh/getListLichQuyGiaDinh`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
+            const response = await apiClient.get(`/api/quy-gia-dinh/get-list-lich-quy-gia-dinh`);
             const apiData = response.data.data;
-            
+
+            console.log(apiData);
+
+
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyGiaDinhs.map((item) => ({
                     lichSuQuyGiaDinhId: item.lichSuQuyGiaDinhId,
                     tenThuChi: item.tenThuChi || 'Chưa có tên quỹ',
                     moTa: item.moTa || 'Không có mô tả',
                     soTien: item.soTien || 0,
+                    ngayThem: item.ngayThem || 'Chưa có ngày',
                     thuOrChi: item.thuOrChi,
                     year: item.year || 0,
                     quy: item.quy || 0,
@@ -96,12 +99,13 @@ const QuyGD = () => {
     // Hàm lọc dữ liệu theo năm, quý và tên
     const filteredData = useMemo(() => fundData.filter((fund) => {
         const matchesName = searchName === '' || fund.tenThuChi.toLowerCase().includes(searchName.toLowerCase());
+        const matchesNgayThem = selectedNgayThem === '' || fund.ngayThem.toLowerCase().includes(selectedNgayThem.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        // console.log(searchName, selectedYear, selectedQuarter);
+        console.log(fundData);
+        return matchesName && matchesYear && matchesQuarter && matchesNgayThem;
 
-        return matchesName && matchesYear && matchesQuarter;
-    }), [fundData, searchName, selectedYear, selectedQuarter]);
+    }), [fundData, searchName, selectedYear, selectedQuarter, selectedNgayThem]);
 
     useEffect(() => {
         let totalAmount = 0;
@@ -146,6 +150,11 @@ const QuyGD = () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        const [year, month, day] = dateString.split("-");
+        return `${day}-${month}-${year}`;
+    };
+
     // Hàm xử lý thêm quỹ
     const handleAddFund = async () => {
         if (newFund.tenThuChi === '' || newFund.soTien === 0) {
@@ -182,11 +191,7 @@ const QuyGD = () => {
         newFund.soTien = parseInt(newFund.soTien);
         // console.log(newFund);
         try {
-            await axios.post(`${env.apiUrl}/api/quygiadinh/insertLichSuQuyGiaDinh`, newFund, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
+            await apiClient.post(`/api/quy-gia-dinh/insert-lich-su-quy-gia-dinh`, newFund);
             Swal.fire({
                 icon: 'success',
                 title: 'Thêm quỹ thành công',
@@ -209,44 +214,45 @@ const QuyGD = () => {
     };
 
     const handleUpdateMoTa = async () => {
-        try {
-            // console.log(selectedMoTa);
-            // console.log(selectedLichSuQuyId);
-
-            const response = await fetch(`${env.apiUrl}/api/quygiadinh/updateMotaLichSuQuyGiaDinh?lich_su_quy_gia_dinh_id=${selectedLichSuQuyId}&mo_ta=${selectedMoTa}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        const result = await Swal.fire({
+            title: "Thông báo từ hệ thống!",
+            text: "Bạn có chắc chắn muốn cập nhật mô tả?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Đồng ý",
+            cancelButtonText: "Hủy",
+        });
+        if (result.isConfirmed) {
+            try {
+                const response = await apiClient.put(`/api/quy-gia-dinh/update-mota-lich-su-quy-gia-dinh/${selectedLichSuQuyId}/${selectedMoTa}`);
+                if (response.data.message !== '') {
+                    await fetchFundData();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập nhật thành công!',
+                        showConfirmButton: true,
+                    });
                 }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            } catch (error) {
+                console.error('Error updating fund:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Cập nhật thất bại!',
+                    text: 'Có lỗi xảy ra khi cập nhật mô tả.',
+                    showConfirmButton: true,
+                });
             }
-
-            // Cập nhật dữ liệu sau khi chỉnh sửa
-            await fetchFundData();
-            Swal.fire({
-                icon: 'success',
-                title: 'Cập nhật thành công!',
-                showConfirmButton: true,
-            });
-        } catch (error) {
-            console.error('Error updating fund:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Cập nhật thất bại!',
-                text: 'Có lỗi xảy ra khi cập nhật mô tả.',
-                showConfirmButton: true,
-            });
         }
     };
 
 
     const headers = useMemo(() => [
         <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
+        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày</CTableDataCell>,
         <CTableDataCell width={'30%'} className="fixed-width-column">Số tiền</CTableDataCell>,
-        <CTableDataCell width={'40%'} className="fixed-width-column">Mô tả</CTableDataCell>
+        <CTableDataCell width={'10%'} className="fixed-width-column">Mô tả</CTableDataCell>
     ], []);
 
     const headerCells = useMemo(() => [
@@ -256,15 +262,22 @@ const QuyGD = () => {
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
         />,
+        <CFormInput className='fixed-width-input'
+            type="search"
+            placeholder="Tìm theo ngày"
+            value={selectedNgayThem}
+            onChange={(e) => setSelectedNgayThem(e.target.value)}
+        />,
         '',
-        '',
-    ], [searchName]);
+        ''
+    ], [searchName, selectedNgayThem]);
 
 
 
     const renderRow = useCallback((fund) => (
         <>
             <CTableDataCell>{fund.tenThuChi}</CTableDataCell>
+            <CTableDataCell>{formatDate(fund.ngayThem)}</CTableDataCell>
             <CTableDataCell>
                 <div style={{ display: 'inline-flex' }}>
                     <div style={{ marginRight: '5px' }}>
@@ -288,16 +301,16 @@ const QuyGD = () => {
                             } else {
                                 // Phần đầu tiên không thay đổi
                                 let firstPart = parts[0].trim();
-                                if(firstPart.length === 0) {
+                                if (firstPart.length === 0) {
                                     parts.shift();
                                     firstPart = parts[0].trim();
                                 }
-                            
+
                                 // Phần còn lại, mỗi phần bắt đầu với '- ' và xuống dòng
                                 const restParts = parts.slice(1).map(part => `\n- ${part.trim()}`);
 
                                 // Kết hợp phần đầu tiên với các phần còn lại
-                                const formattedMoTa = `${`- `+firstPart+restParts.join('')}`;
+                                const formattedMoTa = `${`- ` + firstPart + restParts.join('')}`;
 
                                 setSelectedMoTa(formattedMoTa);
                             }
