@@ -277,7 +277,7 @@ const DDThieuNu = () => {
                             </option>
                         ))}
                     </CFormSelect>
-                    <CButton color="secondary" onClick={addLichSinhHoatDoan}>Thêm</CButton>
+                    <CButton variant="outline" color="info" onClick={addLichSinhHoatDoan}>Thêm</CButton>
                 </CCol>
             </CRow>
 
@@ -289,7 +289,7 @@ const DDThieuNu = () => {
                 searchCriteria={{ searchTerm }}
             />
 
-            <Modal show={show} onHide={handleClose} centered className='modal-lg'>
+            <Modal show={show} scrollable onHide={handleClose} centered className='modal-lg'>
                 <Modal.Header closeButton>
                     <Modal.Title className="modal-title">Điểm danh</Modal.Title>
                 </Modal.Header>

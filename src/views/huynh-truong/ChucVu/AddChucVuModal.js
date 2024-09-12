@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import './ChucVuModal.css';
 import env from '../../../env'
+import apiClient from '../../../apiClient';
 
 function AddChucVuModal({ show, handleClose, onAddChucVu }) {
   const [name, setName] = useState('');
@@ -16,11 +17,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
     // Gọi API lấy danh sách đoàn
     const fetchDoanList = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/doan/getAllDoan`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await apiClient.get(`/api/doan`);
         setDoanList(response.data.data);
       } catch (error) {
         console.error('Lỗi khi gọi API lấy danh sách đoàn:', error);
@@ -62,11 +59,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
     };
 
     try {
-      const response = await axios.post(`${env.apiUrl}/api/role/insert`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await apiClient.post(`/api/roles/insert`, formData);
       const newChucVu = {
         id: response.data.data.ChucVuId,
         name,
@@ -96,7 +89,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thêm Chức Vụ</Modal.Title>
       </Modal.Header>

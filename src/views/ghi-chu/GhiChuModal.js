@@ -1,25 +1,21 @@
 import React, { useState,useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import env from '../../env';
 import Swal from 'sweetalert2';
-import axios from 'axios';
 import './GhiChuModal.css';
+import { jwtDecode } from 'jwt-decode';
+import apiClient from '../../apiClient';
 
-function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
-  const [isEditing, setIsEditing] = useState(false);
+function GhiChuModal({ show, handleClose, ghiChu, onReloadTable  }) {
   const [formData, setFormData] = useState({
-    name: bachoc.name || '',
-    role: bachoc.role || '',
-    mota: bachoc.mota || '',
+    name: ghiChu.name || '',
+    mota: ghiChu.mota || '',
   });
   const [errors, setErrors] = useState({});
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [initialImageUrl, setInitialImageUrl] = useState('');
-
+  const [idAccount, setIdAccount] = useState('');
 
   useEffect(() => {
   
-  }, [bachoc]);
+  }, [ghiChu]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing); // Toggle edit mode
@@ -35,31 +31,35 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
   };
 
 
-
-
-
   const handleSave = async () => {
 
 
     const result = await Swal.fire({
       title: 'Xác nhận!',
-      text: 'Bạn có chắc chắn muốn sửa bậc học này không?',
+      text: 'Bạn có chắc chắn muốn sửa Ghi Chú này không?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Có, Sửa',
       cancelButtonText: 'Hủy',
     });
-    
-    if (result.isDenied || result.isDismissed) return;
 
-    const BacHocData = {
-      tenBacHoc: formData.name, // Mapping the formData to the expected field
-      capBac: formData.role,    // Mapping the formData to the expected field
-      moTa: formData.mota,      // Mapping the formData to the expected field
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token not found');
+      return;
+    }
+    const decodedToken = jwtDecode(token);
+    const idAccount = decodedToken.account_id;
+    setIdAccount(idAccount);
+    
+    const GhiChuData = {
+      noteName: formData.name, // Mapping the formData to the expected field
+      noteContent: formData.mota,// Mapping the formData to the expected field
+      accountId: idAccount,    
     };
     
     try {
-      const response = await axios.put(`${env.apiUrl}/api/bac-hoc/updateBacHoc?bacHocId=${bachoc.id}`, BacHocData, {
+      const response = await apiClient.put(`api/notes/${ghiChu.id}`, GhiChuData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -67,14 +67,14 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
 
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
-        text: 'Thêm bậc học thành công!',
+        text: 'Sửa ghi chú thành công!',
         icon: 'success',
         timer: 2000,
         timerProgressBar: true,
       });
       handleClose(); // Close the modal after successful save
       onReloadTable(); // Reload the data table after successful save
-      setIsEditing(false); // Disable editing mode
+     // Disable editing mode
     } catch (error) {
       console.error('Lỗi khi gọi API:', error);
       Swal.fire({
@@ -83,16 +83,12 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
         icon: 'error',
       });
     }
-    
-
-
-    setIsEditing(false); // Disable editing mode after saving
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title className="modal-title">Thông Tin Bậc Học</Modal.Title>
+        <Modal.Title className="modal-title">Thông Tin Ghi Chú </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
@@ -100,11 +96,10 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="name">Tên Ghi Chu</label>
+          <label htmlFor="name">Tên Ghi Chú</label>
           <input id="name" name="name"  className="form-control"
             type="text"  value={formData.name} onChange={handleInputChange}
           />
-
           <label htmlFor="mota">Mô Tả</label>
           <textarea name="mota" className="form-control" rows="3"
             value={formData.mota} onChange={handleInputChange}
@@ -130,4 +125,4 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
   );
 }
 
-export default BacHocModal;
+export default GhiChuModal;

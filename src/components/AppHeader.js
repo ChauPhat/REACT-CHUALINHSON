@@ -38,15 +38,18 @@ const AppHeader = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
         if (!token) {
           throw new Error("Token không tồn tại")
         }
 
         const decodedToken = jwtDecode(token)
         const userId = decodedToken.user_id
-        const isAdminUser = [1, 2].includes(userId)
-        setIsAdmin(isAdminUser)
+        const roleName1 = user.role_name1;
+        const roleName2 = user.role_name2;
+        const isAdminUser = ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName1) ||
+          ['Bác Đoàn Trưởng', 'Liên Đoàn Trưởng', 'Admin'].includes(roleName2);
 
         const url = isAdminUser
           ? `/api/notifications/admin/${userId}/unread`
@@ -129,12 +132,12 @@ const AppHeader = () => {
                   notifications.map(notification => (
                     <CDropdownItem
                       key={notification.id}
-                      
+
                       onClick={() => {
                         markAsRead(notification.id)
-                        window.location.href = '/#/thong-bao' 
+                        window.location.href = '/#/thong-bao'
                       }}
-                      
+
                     >
                       {notification.message}
                     </CDropdownItem>

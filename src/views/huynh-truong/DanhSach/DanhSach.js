@@ -56,9 +56,8 @@ const DSNganhThanh = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get(`/api/users/get-list-huynh-truong/true`);
-
-        console.log('Dữ liệu nhận được:', response.data.data);
+        let isHuynhTruong = true;
+        const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
 
         let imageUrl;
 
@@ -68,7 +67,7 @@ const DSNganhThanh = () => {
           const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
 
           try {
-            const imageResponse = await apiClient.get(`/api/file/get-img?userid=${item.userId}`
+            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`
             );
             imageUrl = (imageResponse.data.data)
           } catch (error) {
@@ -127,15 +126,8 @@ const DSNganhThanh = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
-          params: {
-            userId: user.id,
-            activeUser: newStatus === 'Active',
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        let activeUser = newStatus === 'Active' ? true : false;
+        await apiClient.put(`/api/users/active-user/${user.id}/${activeUser}`, null);
 
         // Cập nhật trạng thái người dùng trong dữ liệu local state
         setUsersData(prevUsersData =>
@@ -254,12 +246,12 @@ const DSNganhThanh = () => {
         <CDropdown>
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem  className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
+            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
               Thông tin
             </CDropdownItem>
-            <CDropdownItem className="custom-dropdown-item" 
+            <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}>
-            {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -278,7 +270,7 @@ const DSNganhThanh = () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
 
         </CCol>
       </CRow>
