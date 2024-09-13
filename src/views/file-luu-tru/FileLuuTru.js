@@ -244,23 +244,23 @@ const FileLuuTru = () => {
                     title: "Thông báo!",
                     text: "Xoá file thành công.",
                     icon: "success"
-                });   
-                
+                });
+
                 axios.delete(`${env.apiUrl}/api/files/${name}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 })
-                .then(response => {
-                    fetchFiles();
-                })
-                .catch(error => {
-                    MySwal.fire({
-                        title: "Thông báo!",
-                        text: "Có lỗi trong quá trình xoá file",
-                        icon: "error"
+                    .then(response => {
+                        fetchFiles();
+                    })
+                    .catch(error => {
+                        MySwal.fire({
+                            title: "Thông báo!",
+                            text: "Có lỗi trong quá trình xoá file",
+                            icon: "error"
+                        });
                     });
-                });
             }
         });
     }
@@ -287,6 +287,8 @@ const FileLuuTru = () => {
         "",
     ];
 
+    const isAuthorized = authorizeRole(["Thư Ký"]);
+
     const renderRow = (user) => (
         <>
             <CTableDataCell>{user.name}</CTableDataCell>
@@ -298,12 +300,10 @@ const FileLuuTru = () => {
             </CTableDataCell> */}
             <CTableDataCell className="text-center">
                 <CButton color="success" variant="outline" onClick={() => dowloadFile(user.name)}>Tải</CButton>
-                <CButton color="danger" variant="outline" style={{ marginLeft: '10px' }} onClick={() => deleteFile(user.name)}>Xoá</CButton>
+                {isAuthorized && <CButton color="danger" variant="outline" style={{ marginLeft: '10px' }} onClick={() => deleteFile(user.name)}>Xoá</CButton>}
             </CTableDataCell>
         </>
     );
-
-    const isAuthorized = authorizeRole(["Thư Ký"]);
 
     return (
         <div>
@@ -312,10 +312,10 @@ const FileLuuTru = () => {
                     <CCol className="d-flex align-items-center flex-grow-1">
                         <h3>File lưu trữ</h3>
                     </CCol>
-                    <CCol className="d-flex justify-content-end">
-                        {/* {isAuthorized && } */}
-                        <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>
-                    </CCol>
+                    {isAuthorized &&
+                        <CCol className="d-flex justify-content-end">
+                            <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>
+                        </CCol>}
                 </CRow>
 
                 <Table
