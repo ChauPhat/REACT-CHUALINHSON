@@ -15,9 +15,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import '../../../doan-sinh/DoanSinhCss/DanhSach.css'
-import axios from 'axios'
 import env from '../../../../env'
-
+import apiClient from '../../../../apiClient';
 
 
 
@@ -54,14 +53,14 @@ const DPOanhNam = () => {
     const layDuLieu = async () => {
       try {
         // First API call
-        const response1 = await axios.get(`${env.apiUrl}/api/nhiemkydoans/getListNhiemKyDoanWithDoanId?doan_id=1`, {
+        const response1 = await apiClient.get(`/api/nhiem-ky-doan/get-list-nhiem-ky-doan-with-doanid/1`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
   
         // Second API call
-        const response2 = await axios.get(`${env.apiUrl}/api/doansinhdetails/getDoanSinhDetailsWithDoanId?doan_id=1`,{
+        const response2 = await apiClient.get(`/api/users/get-list-user-with-id-doan/1`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -88,7 +87,7 @@ const DPOanhNam = () => {
             roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
           };
         });
-        console.log(data1)
+
         // Mapping data from the second API response
         const data2 = response2.data.data.map(item => {
           // Adjust mapping logic according to the structure of the second API response

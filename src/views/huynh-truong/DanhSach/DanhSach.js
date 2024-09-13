@@ -23,6 +23,7 @@ import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import apiClient from '../../../apiClient';
 import Swal from 'sweetalert2';
 import AddHuynhTruongModal from './AddHuynhTruongModal';
+import { right } from '@popperjs/core';
 
 
 const getBadgeClass = (status) => {
@@ -329,7 +330,7 @@ const DSHuynhTruong= () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info" onClick={handleDownloadExtract}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
 
 
