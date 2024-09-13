@@ -352,7 +352,7 @@ const DSOanhNam = () => {
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info" onClick={handleDownloadExtract}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
         </CCol>
       </CRow>
