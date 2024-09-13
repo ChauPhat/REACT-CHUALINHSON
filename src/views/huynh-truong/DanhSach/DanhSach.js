@@ -20,8 +20,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
-import axios from 'axios'
-import env from '../../../env'
 import apiClient from '../../../apiClient';
 import Swal from 'sweetalert2';
 import AddHuynhTruongModal from './AddHuynhTruongModal';
@@ -43,7 +41,7 @@ const handleGenderChange = (newGender) => {
   }));
 };
 
-const DSNganhThanh = () => {
+const DSHuynhTruong= () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -52,7 +50,7 @@ const DSNganhThanh = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
-  const [filename, setFilename] = useState('tanloc.xlsx');
+  const [filename, setFilename] = useState('DanhSachHuynhTruong.xlsx');
 
   useEffect(() => {
     const layDuLieu = async () => {
@@ -190,41 +188,66 @@ const DSNganhThanh = () => {
 
   const handleDownloadExtract = async () => {
     try {
-      // Thay thế đường dẫn mục tiêu với một giá trị mặc định hoặc hợp lệ nếu cần
-
-      // Gọi API với các tham số
-      const response = await axios.get('http://localhost:8080/api/export-excel/is-huynh-truong-is-active', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },  
-      
-      params: {
-      
-          filename: filename
+      // Hiển thị Swal với trạng thái đang tải
+      Swal.fire({
+        title: 'Đang tạo file...',
+        text: 'Vui lòng chờ trong giây lát.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading(); // Hiển thị icon loading
         },
-        responseType: 'arraybuffer' // Đảm bảo dữ liệu trả về là arraybuffer cho tệp Excel
       });
 
+      // Gọi API với các tham số
+      const response = await apiClient.get('/api/export-excel/is-huynh-truong-is-active', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          filename: filename, 
+        },
+        responseType: 'arraybuffer',
+      });
+  
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-
-      // Tạo phần tử liên kết
+  
+      // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
       a.href = url;
       a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
       document.body.appendChild(a); // Thêm liên kết vào body
-      a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
-      document.body.removeChild(a); // Xóa liên kết khỏi body
-
-      // Giải phóng URL đối tượng
-      URL.revokeObjectURL(url);
-
+  
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'File đã sẵn sàng để tải xuống!',
+        confirmButtonText: 'Tải xuống',
+        allowOutsideClick: false, // Không cho phép nhấp ra ngoài để đóng Swal
+        allowEscapeKey: false, // Không cho phép dùng phím Escape để thoát Swal
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Tạo phần tử liên kết để tải file
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+          document.body.appendChild(a); // Thêm liên kết vào body
+          a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
+          document.body.removeChild(a); // Xóa liên kết khỏi body
+          URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+        }
+      });
     } catch (error) {
       console.error('Lỗi khi tải tệp:', error);
-      alert('Tải tệp không thành công.');
-    }};
-
+      // Cập nhật Swal khi có lỗi
+      Swal.fire({
+        icon: 'error',
+        title: 'Tải tệp không thành công',
+        text: 'Vui lòng thử lại.',
+      });
+    }
+  };
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
@@ -343,4 +366,4 @@ const DSNganhThanh = () => {
   )
 }
 
-export default DSNganhThanh
+export default DSHuynhTruong

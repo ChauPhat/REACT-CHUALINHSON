@@ -22,6 +22,7 @@ import Swal from 'sweetalert2';
 import CategoryCarousel from "./modalDoanSinh/CategoryCarousel";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import apiClient from '../../../apiClient';
 
 const DSOanhNu = () => {
   const [searchName, setSearchName] = useState('');
@@ -32,6 +33,7 @@ const DSOanhNu = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
+  const [filename, setFilename] = useState('DanhSachOanhNu.xlsx');
 
   useEffect(() => {
     const layDuLieu = async () => {
@@ -241,6 +243,70 @@ const DSOanhNu = () => {
     </>
   );
 
+  const handleDownloadExtract = async () => {
+    try {
+      // Hiển thị Swal với trạng thái đang tải
+      Swal.fire({
+        title: 'Đang tạo file...',
+        text: 'Vui lòng chờ trong giây lát.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading(); // Hiển thị icon loading
+        },
+      });
+
+      // Gọi API với các tham số
+      const response = await apiClient.get('api/export-excel/danh-sach-doan-sinh', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          filename: filename, 
+          idDoan:'2'
+        },
+        responseType: 'arraybuffer',
+      });
+  
+      // Tạo Blob từ dữ liệu phản hồi
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+  
+      // Tạo phần tử liên kết để tải file
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+      document.body.appendChild(a); // Thêm liên kết vào body
+  
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'File đã sẵn sàng để tải xuống!',
+        confirmButtonText: 'Tải xuống',
+        allowOutsideClick: false, // Không cho phép nhấp ra ngoài để đóng Swal
+        allowEscapeKey: false, // Không cho phép dùng phím Escape để thoát Swal
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Tạo phần tử liên kết để tải file
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+          document.body.appendChild(a); // Thêm liên kết vào body
+          a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
+          document.body.removeChild(a); // Xóa liên kết khỏi body
+          URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+        }
+      });
+    } catch (error) {
+      console.error('Lỗi khi tải tệp:', error);
+      // Cập nhật Swal khi có lỗi
+      Swal.fire({
+        icon: 'error',
+        title: 'Tải tệp không thành công',
+        text: 'Vui lòng thử lại.',
+      });
+    }
+  };
+
   const headers = [
     <CTableDataCell width={'5%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'25%'} className="fixed-width-column">Tên || Pháp Danh</CTableDataCell>,
@@ -287,6 +353,7 @@ const DSOanhNu = () => {
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
         </CCol>
       </CRow>
