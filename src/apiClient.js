@@ -24,8 +24,14 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 403) {
-      console.error('BITCH fix api usage now!!!')
+    if (error.response?.status === 423) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Tài khoản đang bị khóa',
+        titleText: error.response.data?.message
+      })
+    } else if (error.response?.status === 403) {
+      console.error('fix the api usage: ', error?.request?.responseURL);
       Swal.fire({
         icon: 'error',
         title: 'fix api usage now!!!'
@@ -39,7 +45,7 @@ apiClient.interceptors.response.use(
       //   window.dispatchEvent(event);
       //   window.location.href = '/#login';
       // })
-    } else if (error.response) {
+    } else {
       Swal.fire({
         icon: 'warning',
         title: error.response?.data?.message || 'Thao tác dữ liệu thất bại!'

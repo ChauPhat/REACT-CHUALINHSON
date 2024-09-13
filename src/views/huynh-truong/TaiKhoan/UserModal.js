@@ -18,10 +18,9 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   const [nodes, setNodes] = useState(null);
   const [selectedNodeKeys, setSelectedNodeKeys] = useState(null);
   const [formData, setFormData] = useState({
-    password: user?.password,
-    userId: {
-      userId: user.userId
-    }
+    username: user.accountDTO?.username,
+    password: user.accountDTO?.password,
+    userId: user.userId
   });
 
   useEffect(() => {
@@ -103,6 +102,15 @@ function UserModal({ show, handleClose, user, setUpdated }) {
     setIsEditing(!isEditing);
   }
 
+  const formatDateToDDMMYYYY = (dateString) => {
+    if (!dateString) return;
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -125,21 +133,26 @@ function UserModal({ show, handleClose, user, setUpdated }) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await apiClient.put(`/api/accounts/${user?.accountDTO?.accountId}`, payload);
+          const response = user.accountDTO
+            ? await apiClient.put(`/api/accounts/${user.accountDTO.accountId}`, payload)
+            : await apiClient.post(`/api/accounts`, {
+              ...payload,
+              isActive: true
+            });
           let timerInterval;
           Swal.fire({
             title: "Vui lòng đợi xử lý thông tin!",
-            html: "Tự động đóng sau <b></b> mili giây.",
+            // html: "Tự động đóng sau <b></b> mili giây.",
             timer: 2000,
             timerProgressBar: true,
             allowOutsideClick: false,
             allowEscapeKey: false,
             didOpen: () => {
               Swal.showLoading();
-              const timer = Swal.getPopup().querySelector("b");
-              timerInterval = setInterval(() => {
-                timer.textContent = `${Swal.getTimerLeft()}`;
-              }, 100);
+              // const timer = Swal.getPopup().querySelector("b");
+              // timerInterval = setInterval(() => {
+              //   timer.textContent = `${Swal.getTimerLeft()}`;
+              // }, 100);
             },
             willClose: () => {
               clearInterval(timerInterval);
@@ -167,23 +180,23 @@ function UserModal({ show, handleClose, user, setUpdated }) {
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={`${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()}`} alt="Avatar" className="user-avatar" />
+          <img src={`${user.avatar}`} alt="Avatar" className="user-avatar" />
         </div>
 
         <div class="form-group">
           <label for="exampleFormControlInput1">Họ và tên</label>
           <div class="input-group">
-            <input id="name" name="name" class="form-control" type="text" value={user.name}
+            <input id="name" name="name" class="form-control" type="text" value={user.hoTen}
               readOnly />
-            <span class="input-group-text " id="basic-addon2">{user.idUX}</span>
+            <span class="input-group-text " id="basic-addon2">{user.userIdUx}</span>
           </div>
 
           <label for="exampleFormControlInput1">Tên người dùng</label>
-          <input id="userName" name="userName" class="form-control" type="text" value={user.userName}
-            readOnly />
+          <input id="userName" name="username" class="form-control" type="text" value={user.accountDTO?.username}
+            readOnly={user.accountDTO} onChange={handleInputChange} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Mật khẩu</label>
-          <input id="password" name="password" class="form-control" type="password" value={formData.password}
+          <input id="password" name="password" class="form-control" type="password" value={user.accountDTO?.password}
             onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
           <label htmlFor="roles">Cấp quyền màn hình</label>
@@ -202,9 +215,14 @@ function UserModal({ show, handleClose, user, setUpdated }) {
               placeholder="Chọn màn hình">
             </TreeSelect>
           </div>
-          <label for="exampleFormControlInput1">Ngày tạo</label>
-          <input id="registered" name="registered" class="form-control" type="date" value={user.registered}
-            readOnly />
+          {
+            user.accountDTO
+            && <>
+              <label for="exampleFormControlInput1">Ngày tạo</label>
+              <input id="registered" name="registered" class="form-control" type="text" value={formatDateToDDMMYYYY(user.accountDTO.createdDate)}
+                readOnly />
+            </>
+          }
         </div>
       </Modal.Body>
       <Modal.Footer>
@@ -214,8 +232,8 @@ function UserModal({ show, handleClose, user, setUpdated }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" disabled={!isEditing} onClick={handleSave}>Save</Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>Close</Button>
+            <Button variant="success" disabled={!isEditing} onClick={handleSave}>Save</Button>
+            <Button variant="danger" onClick={handleClose}>Close</Button>
           </div>
         </div>
       </Modal.Footer>

@@ -1,149 +1,42 @@
 import {
   CAvatar,
   CBadge,
-  CButton,
   CCol,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
   CFormInput,
   CRow,
-  CTableDataCell,
+  CTableDataCell
 } from '@coreui/react';
 import React, { useEffect, useState } from 'react';
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import apiClient from '../../../apiClient';
-import env from '../../../env';
+import '../../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../../table/Table';
 import CategoryCarousel from "../CategoryCarousel";
 import '../TaiKhoan/TaiKhoan.css';
 import UserModal from './UserModal';
+import Swal from 'sweetalert2';
 
-// const usersData = [
-//   {
-//     id: 'LS_000001',
-//     name: 'Samppa Nori',
-//     phapdanh: 'Active',
-//     avatar: avatar1,
-//     registered: '2024-02-11',
-//     role: 1,
-//     role2: 3,
-//     status: 'Active', 
-//     phone: '0123456789',
-//     email: 'voanduy1802@gmail.com',
-//     userName: 'admin',
-//     password: '123123123',
-//     gender: 'male',
-//   },
-//   {
-//     id: 2,
-//     name: 'Estavan Lykos',
-//     avatar: '2.jpg',
-//     registered: '10-05-2023',
-//     role: 'Staff',
-//     status: 'Banned',
-//   },
-//   {
-//     id: 3,
-//     name: 'Samppa Nori9',
-//     avatar: '1.jpg',
-//     registered: '20-08-2024',
-//     role: 'Member',
-//     status: 'Inactive',
-//   },
-//   {
-//     id: 4,
-//     name: 'Estavan Lykos4',
-//     avatar: '2.jpg',
-//     registered: '22-02-2024',
-//     role: 'Staff',
-//     status: 'Pending',
-//   },
-//   {
-//     id: 5,
-//     name: 'Nguyễn Văn A',
-//     avatar: '1.jpg',
-//     registered: '02-11-2024',
-//     role: 'Member',
-//     status: 'Active',
-//   },
-//   {
-//     id: 6,
-//     name: 'Trần Văn B',
-//     avatar: '2.jpg',
-//     registered: '10-05-2023',
-//     role: 'Staff',
-//     status: 'Banned',
-//   },
-//   {
-//     id: 7,
-//     name: 'Nguyễn Thị C',
-//     avatar: '1.jpg',
-//     registered: '20-08-2024',
-//     role: 'Member',
-//     status: 'Inactive',
-//   },
-//   {
-//     id: 8,
-//     name: 'Huỳnh Văn E',
-//     avatar: '2.jpg',
-//     registered: '22-02-2024',
-//     role: 'Staff',
-//     status: 'Pending',
-//   },
-//   {
-//     id: 9,
-//     name: 'Cao Văn L',
-//     avatar: '1.jpg',
-//     registered: '05-11-2004',
-//     role: 'Member',
-//     status: 'Active',
-//   },
-//   {
-//     id: 10,
-//     name: 'Phùng Châu P',
-//     avatar: '2.jpg',
-//     registered: '10-05-2003',
-//     role: 'Staff',
-//     status: 'Banned',
-//   },
-//   {
-//     id: 11,
-//     name: 'Hồ Thanh T',
-//     avatar: '1.jpg',
-//     registered: '20-08-2004',
-//     role: 'Member',
-//     status: 'Inactive',
-//   },
-//   {
-//     id: 12,
-//     name: 'Nguyễn Tấn L',
-//     avatar: '2.jpg',
-//     registered: '26-02-2005',
-//     role: 'Staff',
-//     status: 'Pending',
-//   },
-//   //... thêm dữ liệu khác
-// ]
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-// const formatDate = (dateString) => {
-//   const [day, month, year] = dateString.split('-').map(Number)
-//   return new Date(year, month - 1, day)
-// }
-// const handleGenderChange = (newGender) => {
-//   setUser(prevUser => ({
-//     ...prevUser,
-//     gender: newGender
-//   }));
-// };
+const statuses = {
+  active: 'Active',
+  inactive: 'Inactive',
+  notAnAccount: `Haven't`,
+  banned: 'Banned'
+}
 
 const getBadgeClass = (status) => {
   switch (status) {
-    case 'Active':
+    case statuses.active:
       return 'custom-badge-success';
-    case 'Inactive':
+    case statuses.inactive:
       return 'custom-badge-danger';
-    case 'Pending':
+    case statuses.notAnAccount:
       return 'custom-badge-warning'
-    case 'Banned':
+    case statuses.banned:
       return 'custom-badge-danger';
     default:
       return 'primary'
@@ -153,8 +46,8 @@ const getBadgeClass = (status) => {
 const TaiKhoanHuynhTruong = () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
-  const [searchRole, setSearchRole] = useState('')
-  const [searchStatus, setSearchStatus] = useState('')
+  // const [searchRole, setSearchRole] = useState('')
+  // const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
   const [updated, setUpdated] = useState({});
 
@@ -170,43 +63,26 @@ const TaiKhoanHuynhTruong = () => {
   //   ROLE_DOANTRUONG_NGANHTHANH: "Đoàn trưởng Ngành Thanh"
   // };
 
+  const fetchAccountUsers = async () => {
+    try {
+      const response = await apiClient.get(`/api/account-users`);
+      const users = response.data?.data?.map(user => {
+        return {
+          ...user,
+          status: !user.accountDTO ? statuses.notAnAccount : user.accountDTO.isActive ? statuses.active : statuses.inactive
+        }
+      });
+      setUsersData(users);
+    } catch (error) {
+      console.error('Lỗi khi gọi API:', error);
+    }
+  };
   useEffect(() => {
-    const layDuLieu = async () => {
-      try {
-        const response = await apiClient.get(`/api/users?is_huynh_truong=true`);
-        const fetchedData = response.data.data.map(item => {
-          // const roles = item.roles.split(',').map(role => roleMapping[role.trim()] || role);
-          // const [role, role2] = roles.length > 1 ? roles : [roles[0], ''];
-          //const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
-          // console.dir({
-          //   ...item
-          // });
-          return {
-            ...item,
-            id: item.userId,
-            idUX: item.userIdUx,
-            name: item.hoTen,
-            avatar: item.avatar,
-            registered: item.createdDate,
-            role: item?.roleId1?.roleName,
-            role2: item?.roleId2?.roleName,
-            status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            userName: item?.accountDTO?.username,
-            password: item?.accountDTO?.password,
-            roleOfDoanTruong: item?.roles,
-          };
-        });
-        setUsersData(fetchedData);
-      } catch (error) {
-        console.error('Lỗi khi gọi API:', error);
-      }
-    };
-    layDuLieu();
+    fetchAccountUsers();
   }, [updated]);
 
   const formatDateToDDMMYYYY = (dateString) => {
+    if (!dateString) return;
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -216,10 +92,10 @@ const TaiKhoanHuynhTruong = () => {
 
   const filteredData = usersData.filter((user) => {
     return (
-      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-      (searchRegistered === '' || formatDateToDDMMYYYY(user.registered).includes(searchRegistered)) &&
-      (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-      (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
+      (searchName === '' || user.hoTen.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRegistered === '' || formatDateToDDMMYYYY(user.accountDTO?.createdDate).includes(searchRegistered))
+      // && (searchRole === '' || user.roleDTO1.toLowerCase().includes(searchRole.toLowerCase())) &&
+      // (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
     );
   });
 
@@ -269,25 +145,78 @@ const TaiKhoanHuynhTruong = () => {
   const renderRow = (user) => (
     <>
       <CTableDataCell>
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
+        <CAvatar src={user.avatar} />
       </CTableDataCell>
-      <CTableDataCell>{user.name}</CTableDataCell>
-      <CTableDataCell>{formatDateToDDMMYYYY(user.registered)}</CTableDataCell>
-      <CTableDataCell>{user.role}</CTableDataCell>
-      <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>{user.hoTen}</CTableDataCell>
+      <CTableDataCell>{formatDateToDDMMYYYY(user.accountDTO?.createdDate)}</CTableDataCell>
+      <CTableDataCell>{user.roleDTO1?.roleName}</CTableDataCell>
+      <CTableDataCell>{user.roleDTO2?.roleName}</CTableDataCell>
       <CTableDataCell>
         <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
           {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CButton color="info" variant="outline" onClick={() => handleShowModal(user)}
-          disabled={user.status !== 'Active'}>Show</CButton>
-
-
+        <CDropdown>
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
+              Thông tin
+            </CDropdownItem>
+            {
+              user.status !== statuses.notAnAccount &&
+              <CDropdownItem className="custom-dropdown-item"
+                onClick={() => handleToggleStatus(user.accountDTO.accountId, !user.accountDTO.isActive)}>
+                {user.status === statuses.active ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              </CDropdownItem>
+            }
+          </CDropdownMenu>
+        </CDropdown>
       </CTableDataCell>
     </>
   );
+
+  const handleToggleStatus = (accountId, isActive) => {
+    Swal.fire({
+      icon: 'question',
+      title: `Bạn có đồng ý thực hiện thay đổi?`,
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await apiClient.patch(`/api/accounts/${accountId}/activate?isActive=${isActive}`);
+          let timerInterval;
+          Swal.fire({
+            title: "Vui lòng đợi xử lý thông tin!",
+            // html: "Tự động đóng sau <b></b> mili giây.",
+            timer: 2000,
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            }
+          }).then(() => {
+            console.log(response.data, accountId, isActive, updated);
+            setUpdated(response.data);
+            Swal.fire({
+              icon: 'success',
+              title: 'Cập nhật thành công!'
+            });
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  }
 
   return (
     <div className="container-fluid">
@@ -297,16 +226,16 @@ const TaiKhoanHuynhTruong = () => {
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Tài Khoản</h3>
         </CCol>
-        <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info">Thêm</CButton>
-        </CCol>
+        {/* <CCol className="d-flex justify-content-end">
+        </CCol> */}
       </CRow>
       <Table
         headers={headers}
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+        // searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+        searchCriteria={{ searchName, searchRegistered }}
       />
       {selectedUser && (
         <UserModal
