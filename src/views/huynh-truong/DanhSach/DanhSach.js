@@ -191,7 +191,6 @@ const DSNganhThanh = () => {
   const handleDownloadExtract = async () => {
     try {
       // Thay thế đường dẫn mục tiêu với một giá trị mặc định hoặc hợp lệ nếu cần
-      const targetFolder = 'C://Users//Admin//Downloads//'; // Đối với trường hợp thực tế, bạn có thể cần giải pháp khác vì trình duyệt không cho phép chọn thư mục lưu trữ
 
       // Gọi API với các tham số
       const response = await axios.get('http://localhost:8080/api/export-excel/is-huynh-truong-is-active', {
@@ -200,7 +199,7 @@ const DSNganhThanh = () => {
         },  
       
       params: {
-          targetFolder: targetFolder,
+      
           filename: filename
         },
         responseType: 'arraybuffer' // Đảm bảo dữ liệu trả về là arraybuffer cho tệp Excel
