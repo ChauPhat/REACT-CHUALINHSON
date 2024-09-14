@@ -22,6 +22,7 @@ import Swal from 'sweetalert2';
 import CategoryCarousel from "./modalDoanSinh/CategoryCarousel";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import apiClient from '../../../apiClient';
 
 const DSOanhNu = () => {
   const [searchName, setSearchName] = useState('');
@@ -36,19 +37,12 @@ const DSOanhNu = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/users/getListUserWithIDoan?doanId=2`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          },
-        });
-
+        const response = await apiClient.get('/api/users/get-list-user-with-id-doan/2',);
+      
         let imageUrl;
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           try {
-            const imageResponse = await axios.get(`${env.apiUrl}/api/file/get-img?userid=${item.userId}`, {
-              headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-              },
+            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`, {
             });
             imageUrl = (imageResponse.data.data)
           } catch (error) {
@@ -64,11 +58,13 @@ const DSOanhNu = () => {
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
-            avatar: imageUrl, // Lưu URL ảnh vào object người dùng
+            avatar: imageUrl,
             registered: item.createdDate,
             phapDanh: item.phapDanh,
             ngaysinh: item.ngaySinh,
             phone: item.sdt,
+            hoTenCha: item.hoTenCha,
+            hoTenMe: item.hoTenMe,
             idchucvu1: roleId1.roleId,
             tenchucvu1: roleId1.roleName,
             idchucvu2: roleId2.roleName,
@@ -89,7 +85,6 @@ const DSOanhNu = () => {
           };
         }));
         setUsersData(fetchedData);
-        
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
@@ -152,7 +147,7 @@ const DSOanhNu = () => {
 
   const handleToggleStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-
+  
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
@@ -164,36 +159,23 @@ const DSOanhNu = () => {
       confirmButtonText: 'Có, thay đổi nó!',
       cancelButtonText: 'Hủy'
     });
-
+  
     if (result.isConfirmed) {
       try {
-        await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
-          params: {
-            userId: user.id,
-            activeUser: newStatus === 'Active',
-          },
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-          },
-        });
-
-        // Cập nhật trạng thái người dùng trong dữ liệu local state
+        await apiClient.put(`/api/users/active-user/${user.id}/${user.status ? 'true' : 'false'}`);
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
             u.id === user.id ? { ...u, status: newStatus } : u
           )
         );
-
-        // Hiển thị thông báo thành công
         Swal.fire(
           'Thành công!',
           `Trạng thái người dùng đã được cập nhật.`,
           'success'
         );
-
+  
       } catch (error) {
         console.error('Lỗi khi cập nhật trạng thái:', error);
-        // Hiển thị thông báo lỗi
         Swal.fire(
           'Thất bại!',
           'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
@@ -202,7 +184,9 @@ const DSOanhNu = () => {
       }
     }
   };
+  
 
+  
 
   const renderRow = (user) => (
     <>
