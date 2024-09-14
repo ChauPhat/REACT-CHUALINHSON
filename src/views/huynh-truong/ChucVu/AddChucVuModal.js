@@ -141,7 +141,7 @@ function AddChucVuModal({ show, handleClose, onAddChucVu }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleSave}>
+        <Button variant="success" onClick={handleSave}>
           Save
         </Button>
         <Button variant="danger" onClick={handleClose}>

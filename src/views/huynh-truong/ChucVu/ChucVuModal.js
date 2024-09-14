@@ -152,7 +152,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
             </label>
           </div>
           <div className="footer-buttons">
-            <Button variant="secondary" disabled={!isEditing} onClick={handleSave}>
+            <Button variant="success" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
             <Button variant="danger" onClick={handleClose}>

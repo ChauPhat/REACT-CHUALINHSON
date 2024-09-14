@@ -378,11 +378,11 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="primary" onClick={handleUpdateMoTa}>
-                        Cập nhật
+                    <CButton className='btn-success' onClick={handleUpdateMoTa}>
+                        Save
                     </CButton>
-                    <CButton color="secondary" onClick={() => setModalVisible2(false)}>
-                        Đóng
+                    <CButton className='btn-danger' onClick={() => setModalVisible2(false)}>
+                        Close
                     </CButton>
                 </CModalFooter>
             </CModal>
@@ -449,12 +449,13 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton color="secondary" onClick={() => setModalVisible(false)}>
-                        Đóng
+                <CButton className='btn-success' onClick={handleAddFund}>
+                        Save
                     </CButton>
-                    <CButton color="primary" onClick={handleAddFund}>
-                        Thêm
+                    <CButton className='btn-danger' onClick={() => setModalVisible(false)}>
+                        Close
                     </CButton>
+                  
                 </CModalFooter>
             </CModal>
 
