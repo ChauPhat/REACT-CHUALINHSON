@@ -55,31 +55,29 @@ const DSNganhThanh = () => {
           const roleId2 = item.roleId1 || {};
 
           return {
-            id: item.userId,
-            idUX: item.userIdUx,
-            name: item.hoTen,
+            userId: item.userId,
+            userIdUx: item.userIdUx,
+            hoTen: item.hoTen,
             avatar: imageUrl,
-            registered: item.createdDate,
+            createdDate: item.createdDate,
             phapDanh: item.phapDanh,
-            ngaysinh: item.ngaySinh,
-            phone: item.sdt,
+            ngaySinh: item.ngaySinh,
+            sdt: item.sdt,
             hoTenCha: item.hoTenCha,
             hoTenMe: item.hoTenMe,
-            idchucvu1: roleId1.roleId,
-            tenchucvu1: roleId1.roleName,
-            idchucvu2: roleId2.roleName,
-            tenchucvu2: roleId2.roleName,
-            status: item.isActive ? 'Active' : 'Inactive',
+            roleId: roleId1.roleId,
+            roleName: roleId1.roleName,
+            isActive: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
-            gender: item.gioiTinh ? "Male" : "Female",
-            address: item.diaChi,
-            vaitro: doanSinhDetails[0]?.role,
-            sdtgd: item.sdtGd,
+            gioiTinh: item.gioiTinh ? "Male" : "Female",
+            diaChi: item.diaChi,
+            role: doanSinhDetails[0]?.role,
+            sdtGd: item.sdtGd,
             doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
-            ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
-            ngayRoiDoan: doanSinhDetails[0]?.leftDate,
+            joinDate: doanSinhDetails[0]?.joinDate,
+            leftDate: doanSinhDetails[0]?.leftDate,
             mota: doanSinhDetails[0]?.moTa,
-            tendoan: doanSinhDetails[0]?.tenDoan,
+            tenDoan: doanSinhDetails[0]?.tenDoan,
             tenBacHoc: lichSuHocs[0]?.tenBacHoc,
             bacHocId: lichSuHocs[0]?.bacHocId
           };
@@ -162,10 +160,10 @@ const DSNganhThanh = () => {
   
     if (result.isConfirmed) {
       try {
-        await apiClient.put(`/api/users/active-user/${user.id}/${user.status ? 'true' : 'false'}`);
+        await apiClient.put(`/api/users/active-user/${user.userId}/${user.isActive ? 'true' : 'false'}`);
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.id === user.id ? { ...u, status: newStatus } : u
+            u.userId === user.userId ? { ...u, isActive: newStatus } : u
           )
         );
         Swal.fire(
@@ -197,13 +195,13 @@ const DSNganhThanh = () => {
         />
       </CTableDataCell>
       <CTableDataCell>
-        <div>{user.name} || {user.phapDanh}</div>
+        <div>{user.hoTen} || {user.phapDanh}</div>
       </CTableDataCell>
-      <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
-      <CTableDataCell>{user.vaitro}</CTableDataCell>
+      <CTableDataCell>{user.roleName}</CTableDataCell>
+      <CTableDataCell>{user.role}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
-          {user.status}
+        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
+          {user.isActive}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -217,7 +215,7 @@ const DSNganhThanh = () => {
             <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}
             >
-              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              {user.isActive === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
 
             </CDropdownItem>
           </CDropdownMenu>

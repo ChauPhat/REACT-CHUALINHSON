@@ -157,11 +157,11 @@ function UserModal({ show, handleClose, user }) {
           <div className="input-group">
             <input
               id="name" name="name" className="form-control" type="text"
-              value={formData.name}
+              value={formData.hoTen}
               onChange={handleInputChange}
               readOnly={!isEditing} disabled={!isEditing}
             />
-            <span className="input-group-text" id="basic-addon2">{formData.idUX}</span>
+            <span className="input-group-text" id="basic-addon2">{formData.userIdUx}</span>
           </div>
 
           <label>Pháp Danh</label>
@@ -183,7 +183,7 @@ function UserModal({ show, handleClose, user }) {
           <label>Đoàn</label>
           <input
             id="doan" name="doan" className="form-control" type="text"
-            value={formData.tendoan}
+            value={formData.tenDoan}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
@@ -195,7 +195,7 @@ function UserModal({ show, handleClose, user }) {
             readOnly={!isEditing} disabled={!isEditing}
           >
             <option value={formData.idchucvu1} >
-              {formData.tenchucvu1 || 'Chọn Chức Vụ'}
+              {formData.roleName || 'Chọn Chức Vụ'}
             </option>
             {roles.map((role) => (
             <option key={role.roleId} value={role.roleId}>
@@ -207,23 +207,23 @@ function UserModal({ show, handleClose, user }) {
           <label>Ngày Sinh</label>
           <input
             id="ngaysinh" name="ngaysinh" className="form-control" type="date"
-            value={formData.ngaysinh}
+            value={formData.ngaySinh}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
 
-          <label>Ngày Đăng Kí</label>
+          {/* <label>Ngày Đăng Kí</label>
           <input
             id="registered" name="registered" className="form-control" type="date"
-            value={formData.registered}
+            value={formData.joinDate}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
-          />
+          /> */}
 
           <label>Số Điện Thoại</label>
           <input
             id="phone" name="phone" className="form-control" type="text"
-            value={formData.phone}
+            value={formData.sdt}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
@@ -265,7 +265,7 @@ function UserModal({ show, handleClose, user }) {
 
 
           <label for="exampleFormControlInput1">Địa Chỉ</label>
-          <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.address}
+          <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.diaChi}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}></textarea>
 
 <label>Họ Tên Cha</label>
@@ -289,11 +289,11 @@ function UserModal({ show, handleClose, user }) {
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Ngày Gia Nhập Đoàn</label>
-          <input id="ngayGiaNhapDoan" name="ngayGiaNhapDoan" class="form-control" type="Date" value={formData.ngayGiaNhapDoan}
+          <input id="ngayGiaNhapDoan" name="ngayGiaNhapDoan" class="form-control" type="Date" value={formData.joinDate}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Ngày Rời Đoàn</label>
-          <input id="ngayRoiDoan" name="ngayRoiDoan" class="form-control" type="Date" value={formData.ngayRoiDoan}
+          <input id="ngayRoiDoan" name="ngayRoiDoan" class="form-control" type="Date" value={formData.leftDate}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Mô Tả</label>
