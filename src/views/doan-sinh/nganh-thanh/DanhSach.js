@@ -33,7 +33,8 @@ const DSNganhThanh = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
-  const [filename, setFilename] = useState('DanhSachNganhThanh.xlsx');
+  const [filename, setFilename] = useState('DanhSachOanhNam.xlsx');
+
   useEffect(() => {
     const layDuLieu = async () => {
       try {
@@ -52,34 +53,38 @@ const DSNganhThanh = () => {
           const doanSinhDetails = item.doanSinhDetails || [];
           const lichSuHocs = item.lichSuHocs || [];
           const roleId1 = item.roleId1 || {};
-          const roleId2 = item.roleId1 || {};
+
 
           return {
-            userId: item.userId,
-            userIdUx: item.userIdUx,
-            hoTen: item.hoTen,
+            id: item.userId,
+            idUX: item.userIdUx,
+            name: item.hoTen,
             avatar: imageUrl,
-            createdDate: item.createdDate,
+            registered: item.createdDate,
             phapDanh: item.phapDanh,
-            ngaySinh: item.ngaySinh,
-            sdt: item.sdt,
+            ngaysinh: item.ngaySinh,
+            phone: item.sdt,
             hoTenCha: item.hoTenCha,
             hoTenMe: item.hoTenMe,
-            roleId: roleId1.roleId,
-            roleName: roleId1.roleName,
-            isActive: item.isActive ? 'Active' : 'Inactive',
+            idchucvu1: roleId1.roleId,
+            isHuynhTruong: item.isHuynhTruong,
+            tenchucvu1: roleId1.roleName,
+            status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
-            gioiTinh: item.gioiTinh ? "Male" : "Female",
-            diaChi: item.diaChi,
-            role: doanSinhDetails[0]?.role,
-            sdtGd: item.sdtGd,
+            gender: item.gioiTinh ? "Male" : "Female",
+            address: item.diaChi,
+            vaitro: doanSinhDetails[0]?.role,
+            sdtgd: item.sdtGd,
             doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
-            joinDate: doanSinhDetails[0]?.joinDate,
-            leftDate: doanSinhDetails[0]?.leftDate,
+            ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
+            ngayRoiDoan: doanSinhDetails[0]?.leftDate,
             mota: doanSinhDetails[0]?.moTa,
-            tenDoan: doanSinhDetails[0]?.tenDoan,
+            tendoan: doanSinhDetails[0]?.tenDoan,
             tenBacHoc: lichSuHocs[0]?.tenBacHoc,
-            bacHocId: lichSuHocs[0]?.bacHocId
+            bacHocId: lichSuHocs[0]?.bacHocId,
+            traiHuanLuyenId: item.traiHuanLuyenId,
+            nhiemKyDoans: item.nhiemKyDoans,
+            doanSinhDetails: item.doanSinhDetails,
           };
         }));
         setUsersData(fetchedData);
@@ -160,10 +165,10 @@ const DSNganhThanh = () => {
   
     if (result.isConfirmed) {
       try {
-        await apiClient.put(`/api/users/active-user/${user.userId}/${user.isActive ? 'true' : 'false'}`);
+        await apiClient.put(`/api/users/active-user/${user.id}/${user.status ? 'true' : 'false'}`);
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.userId === user.userId ? { ...u, isActive: newStatus } : u
+            u.id === user.id ? { ...u, status: newStatus } : u
           )
         );
         Swal.fire(
@@ -195,32 +200,30 @@ const DSNganhThanh = () => {
         />
       </CTableDataCell>
       <CTableDataCell>
-        <div>{user.hoTen} || {user.phapDanh}</div>
+        <div>{user.name} || {user.phapDanh}</div>
       </CTableDataCell>
-      <CTableDataCell>{user.roleName}</CTableDataCell>
-      <CTableDataCell>{user.role}</CTableDataCell>
+      <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
+      <CTableDataCell>{user.vaitro}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
-          {user.isActive}
+        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
+          {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-
-        <CDropdown  >
+        <CDropdown variant="btn-group" direction="center">
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
-              Thông tin
+            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+              <CButton>Thông tin</CButton>
             </CDropdownItem>
-            <CDropdownItem className="custom-dropdown-item"
+            <CDropdownItem
               onClick={() => handleToggleStatus(user)}
             >
-              {user.isActive === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
 
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-
       </CTableDataCell>
     </>
   );
@@ -244,7 +247,7 @@ const DSNganhThanh = () => {
         },
         params: {
           filename: filename, 
-          idDoan:'5'
+          idDoan:'1'
         },
         responseType: 'arraybuffer',
       });
@@ -252,7 +255,6 @@ const DSNganhThanh = () => {
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-      
   
       // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
@@ -289,7 +291,6 @@ const DSNganhThanh = () => {
       });
     }
   };
-
   const headers = [
     <CTableDataCell width={'5%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'25%'} className="fixed-width-column">Tên || Pháp Danh</CTableDataCell>,

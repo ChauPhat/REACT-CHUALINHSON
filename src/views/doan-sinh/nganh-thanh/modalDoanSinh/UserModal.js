@@ -96,32 +96,55 @@ function UserModal({ show, handleClose, user }) {
   };
 
   const handleSave = async () => {
-    if (selectedFile) {
-      const uploadData = new FormData();
-      uploadData.append('file', selectedFile);
+    console.log('Saving user:', formData);
 
-      try {
-        const response = await apiClient.post(`/api/files/images/upload?userId=${user.id}`, uploadData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          }
-        });
+    try {
+      // Chuẩn bị dữ liệu cần gửi
+      const updateData = {
+        userId: formData.id,
+        userIdUx: formData.idUX,
+        hoTen: formData.name,
+        ngaySinh: formData.ngaysinh,
+        sdt: formData.phone,
+        email: formData.email,
+        isHuynhTruong: formData.isHuynhTruong,
+        phapDanh: formData.phapDanh,
+        gioiTinh: formData.gender === "Male",
+        // updatedDate: new Date().toISOString().split('T')[0],
+        diaChi: formData.address,
+        sdtGd: formData.phone || "",
+        avatar: selectedFile ? selectedFile.name : user.avatar,
+        isActive: formData.status === "Active",
+        roleId1: formData.idchucvu1 ? { roleId: formData.idchucvu1 } : null,
+
+        lichSuHocs: [
+          {
+            bacHocId: formData.bacHocId,
+            userId: formData.id,
+          },
+        ],
+        traiHuanLuyenId: formData.traiHuanLuyenId,
+        hoTenCha: formData.hoTenCha,
+        hoTenMe: formData.hoTenMe,
+        nhiemKyDoans: formData.nhiemKyDoans,
+        doanSinhDetails: formData.doanSinhDetails,
+      };
+
+      console.log('Update data:', updateData);
+      const response = await apiClient.put(`/api/users/${updateData.userId}`, updateData);
+      if (response.status) {
         Swal.fire({
-          title: "Thông báo từ hệ thống!",
-          text: "Cập nhật ảnh thành công",
-          icon: "success"
+          title: 'Thành công!',
+          text: 'Cập nhật thông tin người dùng thành công!',
+          icon: 'success',
         });
-      } catch (error) {
-        Swal.fire({
-          title: "Thông báo từ hệ thống!",
-          text: "Cập nhật ảnh thất bại.",
-          icon: "error"
-        });
+        handleClose();
+      } else {
+        console.error('Failed to update user');
       }
+    } catch (error) {
+      console.error('Error updating user:', error);
     }
-    setIsEditing(false);
-    handleClose(); // Đóng modal sau khi lưu
   };
 
   const handleAvatarClick = () => {
@@ -157,11 +180,11 @@ function UserModal({ show, handleClose, user }) {
           <div className="input-group">
             <input
               id="name" name="name" className="form-control" type="text"
-              value={formData.hoTen}
+              value={formData.name}
               onChange={handleInputChange}
               readOnly={!isEditing} disabled={!isEditing}
             />
-            <span className="input-group-text" id="basic-addon2">{formData.userIdUx}</span>
+            <span className="input-group-text" id="basic-addon2">{formData.idUX}</span>
           </div>
 
           <label>Pháp Danh</label>
@@ -183,7 +206,7 @@ function UserModal({ show, handleClose, user }) {
           <label>Đoàn</label>
           <input
             id="doan" name="doan" className="form-control" type="text"
-            value={formData.tenDoan}
+            value={formData.tendoan}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
@@ -195,7 +218,7 @@ function UserModal({ show, handleClose, user }) {
             readOnly={!isEditing} disabled={!isEditing}
           >
             <option value={formData.idchucvu1} >
-              {formData.roleName || 'Chọn Chức Vụ'}
+              {formData.tenchucvu1 || 'Chọn Chức Vụ'}
             </option>
             {roles.map((role) => (
             <option key={role.roleId} value={role.roleId}>
@@ -207,23 +230,23 @@ function UserModal({ show, handleClose, user }) {
           <label>Ngày Sinh</label>
           <input
             id="ngaysinh" name="ngaysinh" className="form-control" type="date"
-            value={formData.ngaySinh}
+            value={formData.ngaysinh}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
 
-          {/* <label>Ngày Đăng Kí</label>
+          <label>Ngày Đăng Kí</label>
           <input
             id="registered" name="registered" className="form-control" type="date"
-            value={formData.joinDate}
+            value={formData.registered}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
-          /> */}
+          />
 
           <label>Số Điện Thoại</label>
           <input
             id="phone" name="phone" className="form-control" type="text"
-            value={formData.sdt}
+            value={formData.phone}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
           />
@@ -265,7 +288,7 @@ function UserModal({ show, handleClose, user }) {
 
 
           <label for="exampleFormControlInput1">Địa Chỉ</label>
-          <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.diaChi}
+          <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.address}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}></textarea>
 
 <label>Họ Tên Cha</label>
@@ -289,11 +312,11 @@ function UserModal({ show, handleClose, user }) {
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Ngày Gia Nhập Đoàn</label>
-          <input id="ngayGiaNhapDoan" name="ngayGiaNhapDoan" class="form-control" type="Date" value={formData.joinDate}
+          <input id="ngayGiaNhapDoan" name="ngayGiaNhapDoan" class="form-control" type="Date" value={formData.ngayGiaNhapDoan}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Ngày Rời Đoàn</label>
-          <input id="ngayRoiDoan" name="ngayRoiDoan" class="form-control" type="Date" value={formData.leftDate}
+          <input id="ngayRoiDoan" name="ngayRoiDoan" class="form-control" type="Date" value={formData.ngayRoiDoan}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
           <label for="exampleFormControlInput1">Mô Tả</label>
@@ -308,10 +331,10 @@ function UserModal({ show, handleClose, user }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button variant="success" disabled={!isEditing} onClick={handleSave}>
+            <Button  variant="success" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
-            <Button variant="danger" onClick={handleClose}>
+            <Button  variant="danger" onClick={handleClose}>
               Close
             </Button>
           </div>
