@@ -286,11 +286,11 @@ function InsertModal({ show, handleClose }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-      <Button variant="success" onClick={handleSave}>
-          Lưu
+        <Button  variant="success" onClick={handleSave}>
+          Save
         </Button>
-        <Button variant="danger" onClick={handleClose}>
-          Hủy
+        <Button  variant="danger" onClick={handleClose}>
+          Close
         </Button>
       </Modal.Footer>
     </Modal>

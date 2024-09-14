@@ -170,7 +170,7 @@ const handleSave = async () => {
             <div className="form-check form-switch">
             </div>
             <div className="footer-buttons">
-                <Button variant="secondary" onClick={handleSave} >
+                <Button variant="success" onClick={handleSave} >
                 Save
                 </Button>
                 <Button variant="danger" onClick={handleClose}>

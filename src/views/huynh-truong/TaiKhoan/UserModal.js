@@ -174,7 +174,7 @@ function UserModal({ show, handleClose, user, setUpdated }) {
   }
 
   return (
-    <Modal show={show} scrollable onHide={handleClose} centered>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Tài Khoản</Modal.Title>
       </Modal.Header>

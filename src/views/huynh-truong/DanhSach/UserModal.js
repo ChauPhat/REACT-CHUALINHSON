@@ -30,11 +30,7 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
     const fetchRoles = async () => {
       try {
         // Fetch roles as before
-        const response = await axios.get(`${env.apiUrl}/api/role?isHuynhTruong=true`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await apiClient.get(`/api/roles?isHuynhTruong=true`);
         const fetchedRoles = response.data.data;
         const rolesWithDoanId = fetchedRoles.filter((role) => role.doanId !== null);
         const rolesWithoutDoanId = fetchedRoles.filter((role) => role.doanId === null);
@@ -48,11 +44,7 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
     // Fetch Bac Hoc
     const fetchBacHoc = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await apiClient.get(`/api/bac-hoc`);
         setBacHocList(response.data.data);
       } catch (error) {
         console.error('Error fetching Bac Hoc:', error);
@@ -134,33 +126,28 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
         diaChi: formData.address,
         sdtGd: formData.phone || "", // Thêm sdtGd nếu cần
         avatar: selectedFile ? selectedFile.name : user.avatar, // Lấy tên file ảnh
-        isActive: user.isActive,
-        isHuynhTruong: user.isHuynhTruong,
-        roleId1: {
-          roleId: formData.role1,
-        },
+        isHuynhTruong: formData.isHuynhTruong,
+        isActive: formData.isActive,
+        roleId1: formData.role1 ? { roleId: formData.role1 } : null,
         roleId2: formData.role2 ? { roleId: formData.role2 } : null,
         lichSuHocs: [
           {
             bacHocId: formData.bacHoc,
+            userId: formData.id,
           },
         ],
+        traiHuanLuyenId: formData.traiHuanLuyenId,
+        hoTenCha: formData.hoTenCha,
+        hoTenMe: formData.hoTenMe,
+        nhiemKyDoans: formData.nhiemKyDoans,
+        doanSinhDetails: formData.doanSinhDetails,
       };
 
-      return;
+      console.log('Update data:', updateData);
+      // return; 
+      const response = await apiClient.put(`/api/users/${updateData.userId}`, updateData,);
 
-      // Thực hiện gọi API
-      const response = await axios.put(
-        `${env.apiUrl}/api/users/updateUser?nkd_id=&dsdt_id=`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
+      if (response.status) {
         // Thông báo thành công
         Swal.fire({
           title: 'Thành công!',
