@@ -18,7 +18,9 @@ import {
   CModalBody,
   CModalFooter,
   CModalHeader,
-  CModalTitle
+  CModalTitle,
+  CFormCheck,
+  CFormLabel
 } from '@coreui/react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -27,6 +29,7 @@ import Swal from "sweetalert2";
 import apiClient from '../../apiClient';
 import env from '../../env';
 import ChangePass from './ChangePassword';
+import './AppHeaderDropdown.css'
 
 
 
@@ -67,6 +70,7 @@ const AppHeaderDropdown = () => {
   const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef(null)
   const [changePassModalVisible, setChangePassModalVisible] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +138,45 @@ const AppHeaderDropdown = () => {
     setChangePassModalVisible(false); // Đóng modal đổi mật khẩu
   }
 
+  // Hàm để bật/tắt chế độ chỉnh sửa
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
+
+  // Hàm để lưu thông tin (có thể tích hợp API tại đây)
+  const handleSave = async () => {
+    // Logic lưu thông tin đã chỉnh sửa
+    try {
+      // Dữ liệu cập nhật từ userProfile hoặc các trường khác
+      const updatedData = {
+        ...userProfile[0],
+        hoTen: userProfile[0].hoTen,
+        phapDanh: userProfile[0].phapDanh,
+        gioiTinh: userProfile[0].gioiTinh,
+        email: userProfile[0].email,
+        sdt: userProfile[0].sdt,
+        diaChi: userProfile[0].diaChi
+      };
+
+      // Gọi API PUT để cập nhật thông tin user
+      const response = await apiClient.put(`/api/users/${userProfile[0].userId}`, updatedData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      Swal.fire({
+        title: "Thành công.",
+        text: "Đổi mật khẩu thành công",
+        icon: "success"
+    });
+    } catch (error) {
+      console.error("Lỗi cập nhật", error);
+    }
+    // Sau khi lưu, tắt chế độ chỉnh sửa
+    setIsEditing(false);
+  };
+
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -196,7 +239,6 @@ const AppHeaderDropdown = () => {
               setIdUser(userId);
               try {
                 const response = await apiClient.get(`/api/files/images/${userId}`, {
-                 
                   headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                   }
@@ -302,43 +344,66 @@ const AppHeaderDropdown = () => {
                   type="text"
                   label="Họ tên"
                   value={userProfile[0].hoTen || "Nên đọc Chú Đại Bi"}
-                  disabled
+                  disabled={!isEditing}
                   className="mb-3"
+                  onChange={e => setUserProfile([{ ...userProfile[0], hoTen: e.target.value }])}
                 />
                 <CFormInput
                   type="text"
                   label="Pháp Danh"
                   value={userProfile[0].phapDanh || "Chưa cập nhật"}
-                  disabled
+                  disabled={!isEditing}
                   className="mb-3"
+                  onChange={e => setUserProfile([{ ...userProfile[0], phapDanh: e.target.value }])}
                 />
-                <CFormInput
-                  type="text"
-                  label="Giới tính"
-                  value={userProfile[0].gioiTinh ? "Nam" : "Nữ"}
-                  disabled
-                  className="mb-3"
-                />
+                <CFormLabel>Giới tính</CFormLabel>
+                <div className="mb-3">
+                  <div className=" form-check-inline">
+                    <CFormCheck
+                      type="radio"
+                      id="genderMale"
+                      name="gender"
+                      label="Nam"
+                      checked={userProfile[0].gioiTinh === true}
+                      disabled={!isEditing}
+                      onChange={() => setUserProfile([{ ...userProfile[0], gioiTinh: true }])}
+                    />
+                  </div>
+                  <div className=" form-check-inline">
+                    <CFormCheck
+                      type="radio"
+                      id="genderFemale"
+                      name="gender"
+                      label="Nữ"
+                      checked={userProfile[0].gioiTinh === false}
+                      disabled={!isEditing}
+                      onChange={() => setUserProfile([{ ...userProfile[0], gioiTinh: false }])}
+                    />
+                  </div>
+                </div>
                 <CFormInput
                   type="email"
                   label="Email"
                   value={userProfile[0].email || "Nên đọc Chú Đại Bi"}
-                  disabled
+                  disabled={!isEditing}
                   className="mb-3"
+                  onChange={e => setUserProfile([{ ...userProfile[0], email: e.target.value }])}
                 />
                 <CFormInput
                   type="tel"
                   label="Số điện thoại"
                   value={userProfile[0].sdt || "Nên đọc Chú Đại Bi"}
-                  disabled
+                  disabled={!isEditing}
                   className="mb-3"
+                  onChange={e => setUserProfile([{ ...userProfile[0], sdt: e.target.value }])}
                 />
                 <CFormInput
                   type="text"
                   label="Địa chỉ"
                   value={userProfile[0].diaChi || "Nên đọc Chú Đại Bi"}
-                  disabled
+                  disabled={!isEditing}
                   className="mb-3"
+                  onChange={e => setUserProfile([{ ...userProfile[0], diaChi: e.target.value }])}
                 />
               </>
             ) : (
@@ -347,6 +412,16 @@ const AppHeaderDropdown = () => {
           </CModalBody>
 
           <CModalFooter>
+            <CButton class="editBtn" onClick={handleEditClick}>
+              <svg height="1em" viewBox="0 0 512 512">
+                <path
+                  d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"
+                ></path>
+              </svg>
+            </CButton>
+            <CButton color="primary" onClick={handleSave} disabled={!isEditing}>
+              Lưu
+            </CButton>
             <CButton color="outline-secondary" onClick={handleCloseModal}>
               Đóng
             </CButton>
