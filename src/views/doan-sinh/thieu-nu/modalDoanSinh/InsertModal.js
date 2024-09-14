@@ -88,11 +88,8 @@ function InsertModal({ show, handleClose }) {
         return;
       }
       const previewUrl = URL.createObjectURL(file);
-      setAvatarPreview(previewUrl);
-      setFormData((prevData) => ({
-        ...prevData,
-        avatar: file.name,
-      }));
+      setAvatarPreview(previewUrl); // Cập nhật preview
+      setSelectedFile(file); // Lưu file để upload khi nhấn Lưu
     }
   };
 
@@ -135,17 +132,14 @@ function InsertModal({ show, handleClose }) {
     };
   
     try {
-      const response = await apiClient.post(`/api/users/create-user`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (setAvatarPreview) {
+      const response = await apiClient.post(`/api/users/create-user`, payload);
+      console.log(response.data.data);
+      if (selectedFile) {
         try {
           const fileFormData = new FormData();
           fileFormData.append('file', selectedFile);
           const userId = response.data.data.userId
+          
           await apiClient.post(`/api/files/images/upload?userId=${userId}`, fileFormData, {
             headers: {
               'Content-Type': 'multipart/form-data',
@@ -204,8 +198,8 @@ function InsertModal({ show, handleClose }) {
       <Modal.Body>
         <div className="avatar-container text-center mb-3">
           <img
-            src={avatarPreview || formData.avatar}
-            alt="User Avatar"
+            src={avatarPreview || 'path/to/default/avatar.png'}
+            alt="Avatar"
             onClick={handleAvatarClick}
             style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
           />
