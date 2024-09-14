@@ -20,11 +20,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import UserModal from './UserModal';
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
-import axios from 'axios'
-import env from '../../../env'
 import apiClient from '../../../apiClient';
 import Swal from 'sweetalert2';
 import AddHuynhTruongModal from './AddHuynhTruongModal';
+import { right } from '@popperjs/core';
 
 
 const getBadgeClass = (status) => {
@@ -43,7 +42,7 @@ const handleGenderChange = (newGender) => {
   }));
 };
 
-const DSNganhThanh = () => {
+const DSHuynhTruong= () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -52,13 +51,13 @@ const DSNganhThanh = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
+  const [filename, setFilename] = useState('DanhSachHuynhTruong.xlsx');
 
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get(`/api/users/getListHuyTruong?is_huy_truonng=true`);
-
-        console.log('Dữ liệu nhận được:', response.data.data);
+        let isHuynhTruong = true;
+        const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
 
         let imageUrl;
 
@@ -68,7 +67,7 @@ const DSNganhThanh = () => {
           const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
 
           try {
-            const imageResponse = await apiClient.get(`/api/file/get-img?userid=${item.userId}`
+            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`
             );
             imageUrl = (imageResponse.data.data)
           } catch (error) {
@@ -97,7 +96,6 @@ const DSNganhThanh = () => {
           };
         }));
         setUsersData(fetchedData);
-        console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -127,15 +125,8 @@ const DSNganhThanh = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.put(`${env.apiUrl}/api/users/activeUser`, null, {
-          params: {
-            userId: user.id,
-            activeUser: newStatus === 'Active',
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        let activeUser = newStatus === 'Active' ? true : false;
+        await apiClient.put(`/api/users/active-user/${user.id}/${activeUser}`, null);
 
         // Cập nhật trạng thái người dùng trong dữ liệu local state
         setUsersData(prevUsersData =>
@@ -196,7 +187,68 @@ const DSNganhThanh = () => {
   };
 
 
+  const handleDownloadExtract = async () => {
+    try {
+      // Hiển thị Swal với trạng thái đang tải
+      Swal.fire({
+        title: 'Đang tạo file...',
+        text: 'Vui lòng chờ trong giây lát.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading(); // Hiển thị icon loading
+        },
+      });
 
+      // Gọi API với các tham số
+      const response = await apiClient.get('/api/export-excel/is-huynh-truong-is-active', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          filename: filename, 
+        },
+        responseType: 'arraybuffer',
+      });
+  
+      // Tạo Blob từ dữ liệu phản hồi
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+  
+      // Tạo phần tử liên kết để tải file
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+      document.body.appendChild(a); // Thêm liên kết vào body
+  
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'File đã sẵn sàng để tải xuống!',
+        confirmButtonText: 'Tải xuống',
+        allowOutsideClick: false, // Không cho phép nhấp ra ngoài để đóng Swal
+        allowEscapeKey: false, // Không cho phép dùng phím Escape để thoát Swal
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Tạo phần tử liên kết để tải file
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+          document.body.appendChild(a); // Thêm liên kết vào body
+          a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
+          document.body.removeChild(a); // Xóa liên kết khỏi body
+          URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+        }
+      });
+    } catch (error) {
+      console.error('Lỗi khi tải tệp:', error);
+      // Cập nhật Swal khi có lỗi
+      Swal.fire({
+        icon: 'error',
+        title: 'Tải tệp không thành công',
+        text: 'Vui lòng thử lại.',
+      });
+    }
+  };
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
@@ -254,12 +306,12 @@ const DSNganhThanh = () => {
         <CDropdown>
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
+            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
               Thông tin
             </CDropdownItem>
-            <CDropdownItem
+            <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}>
-            {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -278,7 +330,10 @@ const DSNganhThanh = () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
+
+
 
         </CCol>
       </CRow>
@@ -312,4 +367,4 @@ const DSNganhThanh = () => {
   )
 }
 
-export default DSNganhThanh
+export default DSHuynhTruong

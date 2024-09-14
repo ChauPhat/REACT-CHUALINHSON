@@ -21,6 +21,7 @@ import AddChucVuModal from './AddChucVuModal';
 import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import axios from 'axios';
 import env from '../../../env'
+import apiClient from '../../../apiClient';
 
 const ChucVu = () => {
   const [searchName, setSearchName] = useState('');
@@ -40,11 +41,7 @@ const ChucVu = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${env.apiUrl}/api/role/get-all`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await apiClient.get(`${env.apiUrl}/api/roles/get-all`);
 
       const fetchedData = response.data.data.map((item) => ({
         id: item.roleId,
@@ -139,18 +136,13 @@ const ChucVu = () => {
       // Gọi API để cập nhật trạng thái
       const newStatus = ChucVu.status === 'Active' ? 'Inactive' : 'Active';
 
-      await axios.put(
-        `${env.apiUrl}/api/role/${ChucVu.id}`,
+      await apiClient.put(
+        `/api/roles/${ChucVu.id}`,
         {
           roleName: ChucVu.name,
           isHuynhTruong: ChucVu.role === 'Huynh Trưởng',
           isActive: newStatus === 'Active'
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        }
       );
 
       // Cập nhật lại danh sách sau khi API thành công
@@ -196,7 +188,7 @@ const ChucVu = () => {
           <h3>Danh Sách Chức Vụ</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
         </CCol>
       </CRow>
 

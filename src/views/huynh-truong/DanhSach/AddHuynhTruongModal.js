@@ -1,18 +1,19 @@
-import React, { useState, useRef, useEffect   } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { 
-  CRow , CContainer, 
-  CCol, CFormSelect, 
+import {
+  CRow, CContainer,
+  CCol, CFormSelect,
 } from '@coreui/react'
 import './UserModal.css';
 import axios from 'axios';
 import env from '../../../env'
 import Swal from 'sweetalert2';
+import apiClient from '../../../apiClient';
 
-function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
+function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
   const [name, setName] = useState('');
-  const [role1, setRole1] = useState(''); 
-  const [role2, setRole2] = useState(''); 
+  const [role1, setRole1] = useState('');
+  const [role2, setRole2] = useState('');
   const [phapdanh, setPhapdanh] = useState('');
   const [email, setEmail] = useState('');
   const [birthDate, setBirthDate] = useState('');
@@ -34,15 +35,11 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
     const fetchRoles = async () => {
       try {
         // Fetch roles as before
-        const response = await axios.get(`${env.apiUrl}/api/role?isHuynhTruong=true`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await apiClient.get(`/api/roles?isHuynhTruong=true`);
         const fetchedRoles = response.data.data;
         const rolesWithDoanId = fetchedRoles.filter((role) => role.doanId !== null);
         const rolesWithoutDoanId = fetchedRoles.filter((role) => role.doanId === null);
-  
+
         setRolesWithDoanId(rolesWithDoanId);
         setRolesWithoutDoanId(rolesWithoutDoanId);
       } catch (error) {
@@ -50,25 +47,21 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       }
     };
     // Fetch Bac Hoc
-      const fetchBacHoc = async () => {
-        try {
-          const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          });
-          setBacHocList(response.data.data);
-        } catch (error) {
-          console.error('Error fetching Bac Hoc:', error);
-        }
-      };
-    
-      fetchRoles();
-      fetchBacHoc();
-    }, []);
+    const fetchBacHoc = async () => {
+      try {
+        const response = await apiClient.get(`/api/bac-hoc`);
+        setBacHocList(response.data.data);
+      } catch (error) {
+        console.error('Error fetching Bac Hoc:', error);
+      }
+    };
+
+    fetchRoles();
+    fetchBacHoc();
+  }, []);
 
 
-    const handleInputChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
       case 'name':
@@ -101,6 +94,8 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       case 'bacHoc':
         setBacHoc(value);
         break;
+      case 'address':
+        setAddress(value);
       default:
         break;
     }
@@ -124,7 +119,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
     } if (!role1 && !role2) {
       newErrors.role = 'Ít nhất một chức vụ phải được chọn';
       isValid = false;
-    }if (!phone) {
+    } if (!phone) {
       newErrors.phone = 'Số điện thoại là bắt buộc';
       isValid = false;
     } if (!gender) {
@@ -139,7 +134,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
 
   const handleSave = async () => {
     if (!validateForm()) return;
-  
+
     const result = await Swal.fire({
       title: 'Xác nhận!',
       text: 'Bạn có chắc chắn muốn thêm Huynh Trưởng  này không?',
@@ -148,9 +143,9 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       confirmButtonText: 'Có, thêm!',
       cancelButtonText: 'Hủy',
     });
-  
+
     if (result.isDenied || result.isDismissed) return;
-    
+
 
     const formData = {
       hoTen: name,
@@ -164,31 +159,30 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       updatedDate: new Date().toISOString().split('T')[0], // Current date as string
       diaChi: address,
       isActive: true,
-      roleId1:  role1 ? { roleId: role1 } : null, // Assume role1 comes from a select input
-      roleId2:  role2 ? { roleId: role2 } : null, // Assume role2 comes from a select input
+      roleId1: role1 ? { roleId: role1 } : null, // Assume role1 comes from a select input
+      roleId2: role2 ? { roleId: role2 } : null, // Assume role2 comes from a select input
       lichSuHocs: bacHoc ? [{ bacHocId: bacHoc }] : [], // Assume bacHoc comes from a select input 
-      accountDTO: null
+      accountDTO: null,
+      traiHuanLuyenId: 1
     };
     console.log(formData)
 
     try {
       // First API call to add Bac Hoc
-      const response = await axios.post(`${env.apiUrl}/api/users/createUser`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-  
+      const response = await apiClient.post(`/api/users/create-user`, formData);
+      console.log(response.data.data);
+      
       if (selectedFile) {
         try {
           const fileFormData = new FormData();
           fileFormData.append('file', selectedFile);
           const userId = response.data.data.userId
+          console.log(userId);
+          
           // Second API call to upload the file
-          await axios.post(`${env.apiUrl}/api/file/upload-img?userId=${userId}`, fileFormData, {
+          await apiClient.post(`/api/files/images/upload?userId=${userId}`, fileFormData, {
             headers: {
               'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
           });
         } catch (fileUploadError) {
@@ -198,11 +192,11 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
             text: 'Thêm Huynh Trưởng thất bại do lỗi upload file.',
             icon: 'error',
           });
-  
+
           return;
         }
       }
-  
+
       // Only proceed if both actions succeed
       const newHuynhTruong = {
         id: response.data.data.bacHocId,
@@ -250,13 +244,13 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Huynh Trưởng</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-        <img
+          <img
             src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
             alt="Avatar" className="user-avatar"
           />
@@ -271,11 +265,11 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
           <div className="input-group">
             <input
               id="name" name="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-              type="text" value={name} onChange={handleInputChange} required/>
+              type="text" value={name} onChange={handleInputChange} required />
             {errors.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
-         
-          
+
+
           <label htmlFor="role">Chức Vụ</label>
           <CContainer className="px-1">
             <CRow>
@@ -319,21 +313,21 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
             onChange={handleInputChange}
           />
 
-        
+
           <label htmlFor="bacHoc">Bậc Học</label>
-        <CFormSelect
-          name="bacHoc"
-          aria-label="Chọn bậc học"
-          value={bacHoc} // Correctly assign the state value here
-          onChange={handleInputChange} // Handle change correctly
-        >
-          <option value="">Chọn bậc học</option>
-          {bacHocList.map((bacHoc) => (
-            <option key={bacHoc.bacHocId} value={bacHoc.bacHocId}>
-              {bacHoc.tenBacHoc}
-            </option>
-          ))}
-        </CFormSelect>
+          <CFormSelect
+            name="bacHoc"
+            aria-label="Chọn bậc học"
+            value={bacHoc} // Correctly assign the state value here
+            onChange={handleInputChange} // Handle change correctly
+          >
+            <option value="">Chọn bậc học</option>
+            {bacHocList.map((bacHoc) => (
+              <option key={bacHoc.bacHocId} value={bacHoc.bacHocId}>
+                {bacHoc.tenBacHoc}
+              </option>
+            ))}
+          </CFormSelect>
 
           <label htmlFor="email">Email</label>
           <input
@@ -393,13 +387,13 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong}) {
       <Modal.Footer>
         <div className="footer-container">
           <div className="form-check form-switch">
-           
+
           </div>
           <div className="footer-buttons">
-            <Button className='custom-badge-success' variant="secondary" onClick={handleSave} >
+            <Button variant="success" onClick={handleSave} >
               Save
             </Button>
-            <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
+            <Button variant="danger" onClick={handleClose}>
               Close
             </Button>
           </div>

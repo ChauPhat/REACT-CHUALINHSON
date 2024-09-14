@@ -33,7 +33,7 @@ const DSNganhThanh = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
-
+  const [filename, setFilename] = useState('DanhSachNganhThanh.xlsx');
   useEffect(() => {
     const layDuLieu = async () => {
       try {
@@ -207,23 +207,90 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-        <CDropdown variant="btn-group" direction="center">
+
+        <CDropdown  >
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem variant="outline" onClick={() => handleShowModal(user)}>
-              <CButton>Thông tin</CButton>
+            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
+              Thông tin
             </CDropdownItem>
-            <CDropdownItem
+            <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}
             >
-              <CButton>{user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}</CButton>
+              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
 
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
+
       </CTableDataCell>
     </>
   );
+
+  const handleDownloadExtract = async () => {
+    try {
+      // Hiển thị Swal với trạng thái đang tải
+      Swal.fire({
+        title: 'Đang tạo file...',
+        text: 'Vui lòng chờ trong giây lát.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading(); // Hiển thị icon loading
+        },
+      });
+
+      // Gọi API với các tham số
+      const response = await apiClient.get('api/export-excel/danh-sach-doan-sinh', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        params: {
+          filename: filename, 
+          idDoan:'5'
+        },
+        responseType: 'arraybuffer',
+      });
+  
+      // Tạo Blob từ dữ liệu phản hồi
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      
+  
+      // Tạo phần tử liên kết để tải file
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+      document.body.appendChild(a); // Thêm liên kết vào body
+  
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'File đã sẵn sàng để tải xuống!',
+        confirmButtonText: 'Tải xuống',
+        allowOutsideClick: false, // Không cho phép nhấp ra ngoài để đóng Swal
+        allowEscapeKey: false, // Không cho phép dùng phím Escape để thoát Swal
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Tạo phần tử liên kết để tải file
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
+          document.body.appendChild(a); // Thêm liên kết vào body
+          a.click(); // Nhấp vào liên kết để kích hoạt tải xuống
+          document.body.removeChild(a); // Xóa liên kết khỏi body
+          URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+        }
+      });
+    } catch (error) {
+      console.error('Lỗi khi tải tệp:', error);
+      // Cập nhật Swal khi có lỗi
+      Swal.fire({
+        icon: 'error',
+        title: 'Tải tệp không thành công',
+        text: 'Vui lòng thử lại.',
+      });
+    }
+  };
 
   const headers = [
     <CTableDataCell width={'5%'} className="fixed-width-column">Ảnh</CTableDataCell>,
@@ -271,6 +338,7 @@ const DSNganhThanh = () => {
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
         </CCol>
       </CRow>

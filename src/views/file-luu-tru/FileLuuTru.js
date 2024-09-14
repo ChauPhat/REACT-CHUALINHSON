@@ -40,7 +40,7 @@ const FileLuuTru = () => {
 
     const fetchFiles = async () => {
         try {
-            axios.get(`${env.apiUrl}/api/file/getAllFile`, {
+            axios.get(`${env.apiUrl}/api/files`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                 }
@@ -118,7 +118,7 @@ const FileLuuTru = () => {
         }).then((result) => {
             if (result.dismiss === MySwal.DismissReason.timer) {
                 try {
-                    axios.get(`${env.apiUrl}/api/file/downloadFile?fileName=${name}`, {
+                    axios.get(`${env.apiUrl}/api/files/download?fileName=${name}`, {
                         responseType: 'blob', // Nhận dữ liệu dưới dạng Blob
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
@@ -165,7 +165,7 @@ const FileLuuTru = () => {
                 try {
                     const formData = new FormData();
                     formData.append('file', selectedFile);
-                    axios.post(`${env.apiUrl}/api/file/upload-file`, formData, {
+                    axios.post(`${env.apiUrl}/api/files/upload`, formData, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`, // Thêm Authorization header
                             'Content-Type': 'multipart/form-data' // Đảm bảo rằng nội dung là form-data
@@ -233,6 +233,38 @@ const FileLuuTru = () => {
         }
     }
 
+    const deleteFile = (name) => {
+        MySwal.fire({
+            title: "Thông báo!",
+            text: "Bạn có chắc là muốn xoá file này.",
+            icon: "warning"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                MySwal.fire({
+                    title: "Thông báo!",
+                    text: "Xoá file thành công.",
+                    icon: "success"
+                });
+
+                axios.delete(`${env.apiUrl}/api/files/${name}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                })
+                    .then(response => {
+                        fetchFiles();
+                    })
+                    .catch(error => {
+                        MySwal.fire({
+                            title: "Thông báo!",
+                            text: "Có lỗi trong quá trình xoá file",
+                            icon: "error"
+                        });
+                    });
+            }
+        });
+    }
+
     const headers = [
         <CTableDataCell width={'50%'}>Tên</CTableDataCell>,
         <CTableDataCell width={'40%'} >Ngày</CTableDataCell>,
@@ -255,6 +287,8 @@ const FileLuuTru = () => {
         "",
     ];
 
+    const isAuthorized = authorizeRole(["Thư Ký"]);
+
     const renderRow = (user) => (
         <>
             <CTableDataCell>{user.name}</CTableDataCell>
@@ -266,11 +300,10 @@ const FileLuuTru = () => {
             </CTableDataCell> */}
             <CTableDataCell className="text-center">
                 <CButton color="success" variant="outline" onClick={() => dowloadFile(user.name)}>Tải</CButton>
+                {isAuthorized && <CButton color="danger" variant="outline" style={{ marginLeft: '10px' }} onClick={() => deleteFile(user.name)}>Xoá</CButton>}
             </CTableDataCell>
         </>
     );
-
-    const isAuthorized = authorizeRole(["Thư Ký"]);
 
     return (
         <div>
@@ -279,9 +312,10 @@ const FileLuuTru = () => {
                     <CCol className="d-flex align-items-center flex-grow-1">
                         <h3>File lưu trữ</h3>
                     </CCol>
-                    <CCol className="d-flex justify-content-end">
-                        {isAuthorized && <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>}
-                    </CCol>
+                    {isAuthorized &&
+                        <CCol className="d-flex justify-content-end">
+                            <CButton variant="outline" color="info" data-bs-toggle="modal" data-bs-target="#exampleModal">Thêm</CButton>
+                        </CCol>}
                 </CRow>
 
                 <Table
@@ -295,7 +329,7 @@ const FileLuuTru = () => {
 
             {/* Modal */}
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h1 className="modal-title fs-5" id="exampleModalLabel">Tải File</h1>

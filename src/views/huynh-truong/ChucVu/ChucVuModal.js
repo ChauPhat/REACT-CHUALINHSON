@@ -4,6 +4,7 @@ import './ChucVuModal.css';
 import env from '../../../env';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import apiClient from '../../../apiClient';
 
 function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,11 +19,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
   useEffect(() => {
     const fetchDoanList = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/doan/getAllDoan`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await apiClient.get(`/api/doan`);
         setDoanList(response.data.data);
       } catch (error) {
         console.error('Lỗi khi gọi API lấy danh sách đoàn:', error);
@@ -61,11 +58,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
     };
 
     try {
-      const response = await axios.put(`${env.apiUrl}/api/role/${ChucVu.id}`, updatedRole, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await apiClient.put(`/api/roles/${ChucVu.id}`, updatedRole);
 
       const updatedData = {
         ...ChucVu,
@@ -92,7 +85,7 @@ function ChucVuModal({ show, handleClose, ChucVu, onUpdateChucVu }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Chức Vụ</Modal.Title>
       </Modal.Header>

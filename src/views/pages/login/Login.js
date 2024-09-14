@@ -19,6 +19,7 @@ import {
   CInputGroupText,
   CRow,
 } from '@coreui/react';
+import apiClient from '../../../apiClient';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -64,22 +65,18 @@ const Login = () => {
       })
       return
     }
-
     setLoading(true)
     try {
-      const response = await axios.post(`${env.apiUrl}/api/auth/login`, {
+      const response = await apiClient.post(`/api/auth/login`, {
         username,
         password,
       })
-
       const data = response.data.data
-
       if (data) {
         updatelocalStorage(data?.token);
-
         Swal.fire({
           icon: 'success',
-          title: 'Đăng nhập thành công',
+          title: response.data?.message,
           showConfirmButton: false,
           timer: 2000,
         }).then(() => {
@@ -88,31 +85,31 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Login failed:', error)
-      if (error.response) {
-        const { status, data } = error.response
-        if (status === 401 || status === 403) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Sai tên đăng nhập hoặc mật khẩu',
-            text: data.message || 'Vui lòng kiểm tra lại thông tin đăng nhập.',
-            showConfirmButton: true,
-          })
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Đã xảy ra lỗi',
-            text: data.message || 'Vui lòng thử lại sau.',
-            showConfirmButton: true,
-          })
-        }
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi mạng',
-          text: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.',
-          showConfirmButton: true,
-        })
-      }
+      // if (error.response) {
+      //   const { status, data } = error.response
+      //   if (status === 401 || status === 403) {
+      //     Swal.fire({
+      //       icon: 'error',
+      //       title: 'Sai tên đăng nhập hoặc mật khẩu',
+      //       text: data.message || 'Vui lòng kiểm tra lại thông tin đăng nhập.',
+      //       showConfirmButton: true,
+      //     })
+      //   } else {
+      //     Swal.fire({
+      //       icon: 'error',
+      //       title: 'Đã xảy ra lỗi',
+      //       text: data.message || 'Vui lòng thử lại sau.',
+      //       showConfirmButton: true,
+      //     })
+      //   }
+      // } else {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Lỗi mạng',
+      //     text: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.',
+      //     showConfirmButton: true,
+      //   })
+      // }
     } finally {
       setLoading(false)
     }

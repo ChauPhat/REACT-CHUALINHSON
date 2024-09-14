@@ -100,6 +100,8 @@ const BacHoc = React.lazy(() => import('./views/bac-hoc/BacHoc.js'))
 
 const ChucVu = React.lazy(() => import('./views/huynh-truong/ChucVu/ChucVu.js'))
 
+const GhiChu = React.lazy(() => import('./views/ghi-chu/GhiChu.js'))
+
 const routes = [
   // { path: '/', name: 'Trang Chủ', element: HomeDashboard, screen_id: '*.trang-chu' },
   { path: '/', name: 'Trang Chủ', element: HomeDashboard },
@@ -139,6 +141,7 @@ const routes = [
   { path: '/quygd', name: 'Quỹ Gia Đình', element: QuyGD, role: ['Thủ Quỹ'] },
   { path: '/thong-bao', name: 'Thông Báo', element: ThongBao },
   { path: '/bac-hoc', name: 'Bậc Học', element: BacHoc, screen_id: '*.bac-hoc' },
+  { path: '/ghi-chu', name: 'Ghi Chú', element: GhiChu, screen_id: '*.ghi-chu' },
 ];
 
 

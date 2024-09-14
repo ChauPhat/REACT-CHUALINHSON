@@ -7,13 +7,13 @@ import {
     CTableDataCell
 } from '@coreui/react';
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
-import env from '../../../env';
 import Table from '../../table/Table';
 import '../DoanSinhCss/DanhSach.css';
 import './DiemDanh.css';
+
 const DDOanhNam = () => {
     const [searchTerm, setSearchTerm] = useState({
         tuan: '',
@@ -43,9 +43,9 @@ const DDOanhNam = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await apiClient.post(`/api/lichSinhHoatDoan/tao_lich_sinh_hoat`, null, {
+                    const response = await apiClient.post(`/api/lich-sinh-hoat-doan?`, null, {
                         params: {
-                            doan_id: doanId,
+                            doanId: doanId,
                             year: selectedYear
                         }
                     });
@@ -86,7 +86,7 @@ const DDOanhNam = () => {
     }, [])
 
     const getLichSinhHoatDoan = () => {
-        apiClient.get(`/api/lichSinhHoatDoan/tim_kiem_theo_doan_id?`, {
+        apiClient.get(`/api/lich-sinh-hoat-doan`, {
             params: {
                 doanId: doanId
             }
@@ -98,12 +98,11 @@ const DDOanhNam = () => {
     }
 
     const formatDate = (dateString) => {
-        if (!dateString) return;
         const [year, month, day] = dateString.split("-");
         return `${day}-${month}-${year}`;
     };
 
-    const filteredData = !lichSinhHoatDoan ? [] : lichSinhHoatDoan?.filter(item => {
+    const filteredData = lichSinhHoatDoan?.filter(item => {
         const formattedDate = formatDate(item.ngaySinhHoat);
         return (
             (searchTerm.tuan === '' || item.sttTuan.toString().includes(searchTerm.tuan)) &&
@@ -159,7 +158,7 @@ const DDOanhNam = () => {
         if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
             setSelectedLichSinhHoatDoan(item)
         } else {
-            apiClient.put(`/api/lichSinhHoatDoan/updateDiemDanh/${item.lichSinhHoatDoanId}`)
+            apiClient.put(`/api/lich-sinh-hoat-doan/${item.lichSinhHoatDoanId}/diem-danh`)
                 .then(response => {
                     getLichSinhHoatDoan();
                     setSelectedLichSinhHoatDoan(response.data.data);
@@ -199,11 +198,11 @@ const DDOanhNam = () => {
         try {
             handleEditToggle();
             const payload = getFormData();
-            const response = await apiClient.post(`/api/diem_danh/luu_hoac_cap_nhat_diem_danh`, payload);
+            const response = await apiClient.post(`/api/diem-danh/save-or-update`, payload);
             let timerInterval;
             Swal.fire({
                 title: "Vui lòng đợi xử lý thông tin!",
-                html: "Tự động đóng sau <b></b> mili giây.",
+                // html: "Tự động đóng sau <b></b> mili giây.",
                 timer: 2000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
@@ -211,10 +210,10 @@ const DDOanhNam = () => {
                 didOpen: () => {
                     getLichSinhHoatDoan();
                     Swal.showLoading();
-                    const timer = Swal.getPopup().querySelector("b");
-                    timerInterval = setInterval(() => {
-                        timer.textContent = `${Swal.getTimerLeft()}`;
-                    }, 100);
+                    // const timer = Swal.getPopup().querySelector("b");
+                    // timerInterval = setInterval(() => {
+                    //     timer.textContent = `${Swal.getTimerLeft()}`;
+                    // }, 100);
                 },
                 willClose: () => {
                     clearInterval(timerInterval);
@@ -244,7 +243,7 @@ const DDOanhNam = () => {
             <CTableDataCell>{item.nam}</CTableDataCell>
             <CTableDataCell>
                 <CButton color="info"
-                    disabled={getTodayDateString() !== item.ngaySinhHoat}
+                    disabled={isFuture(item.ngaySinhHoat)}
                     onClick={() => { checkDiemDanhDTOS(item); setShow(true); }}
                     variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     Điểm danh
@@ -256,11 +255,54 @@ const DDOanhNam = () => {
         return new Date().toISOString().split('T')[0];
     }
 
+    const isFuture = (date) => {
+        const givenDate = new Date(date);
+        const now = new Date();
+        givenDate.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0);
+        return givenDate > now;
+    }
+
+    const isPastExact = (date) => {
+        const givenDate = new Date(date);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        return givenDate < now;
+    }
+
     const [show, setShow] = useState(false);
 
     const handleClose = () => {
         setShow(false);
         setIsEditing(false);
+    }
+
+    const renderLichSinhHoatDoan = () => {
+        return selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
+            let doanSinh = element.doanSinhDetailDTO;
+            console.log(doanSinh);
+            return (<tr className='align-items-center'>
+                <td>
+                    <img
+                        src={`${doanSinh.avatar}`}
+                        alt="Ảnh"
+                        className="rounded-image"
+                        width="50"
+                        height="50"
+                    />
+                </td>
+                <td>{doanSinh.hoTen}</td>
+                <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
+                <td>{doanSinh.tenDoan}</td>
+                <td className=''>
+                    <div className="checkbox-con">
+                        <input id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                            checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}>
+                        </input>
+                    </div>
+                </td>
+            </tr>);
+        })
     }
 
     return (
@@ -277,7 +319,7 @@ const DDOanhNam = () => {
                             </option>
                         ))}
                     </CFormSelect>
-                    <CButton color="secondary" onClick={addLichSinhHoatDoan}>Thêm</CButton>
+                    <CButton variant="outline" color="info" onClick={addLichSinhHoatDoan}>Thêm</CButton>
                 </CCol>
             </CRow>
 
@@ -289,7 +331,7 @@ const DDOanhNam = () => {
                 searchCriteria={{ searchTerm }}
             />
 
-            <Modal show={show} onHide={handleClose} centered className='modal-lg'>
+            <Modal show={show} scrollable onHide={handleClose} centered className='modal-lg'>
                 <Modal.Header closeButton>
                     <Modal.Title className="modal-title">Điểm danh</Modal.Title>
                 </Modal.Header>
@@ -306,45 +348,26 @@ const DDOanhNam = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {
-                                    selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
-                                        let doanSinh = element.doanSinhDetailDTO;
-                                        console.dir(element);
-                                        return (<tr className='align-items-center'>
-                                            <td>
-                                                <img
-                                                    src={`${env.apiUrl}/api/file/get-img?userId=${doanSinh.userId}&t=${Date.now()}`}
-                                                    alt="Ảnh"
-                                                    className="rounded-image"
-                                                    width="50"
-                                                    height="50"
-                                                />
-                                            </td>
-                                            <td>{doanSinh.hoTen}</td>
-                                            <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
-                                            <td>{doanSinh.tenDoan}</td>
-                                            <td className=''>
-                                                <div className="checkbox-con">
-                                                    <input
-                                                        id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
-                                                        checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}></input>
-                                                </div>
-                                            </td>
-                                        </tr>);
-                                    })
-                                }
+                                {renderLichSinhHoatDoan()}
                             </tbody>
                         </table>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <div className="form-check form-switch" >
-                        <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked={isEditing} onChange={handleEditToggle} />
+                        <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
+                            checked={isEditing} onChange={handleEditToggle} disabled={isPastExact(selectedLichSinhHoatDoan?.ngaySinhHoat)} />
                         <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
                     </div>
                     <div className="footer-buttons">
-                        <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
-                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button>
+                        <Button variant="success" disabled={!isEditing} onClick={handleSaveDiemDanh} >
+                            Save
+                        </Button>
+                        <Button variant="danger" onClick={handleClose}>
+                            Close
+                        </Button>
+                        {/* <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
+                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button> */}
                     </div>
                 </Modal.Footer>
             </Modal>

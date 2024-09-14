@@ -79,9 +79,7 @@ const AppHeaderDropdown = () => {
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.user_id;
         setIdUser(userId);
-        const response = await apiClient.get('/api/file/get-img', {
-          params: { userid: userId }
-        });
+        const response = await apiClient.get(`/api/files/images/${userId}`);
         if (response.status === 200) {
           const newImageUrl = response.data.data;
           setImageUrl(newImageUrl);
@@ -107,8 +105,8 @@ const AppHeaderDropdown = () => {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.user_id;
       setIdUser(userId);
-      const response = await apiClient.get(`/api/users/get_thong_tin_doan_sinh`, {
-        params: { user_id: userId }
+      const response = await apiClient.get(`/api/users/doan-sinh-detail`, {
+        params: { userId: userId }
       });
       if (response.status === 200) {
         setUserProfile(response.data.data);
@@ -155,95 +153,95 @@ const AppHeaderDropdown = () => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-    
+
         const tempImageUrl = URL.createObjectURL(file); // Tạo URL tạm thời cho hình ảnh
-    
-        axios.post(`${env.apiUrl}/api/file/upload-img?userId=${iduser}`, formData, {
+
+        axios.post(`${env.apiUrl}/api/files/images/upload?userId=${iduser}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${localStorage.getItem('token')}` // Thêm Authorization header
           }
         })
-        .then(() => {
-          let timerInterval;
-          return Swal.fire({
-            title: "Thông báo từ hệ thống!",
-            html: "Đang cập nhật hình ảnh<b></b>s",
-            timer: 2500,
-            timerProgressBar: true,
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-              Swal.showLoading();
-              const timer = Swal.getPopup().querySelector("b");
-              timerInterval = setInterval(() => {
-                timer.textContent = `${Swal.getTimerLeft()}`;
-              }, 100);
-            },
-            willClose: () => {
-              clearInterval(timerInterval);
-            }
-          });
-        })
-        .then(async (result) => {
-          if (result.dismiss === Swal.DismissReason.timer) {
-            URL.revokeObjectURL(tempImageUrl);
-            const token = localStorage.getItem('token');
-            if (!token) {
-              console.error('Token not found');
-              return;
-            }
-            const decodedToken = jwtDecode(token);
-            const userId = decodedToken.user_id;
-            setIdUser(userId);
-            try {
-              const response = await apiClient.get(`/api/file/get-img`, {
-                params: { userid: userId },
-                headers: {
-                  'Authorization': `Bearer ${localStorage.getItem('token')}` 
-                }
-              });
-    
-              if (response.status === 200) {
-                const newImageUrl = response.data.data;
-                setImageUrl(newImageUrl);
-    
-                await Swal.fire({
-                  title: "Thông báo từ hệ thống!",
-                  text: "Cập nhật ảnh thành công",
-                  icon: "success"
+          .then(() => {
+            let timerInterval;
+            return Swal.fire({
+              title: "Thông báo từ hệ thống!",
+              html: "Đang cập nhật hình ảnh<b></b>s",
+              timer: 2500,
+              timerProgressBar: true,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                  timer.textContent = `${Swal.getTimerLeft()}`;
+                }, 100);
+              },
+              willClose: () => {
+                clearInterval(timerInterval);
+              }
+            });
+          })
+          .then(async (result) => {
+            if (result.dismiss === Swal.DismissReason.timer) {
+              URL.revokeObjectURL(tempImageUrl);
+              const token = localStorage.getItem('token');
+              if (!token) {
+                console.error('Token not found');
+                return;
+              }
+              const decodedToken = jwtDecode(token);
+              const userId = decodedToken.user_id;
+              setIdUser(userId);
+              try {
+                const response = await apiClient.get(`/api/files/images/${userId}`, {
+                 
+                  headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  }
                 });
-              } else {
-                console.error('Failed to fetch new image URL, status:', response.status);
+
+                if (response.status === 200) {
+                  const newImageUrl = response.data.data;
+                  setImageUrl(newImageUrl);
+
+                  await Swal.fire({
+                    title: "Thông báo từ hệ thống!",
+                    text: "Cập nhật ảnh thành công",
+                    icon: "success"
+                  });
+                } else {
+                  console.error('Failed to fetch new image URL, status:', response.status);
+                  await Swal.fire({
+                    title: "Thông báo từ hệ thống!",
+                    text: "Cập nhật ảnh không thành công.",
+                    icon: "error"
+                  });
+                }
+              } catch (error) {
+                console.error('Error fetching new image URL:', error);
                 await Swal.fire({
                   title: "Thông báo từ hệ thống!",
-                  text: "Cập nhật ảnh không thành công.",
+                  text: "Đã xảy ra lỗi khi lấy ảnh.",
                   icon: "error"
                 });
               }
-            } catch (error) {
-              console.error('Error fetching new image URL:', error);
-              await Swal.fire({
-                title: "Thông báo từ hệ thống!",
-                text: "Đã xảy ra lỗi khi lấy ảnh.",
-                icon: "error"
-              });
             }
-          }
-        })
-        .catch(error => {
-          console.error('Error during image upload:', error);
-          Swal.fire({
-            title: "Thông báo từ hệ thống!",
-            text: "Cập nhật ảnh thất bại.",
-            icon: "error"
+          })
+          .catch(error => {
+            console.error('Error during image upload:', error);
+            Swal.fire({
+              title: "Thông báo từ hệ thống!",
+              text: "Cập nhật ảnh thất bại.",
+              icon: "error"
+            });
           });
-        });
-    
-    } catch (error) {
-      console.error('Error uploading image:', error);
+
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
-  }    
   }
 
   return (
@@ -277,7 +275,7 @@ const AppHeaderDropdown = () => {
           </CDropdownMenu>
         </CDropdown>
 
-        <CModal visible={modalVisible} onClose={handleCloseModal}>
+        <CModal visible={modalVisible} scrollable onClose={handleCloseModal}>
           <CModalHeader>
             <CModalTitle>Hồ sơ người dùng</CModalTitle>
           </CModalHeader>

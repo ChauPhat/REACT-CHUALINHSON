@@ -35,7 +35,7 @@
       
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
+        const response = await axios.get(`${env.apiUrl}/api/bac-hoc`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -120,8 +120,8 @@
     const renderRow = (bacHoc) => (
       <>
         <CTableDataCell>
-        <CAvatar
-        src={`${env.apiUrl}/api/bac-hoc/get-img?bac_hoc_id=${bacHoc.id}&t=${Date.now()}`}
+        <CAvatar  
+        src={`${env.apiUrl}/api/bac-hoc/${bacHoc.id}/image`}
         style={{ width: '50px', height: '35px', borderRadius: '50%', cursor: 'pointer' }}
       />
         </CTableDataCell>
@@ -144,7 +144,7 @@
             <h3>Danh Sách Bậc Học</h3>
           </CCol>
           <CCol className="d-flex justify-content-end">
-            <CButton color="secondary" onClick={handleShowAddModal} >Thêm</CButton>
+            <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
           </CCol>
         </CRow>
 

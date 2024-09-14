@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './BacHocModal.css';
 import env from '../../env';
@@ -15,11 +15,11 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
   const [errors, setErrors] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [initialImageUrl, setInitialImageUrl] = useState('');
-
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (bachoc) {
-      setInitialImageUrl(`${env.apiUrl}/api/file/get-img?bachocId=${bachoc.id}&t=${Date.now()}`);
+      setInitialImageUrl(`${env.apiUrl}/api/bac-hoc?bachocId=${bachoc.id}/image`);
     }
   }, [bachoc]);
 
@@ -85,7 +85,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
     
     console.log(BacHocData , bachoc.id)
     try {
-      const response = await axios.put(`${env.apiUrl}/api/bac-hoc/updateBacHoc?bacHocId=${bachoc.id}`, BacHocData, {
+      const response = await axios.put(`${env.apiUrl}/api/bac-hoc/${bachoc.id}`, BacHocData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -97,7 +97,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
           fileFormData.append('file', selectedFile);
           const idBacHoc = response.data.data.bacHocId
           // Second API call to upload the file
-          await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bac_hoc_id=${idBacHoc}`, fileFormData, {
+          await axios.post(`${env.apiUrl}/api/bac-hoc/upload-img?bacHocId=${idBacHoc}`, fileFormData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -140,27 +140,21 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Thông Tin Bậc Học</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="avatar-container">
-          {/* <img
-            src={`${env.apiUrl}/api/file/get-img?bachocId=${bachoc.id}&t=${Date.now()}`}
-            alt="Avatar"
-            className="bachoc-avatar"
-          /> */}
-
-
+      <div className="avatar-container">
           <img
-            src={selectedFile ? URL.createObjectURL(selectedFile) : initialImageUrl}
-            alt="Avatar"
-            className="bachoc-avatar"
+            src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
+            alt="Avatar" className="user-avatar"
           />
            {isEditing && (
-            <input type="file" onChange={handleFileChange}  accept=".jpg,.jpeg,.png" className="form-control mt-2" />
-          )}
+          <input
+            type="file" style={{ display: 'block', marginTop: '10px' }} ref={fileInputRef}
+            onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control"
+          />)}
         </div>
 
         <div className="form-group">
