@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import '../../DoanSinhCss/InsertModal.css';
-import env from '../../../../env';
+import apiClient from '../../../../apiClient';
 import { CFormInput, CFormSelect } from '@coreui/react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 
 function InsertModal({ show, handleClose }) {
@@ -25,8 +23,12 @@ function InsertModal({ show, handleClose }) {
     sdtGd: '',
     avatar: '',
     isActive: true,
-    roleId1: '',
-    lichSuHocs: [] // Đổi từ null thành mảng rỗng
+    lichSuHocs: [{bacHocId:''}],
+    traiHuanLuyenId: '',
+    hoTenCha: '',
+    hoTenMe: '',
+    roleId1: { roleId: '' },
+    roleId2: null
   });
 
   const fileInputRef = useRef(null);
@@ -35,12 +37,8 @@ function InsertModal({ show, handleClose }) {
     const fetchData = async () => {
       try {
         const [rolesResponse, bacHocResponse] = await Promise.all([
-          axios.get(`${env.apiUrl}/api/role/get-all`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          }),
-          axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          })
+          apiClient.get(`/api/roles/get-all`),
+          apiClient.get(`/api/bac-hoc`)
         ]);
 
         if (rolesResponse.data.status === 'OK') {
@@ -71,19 +69,10 @@ function InsertModal({ show, handleClose }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prevData => {
-      switch (name) {
-        case "roleId1":
-          return { ...prevData, [name]: { roleId: value } };
-
-        case "gioiTinh":
-          return { ...prevData, [name]: value === "true" };
-        case "bacHoc":
-          return { ...prevData, lichSuHocs: [{ bacHocId: value }] };
-        default:
-          return { ...prevData, [name]: value };
-      }
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -92,64 +81,116 @@ function InsertModal({ show, handleClose }) {
       const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
       if (!validExtensions.includes(file.type)) {
         Swal.fire({
-          title: "Thông báo từ hệ thống!",
-          text: "Đây không phải file ảnh, vui lòng chọn lại.",
-          icon: "warning"
+          title: 'Thông báo từ hệ thống!',
+          text: 'Đây không phải file ảnh, vui lòng chọn lại.',
+          icon: 'warning',
         });
         return;
       }
       const previewUrl = URL.createObjectURL(file);
       setAvatarPreview(previewUrl);
-      setFormData(prevFormData => ({
-        ...prevFormData,
-        avatar: file
+      setFormData((prevData) => ({
+        ...prevData,
+        avatar: file.name,
       }));
     }
   };
 
   const handleSave = async () => {
-    const { hoTen, ngaySinh, sdt, email, roleId1 } = formData;
-    if (!hoTen || !ngaySinh || !sdt || !email || !roleId1) {
+    const {
+      hoTen, ngaySinh, sdt, email, roleId1,bacHocId, hoTenCha, hoTenMe, avatar, diaChi, sdtGd,
+    } = formData;
+  
+    if (!hoTen || !ngaySinh || !sdt || !email || !roleId1 || !hoTenCha || !hoTenMe) {
       Swal.fire({
-        title: "Lỗi!",
-        text: "Các trường bắt buộc không được để trống!",
-        icon: "warning",
-        confirmButtonText: "OK"
+        title: 'Lỗi!',
+        text: 'Các trường bắt buộc không được để trống!',
+        icon: 'warning',
+        confirmButtonText: 'OK',
       });
       return;
     }
-    try {
-      const response = await axios.post(`${env.apiUrl}/api/users/createUser`, formData, {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-      });
 
-      if (response.data.status === 'OK') {
+    const payload = {
+      userId:formData.userId,
+      hoTen: formData.hoTen,
+      ngaySinh: formData.ngaySinh,
+      sdt: formData.sdt,
+      email: formData.email,
+      phapDanh: formData.phapDanh,
+      gioiTinh: formData.gioiTinh,
+      createdDate: formData.createdDate,
+      isHuynhTruong: formData.isHuynhTruong,
+      updatedDate: formData.updatedDate,
+      diaChi: formData.diaChi,
+      sdtGd: formData.sdtGd,
+      avatar: formData.avatar,
+      isActive: formData.isActive,
+      roleId1:  roleId1 ? { roleId: roleId1 } : null,
+      roleId2: null,
+      lichSuHocs: bacHocId ? [{ bacHocId: bacHocId }] : [],
+      traiHuanLuyenId: formData.traiHuanLuyenId='1',
+      hoTenCha: formData.hoTenCha,
+      hoTenMe: formData.hoTenMe,
+    };
+  
+    try {
+      const response = await apiClient.post(`/api/users/create-user`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (setAvatarPreview) {
+        try {
+          const fileFormData = new FormData();
+          fileFormData.append('file', selectedFile);
+          const userId = response.data.data.userId
+          await apiClient.post(`/api/files/images/upload?userId=${userId}`, fileFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        } catch (fileUploadError) {
+          console.error('Lỗi khi upload file:', fileUploadError);
+          Swal.fire({
+            title: 'Thông báo từ hệ thống!',
+            text: 'Thêm Đoàn Sinh thất bại do lỗi upload file.',
+            icon: 'error',
+          });
+
+          return;
+        }
+      }
+
+      if (response.data) {
         Swal.fire({
-          title: "Thành công!",
-          text: "Đoàn sinh đã được thêm thành công!",
-          icon: "success",
-          confirmButtonText: "OK"
+          title: 'Thành công!',
+          text: 'Đoàn sinh đã được thêm thành công!',
+          icon: 'success',
+          confirmButtonText: 'OK',
         }).then(() => {
           handleClose();
         });
       } else {
         Swal.fire({
-          title: "Lỗi!",
+          title: 'Lỗi!',
           text: `Lỗi khi thêm đoàn sinh: ${response.data.message}`,
-          icon: "error",
-          confirmButtonText: "OK"
+          icon: 'error',
+          confirmButtonText: 'OK',
         });
       }
     } catch (error) {
       Swal.fire({
-        title: "Lỗi hệ thống!",
-        text: "Có lỗi xảy ra khi gọi API.",
-        icon: "error",
-        confirmButtonText: "OK"
+        title: 'Lỗi hệ thống!',
+        text: 'Có lỗi xảy ra khi gọi API.',
+        icon: 'error',
+        confirmButtonText: 'OK',
       });
       console.error('Lỗi khi gọi API:', error);
     }
   };
+  
 
   const handleAvatarClick = () => {
     fileInputRef.current.click();
@@ -163,7 +204,7 @@ function InsertModal({ show, handleClose }) {
       <Modal.Body>
         <div className="avatar-container text-center mb-3">
           <img
-            src={avatarPreview}
+            src={avatarPreview || formData.avatar}
             alt="User Avatar"
             onClick={handleAvatarClick}
             style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
@@ -222,9 +263,10 @@ function InsertModal({ show, handleClose }) {
               /> Nữ
             </label>
           </div>
+
           <label>Bậc Học</label>
-          <CFormSelect name="bacHoc" onChange={handleChange}>
-            <option value="">Chọn Bậc Học</option>
+          <CFormSelect name="bacHocId" onChange={handleChange}>
+            <option>Chọn Bậc Học</option>
             {bacHoc.map(bac => (
               <option key={bac.bacHocId} value={bac.bacHocId}>
                 {bac.tenBacHoc}
@@ -234,21 +276,27 @@ function InsertModal({ show, handleClose }) {
 
           <label>Chức Vụ</label>
           <CFormSelect name="roleId1" onChange={handleChange}>
-            <option value="">Chọn Chức Vụ</option>
-            {roles.map((role) => (
+            <option>Chọn Chức Vụ</option>
+            {roles.map(role => (
               <option key={role.roleId} value={role.roleId}>
                 {role.roleName}
               </option>
             ))}
           </CFormSelect>
+
+          <label>Họ Tên Cha</label>
+          <input id="hoTenCha" name="hoTenCha" value={formData.hoTenCha} className="form-control" type="text" onChange={handleChange} />
+
+          <label>Họ Tên Mẹ</label>
+          <input id="hoTenMe" name="hoTenMe" value={formData.hoTenMe} className="form-control" type="text" onChange={handleChange} />
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button className='custom-badge-success' variant="secondary" onClick={handleSave}>
-          Save
+      <Button variant="success" onClick={handleSave}>
+          Lưu
         </Button>
-        <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
-          Close
+        <Button variant="danger" onClick={handleClose}>
+          Hủy
         </Button>
       </Modal.Footer>
     </Modal>
