@@ -94,6 +94,7 @@ const ChangePass = ({ modalVisible, onCloseModal }) => {
                     timerProgressBar: true,
                 }).then(() => {
                     onCloseModal();
+                     window.location.href = '/#/thong-bao'
                 });
             }
         } catch (error) {
