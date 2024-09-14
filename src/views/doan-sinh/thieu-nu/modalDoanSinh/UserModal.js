@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import '../../DoanSinhCss/UserModal.css';
 import env from '../../../../env';
+import apiClient from '../../../../apiClient';
 import { CFormInput, CFormSelect } from '@coreui/react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -18,14 +19,10 @@ function UserModal({ show, handleClose, user }) {
     const fetchData = async () => {
       try {
         const [rolesResponse, bacHocResponse] = await Promise.all([
-          axios.get(`${env.apiUrl}/api/role/get-all`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          }),
-          axios.get(`${env.apiUrl}/api/bac-hoc/get-all`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          })
+          apiClient.get(`/api/roles/get-all`),
+          apiClient.get(`/api/bac-hoc`)
         ]);
-
+  
         if (rolesResponse.data.status === 'OK') {
           const filteredRoles = rolesResponse.data.data.filter(
             (role) => !role.isHuynhTruong && role.doanId === 4
@@ -34,7 +31,7 @@ function UserModal({ show, handleClose, user }) {
         } else {
           console.error('Lỗi khi lấy dữ liệu roles:', rolesResponse.data.message);
         }
-
+  
         if (bacHocResponse.data.status === 'OK') {
           const filteredBacHoc = bacHocResponse.data.data.filter(
             (bac) => bac.capBac === "Đoàn Sinh"
@@ -42,14 +39,15 @@ function UserModal({ show, handleClose, user }) {
           setBacHoc(filteredBacHoc);
         } else {
           console.error('Lỗi khi lấy dữ liệu Bậc Học:', bacHocResponse.data.message);
-        }
+        }        
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
     };
-
+  
     fetchData();
   }, []);
+  
 
   useEffect(() => {
     setFormData(prevFormData => ({
@@ -103,10 +101,10 @@ function UserModal({ show, handleClose, user }) {
       uploadData.append('file', selectedFile);
 
       try {
-        const response = await axios.post(`${env.apiUrl}/api/file/upload-img?userId=${user.id}`, uploadData, {
+        const response = await apiClient.post(`/api/files/images/upload?userId=${user.id}`, uploadData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           }
         });
         Swal.fire({
@@ -200,10 +198,10 @@ function UserModal({ show, handleClose, user }) {
               {formData.tenchucvu1 || 'Chọn Chức Vụ'}
             </option>
             {roles.map((role) => (
-              <option key={role.roleId} value={formData.roleId1?.roleName}>
-                {role.roleName}
-              </option>
-            ))}
+            <option key={role.roleId} value={role.roleId}>
+              {role.roleName}
+            </option>
+          ))}
           </CFormSelect>
 
           <label>Ngày Sinh</label>
@@ -269,6 +267,22 @@ function UserModal({ show, handleClose, user }) {
           <label for="exampleFormControlInput1">Địa Chỉ</label>
           <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.address}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}></textarea>
+
+<label>Họ Tên Cha</label>
+          <input
+            id="hoTenCha" name="hoTenCha" className="form-control" type="text"
+            value={formData.hoTenCha}
+            onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing}
+          />
+
+<label>Họ Tên Mẹ</label>
+          <input
+            id="hoTenMe" name="hoTenMe" className="form-control" type="text"
+            value={formData.hoTenMe}
+            onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing}
+          />
 
           <label for="exampleFormControlInput1">Số Điện Thoại Người Dám Hộ</label>
           <input id="sdtgd" name="sdtgd" class="form-control" type="text" value={formData.sdtgd}
