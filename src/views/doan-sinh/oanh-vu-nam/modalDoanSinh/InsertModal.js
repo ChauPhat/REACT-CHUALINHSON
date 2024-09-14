@@ -244,10 +244,10 @@ function InsertModal({ show, handleClose }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button className='custom-badge-success' variant="secondary" onClick={handleSave}>
+        <Button  variant="success" onClick={handleSave}>
           Save
         </Button>
-        <Button className='custom-badge-danger' variant="secondary" onClick={handleClose}>
+        <Button  variant="danger" onClick={handleClose}>
           Close
         </Button>
       </Modal.Footer>

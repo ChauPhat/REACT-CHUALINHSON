@@ -1,11 +1,11 @@
-import React, { useState,useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './BacHocModal.css';
 import env from '../../env';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
+function BacHocModal({ show, handleClose, bachoc, onReloadTable }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: bachoc.name || '',
@@ -38,9 +38,9 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    
+
     const validExtensions = ['image/jpeg', 'image/png', 'image/jpg'];
-  
+
     if (file && validExtensions.includes(file.type)) {
       setSelectedFile(file);
     } else {
@@ -51,7 +51,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
       });
       fileInputRef.current.value = ''; // Reset file input if invalid
     }
-  
+
   };
 
   const validateForm = () => {
@@ -74,7 +74,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
       confirmButtonText: 'Có, Sửa',
       cancelButtonText: 'Hủy',
     });
-    
+
     if (result.isDenied || result.isDismissed) return;
 
     const BacHocData = {
@@ -82,8 +82,8 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
       capBac: formData.role,    // Mapping the formData to the expected field
       moTa: formData.mota,      // Mapping the formData to the expected field
     };
-    
-    console.log(BacHocData , bachoc.id)
+
+    console.log(BacHocData, bachoc.id)
     try {
       const response = await axios.put(`${env.apiUrl}/api/bac-hoc/${bachoc.id}`, BacHocData, {
         headers: {
@@ -110,7 +110,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
             text: 'Thêm bậc học thất bại do lỗi upload file.',
             icon: 'error',
           });
-  
+
           return;
         }
       }
@@ -133,7 +133,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
         icon: 'error',
       });
     }
-    
+
 
 
     setIsEditing(false); // Disable editing mode after saving
@@ -145,28 +145,28 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
         <Modal.Title className="modal-title">Thông Tin Bậc Học</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <div className="avatar-container">
+        <div className="avatar-container">
           <img
             src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
             alt="Avatar" className="user-avatar"
           />
-           {isEditing && (
-          <input
-            type="file" style={{ display: 'block', marginTop: '10px' }} ref={fileInputRef}
-            onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control"
-          />)}
+          {isEditing && (
+            <input
+              type="file" style={{ display: 'block', marginTop: '10px' }} ref={fileInputRef}
+              onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control"
+            />)}
         </div>
 
         <div className="form-group">
           <label htmlFor="name">Tên Bậc Học</label>
-          <input id="name" name="name"  className="form-control"
-            type="text"  value={formData.name} onChange={handleInputChange}
-            disabled={!isEditing}/>
-            
+          <input id="name" name="name" className="form-control"
+            type="text" value={formData.name} onChange={handleInputChange}
+            disabled={!isEditing} />
+
           <label htmlFor="role">Cấp Bậc</label>
           <input name="role" className="form-control"
             type="text" value={formData.role} onChange={handleInputChange}
-            disabled={!isEditing}/>
+            disabled={!isEditing} />
 
           <label htmlFor="mota">Mô Tả</label>
           <textarea name="mota" className="form-control" rows="3"
@@ -186,7 +186,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable  }) {
             </label>
           </div>
           <div className="footer-buttons">
-            <Button variant="secondary" disabled={!isEditing} onClick={handleSave}>
+            <Button variant="success" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
             <Button variant="danger" onClick={handleClose}>

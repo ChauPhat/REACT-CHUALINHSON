@@ -59,40 +59,42 @@ const DSHuynhTruong= () => {
         let isHuynhTruong = true;
         const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
 
-        let imageUrl;
+        console.log(response.data.data);
 
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
           const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
           const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
 
-          try {
-            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`
-            );
-            imageUrl = (imageResponse.data.data)
-          } catch (error) {
-            console.error('Lỗi khi tải ảnh:', error);
-          }
           return {
             id: item.userId,
             idUX: item.userIdUx,
             name: item.hoTen,
-            avatar: imageUrl,
+            birthDate: item.ngaySinh,
+            phone: item.sdt,
+            email: item.email,
+            phapdanh: item.phapDanh,
+            gender: item.gioiTinh,
             registered: item.createdDate,
+            isHuynhTruong: item.isHuynhTruong,
+            updatedDate: item.updatedDate,
+            address: item.diaChi,
+            sdtGd: item.sdtGd,
+            avatar: item.avatar,
+            isActive: item.isActive,
             role1: item?.roleId1?.roleName,
             role2: item?.roleId2?.roleName,
             idrole1: item?.roleId1?.roleId,
             idrole2: item?.roleId2?.roleId,
             status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            address: item.diaChi,
-            phone: item.sdt,
-            birthDate: item.ngaySinh,
             admissionDate: item.ngayGiaNhapDoan,
             group: item.doan ? item.doan.tenDoan : 'N/A',
-            phapdanh: item.phapDanh,
             bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null,
+            traiHuanLuyenId: item.traiHuanLuyenId,
+            hoTenCha: item.hoTenCha,
+            hoTenMe: item.hoTenMe,
+            nhiemKyDoans: item.nhiemKyDoans,
+            doanSinhDetails: item.doanSinhDetails,
           };
         }));
         setUsersData(fetchedData);
