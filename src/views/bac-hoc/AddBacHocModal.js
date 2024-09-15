@@ -17,6 +17,7 @@ function AddBacHocModal({ show, handleClose, onAddBacHoc  }) {
     const { name, value } = e.target;
         if (name === 'name') setName(value);
         if (name === 'role') setRole(value);
+        if (name === 'mota') setMota(value);
         setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
     };
 
