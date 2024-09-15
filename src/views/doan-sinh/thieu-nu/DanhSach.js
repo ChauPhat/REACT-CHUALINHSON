@@ -17,6 +17,7 @@ import '../DoanSinhCss/DanhSach.css';
 import Table from '../../table/Table';
 import InsertModal from './modalDoanSinh/InsertModal'
 import UserModal from './modalDoanSinh/UserModal';
+import ChuyenDoanModal from './modalDoanSinh/ChuyenDoanModal'
 import env from '../../../env';
 import Swal from 'sweetalert2';
 import CategoryCarousel from "./modalDoanSinh/CategoryCarousel";
@@ -30,7 +31,10 @@ const DSThieuNu = () => {
   const [searchRole, setSearchRole] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showChuyenDoan, setChuyenDoanModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedPUser, setSelectedPUser] = useState(null);
+  const [pUsers, setPUsers] = useState([]);
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
   const [filename, setFilename] = useState('DanhSachOanhNam.xlsx');
@@ -39,7 +43,7 @@ const DSThieuNu = () => {
     const layDuLieu = async () => {
       try {
         const response = await apiClient.get('/api/users/get-list-user-with-id-doan/4',);
-      
+        setPUsers(response.data.data);
         let imageUrl;
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           try {
@@ -75,6 +79,7 @@ const DSThieuNu = () => {
             address: item.diaChi,
             vaitro: doanSinhDetails[0]?.role,
             sdtgd: item.sdtGd,
+            isActive: doanSinhDetails[0]?.isActive ? 'Active' : 'Inactive',
             doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
             ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
             ngayRoiDoan: doanSinhDetails[0]?.leftDate,
@@ -89,7 +94,7 @@ const DSThieuNu = () => {
           };
         }));
         setUsersData(fetchedData);
-        console.log(fetchedData);
+
         
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
@@ -126,8 +131,20 @@ const DSThieuNu = () => {
     setShowInsertModal(false);
   };
 
-  const getBadgeClass = (status) => {
-    switch (status) {
+  // Hàm để mở modal
+  const handleOpenChuyenDoanModal = (user) => {
+    setSelectedUser(user);
+    setChuyenDoanModal(true);
+  };
+
+  // Hàm để đóng modal
+  const handleCloseChuyenDoanModal = () => {
+    setShowModal(false);
+    setChuyenDoanModal(null);
+  };
+
+  const getBadgeClass = (isActive) => {
+    switch (isActive) {
       case 'Active':
         return 'bg-success';
       case 'Inactive':
@@ -151,7 +168,7 @@ const DSThieuNu = () => {
 
 
   const handleToggleStatus = async (user) => {
-    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+    const newStatus = user.isActive === 'Active' ? 'Inactive' : 'Active';
   
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
@@ -207,8 +224,8 @@ const DSThieuNu = () => {
       <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
       <CTableDataCell>{user.vaitro}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
-          {user.status}
+        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
+          {user.isActive}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -221,6 +238,9 @@ const DSThieuNu = () => {
             <CDropdownItem className='custom-dropdown-item'
               onClick={() => handleToggleStatus(user)}>
               {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+            </CDropdownItem>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(pUsers.find(u => u.userId === user.id))}>
+              Chuyển Đoàn
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -364,7 +384,13 @@ const DSThieuNu = () => {
           handleClose={handleCloseInsertModal}
       />
       )}
-
+      {showChuyenDoan && (
+        <ChuyenDoanModal
+          show={showChuyenDoan}
+          handleClose={handleCloseChuyenDoanModal}
+          user={selectedUser}
+      />
+      )}
     </div>
   );
 };
