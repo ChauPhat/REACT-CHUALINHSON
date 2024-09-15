@@ -1,151 +1,68 @@
-import React, { useState,useEffect } from 'react'
 import {
-  CBadge,
   CAvatar,
-  CTableDataCell,
-  CRow,
-  CFormInput,
   CButton,
   CCol,
-} from '@coreui/react'
+  CFormInput,
+  CRow,
+  CTableDataCell,
+} from '@coreui/react';
+import React, { useEffect, useState } from 'react';
 
 
-import Table from '../../../table/Table'
-import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import UserModal from './UserModal';
-import '../../../doan-sinh/DoanSinhCss/DanhSach.css'
-import env from '../../../../env'
+import "slick-carousel/slick/slick.css";
 import apiClient from '../../../../apiClient';
-
-
-
-// Hàm format date từ dd-mm-yyyy sang đối tượng Date
-const formatDate = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number)
-  return new Date(year, month - 1, day)
-}
-
-const getBadgeClass = (status) => {
-  switch (status) {
-    case 'Active':
-      return 'custom-badge-success';
-    case 'Inactive':
-      return 'custom-badge-danger';
-  }
-}
-
-const handleGenderChange = (newGender) => {
-  setUser(prevUser => ({
-    ...prevUser,
-    gender: newGender
-  }));
-};
+import env from '../../../../env';
+import '../../../doan-sinh/DoanSinhCss/DanhSach.css';
+import Table from '../../../table/Table';
+import UserModal from './UserModal';
 
 const DPOanhNam = () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
-  const [usersData, setUsersData] = useState([]);
+  const [doanId, setDoanId] = useState(1);
+  const [nhiemKyDoans, setNhiemKyDoans] = useState([]);
 
   useEffect(() => {
-    const layDuLieu = async () => {
-      try {
-        // First API call
-        const response1 = await apiClient.get(`/api/nhiem-ky-doan/get-list-nhiem-ky-doan-with-doanid/1`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-  
-        // Second API call
-        const response2 = await apiClient.get(`/api/users/get-list-user-with-id-doan/1`,{
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+    fetchData();
+  }, [])
 
-     
-        // Mapping data from the first API response
-        const data1 = response1.data.data.map(item => {
-          const currentNhiemKy = item.nhiemKyDoans.find(nhiemKy => nhiemKy.isNow);
-          return {
-            id: item.userIdUx,
-            name: item.hoTen,
-            avatar: item.avatar,
-            registered: item.createdDate,
-            status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            address: item.diaChi,
-            phone: item.sdt,
-            birthDate: item.ngaySinh,
-            admissionDate: item.ngayGiaNhapDoan,
-            group: item.doan ? item.doan.tenDoan : 'N/A',
-            phapdanh: item.phapDanh,
-            roleOfDoanTruong: currentNhiemKy ? currentNhiemKy.role : '',
-          };
-        });
+  const fetchData = async () => {
+    try {
+      const response = await apiClient.get(`/api/nhiem-ky-doan`, {
+        params: {
+          doanId: doanId
+        }
+      });
+      console.dir()
+      setNhiemKyDoans(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-        // Mapping data from the second API response
-        const data2 = response2.data.data.map(item => {
-          // Adjust mapping logic according to the structure of the second API response
-          const activeDoanSinhDetail = item.doanSinhDetails.find((detail) => detail.isActive) || item.doanSinhDetails[0];
-          return {
-            id: item.userIdUx,
-            name: item.hoTen,
-            avatar: item.avatar,
-            registered: item.createdDate,
-            status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            address: item.diaChi,
-            phone: item.sdt,
-            birthDate: item.ngaySinh,
-            admissionDate: item.ngayGiaNhapDoan,
-            group: item.doan ? item.doan.tenDoan : 'N/A',
-            phapdanh: item.phapDanh,
-            roleOfDoanTruong: activeDoanSinhDetail ? activeDoanSinhDetail.role : '',
-          };
-        });
-  
-        // Combine both lists into a single array
-        const combinedData = [...data1, ...data2];
-  
-        // Set the combined data to state
-        setUsersData(combinedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-  
-    layDuLieu();
-  }, []);
-
-
-  const filteredData = usersData.filter((user) => {
+  const filteredData = nhiemKyDoans.filter((nhiemKyDoan) => {
     return (
-      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-      (searchRole === '' || user.roleOfDoanTruong.toLowerCase().includes(searchRole.toLowerCase())) 
+      (searchName === '' || nhiemKyDoan.hoTen.toLowerCase().includes(searchName.toLowerCase())) &&
+      (searchRole === '' || nhiemKyDoan.role.toLowerCase().includes(searchRole.toLowerCase()))
     );
   });
 
 
   const [showModal, setShowModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedNhiemKyDoan, setSelectedNhiemKyDoan] = useState(null);
 
-  const handleShowModal = (user) => {
-    setSelectedUser(user);
+  const handleShowModal = (nhiemKyDoan) => {
+    setSelectedNhiemKyDoan(nhiemKyDoan);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedUser(null);
+    setSelectedNhiemKyDoan({});
   };
-
-
 
   const headers = [
     <CTableDataCell width={'20%'} className="fixed-width-column">Ảnh</CTableDataCell>,
@@ -167,57 +84,45 @@ const DPOanhNam = () => {
       value={searchRole}
       onChange={(e) => setSearchRole(e.target.value)}
     />,
-    
     '',
   ];
 
-  const renderRow = (user) => (
+  const renderRow = (nhiemKyDoan) => (
     <>
-      <CTableDataCell>  
-        <CAvatar src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} />
-      </CTableDataCell>
-        <CTableDataCell>{user.name} || {user.name} </CTableDataCell>
-        <CTableDataCell>{user.roleOfDoanTruong}</CTableDataCell>
       <CTableDataCell>
-      <CButton color="info" variant="outline" onClick={() => handleShowModal(user)} 
-       >Show</CButton>
+        <CAvatar src={`${env.userAvatarUrl + nhiemKyDoan.pureUser?.avatar || ''}`} />
+      </CTableDataCell>
+      <CTableDataCell>{nhiemKyDoan.pureUser?.hoTen} || {nhiemKyDoan.pureUser?.phapDanh} </CTableDataCell>
+      <CTableDataCell>{nhiemKyDoan.role}</CTableDataCell>
+      <CTableDataCell>
+        <CButton color="info" variant="outline" onClick={() => handleShowModal(nhiemKyDoan)}
+        >Show</CButton>
       </CTableDataCell>
     </>
   );
 
   return (
-    
     <div className="container-fluid">
-
-    <br/>
+      <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
-          <h3>Danh Phả Oanh Vũ Nam</h3>
-        </CCol>
-        <CCol className="d-flex justify-content-end">
-
+          <h3>Đoàn Phả Oanh Vũ Nam </h3>
         </CCol>
       </CRow>
-            <Table
-                headers={headers}
-                headerCells={headerCells}
-                items={filteredData}
-                renderRow={renderRow}
-                searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }} 
-            />
-   
-
-   {selectedUser && (
+      <Table
+        headers={headers}
+        headerCells={headerCells}
+        items={filteredData}
+        renderRow={renderRow}
+        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+      />
+      {selectedNhiemKyDoan && (
         <UserModal
           show={showModal}
           handleClose={handleCloseModal}
-          user={selectedUser}
-          handleGenderChange={handleGenderChange}
+          nhiemKyDoan={selectedNhiemKyDoan}
         />
       )}
-
-
-   
     </div>
   )
 }

@@ -45,9 +45,9 @@ const CategoryCarousel = ({ categories }) => {
         {categories.map((category, index) => (
           <div key={index} className="category-item">
             <div className="profile-card">
-              <img src={category.avatar} alt={category.name} className="profile-image" />
+              <img src={category.avatar} alt={category.hoTen} className="profile-image" />
               <div className="profile-info">
-                <h3>{category.name}</h3>
+                <h3>{category.hoTen}</h3>
                 <p>{category.role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</p>
               </div>
             </div>
