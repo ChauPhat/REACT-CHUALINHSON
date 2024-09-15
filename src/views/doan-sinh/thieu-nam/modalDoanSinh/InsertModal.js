@@ -43,7 +43,7 @@ function InsertModal({ show, handleClose }) {
 
         if (rolesResponse.data.status === 'OK') {
           const filteredRoles = rolesResponse.data.data.filter(
-            (role) => !role.isHuynhTruong && role.doanId === 3
+            (role) => !role.isHuynhTruong && role.doanId === 4
           );
           setRoles(filteredRoles);
         } else {
@@ -68,10 +68,10 @@ function InsertModal({ show, handleClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+  
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'gioiTinh' ? value === 'true' : value,
     }));
   };
 
