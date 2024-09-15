@@ -174,7 +174,7 @@ const FileLuuTru = () => {
                         .then(response => {
                             let timerInterval;
                             Swal.fire({
-                                title: "Đang tải ảnh lên hệ thống!",
+                                title: "Đang tải file lên hệ thống!",
                                 html: "Vui lòng chờ trong <b></b> s.",
                                 timer: 2500,
                                 timerProgressBar: true,
@@ -195,7 +195,7 @@ const FileLuuTru = () => {
                                 if (result.dismiss === Swal.DismissReason.timer) {
                                     MySwal.fire({
                                         title: "Thông báo!",
-                                        text: "Tải ảnh thành công.",
+                                        text: "Tải file thành công.",
                                         icon: "success"
                                     }).then((result) => {
                                         if (result.isConfirmed) {
@@ -210,7 +210,7 @@ const FileLuuTru = () => {
                         .catch(error => {
                             MySwal.fire({
                                 title: "Thông báo!",
-                                text: "Có lỗi sinh ra trong quá trinh tải ảnh, vui lòng tải lại.",
+                                text: "Có lỗi sinh ra trong quá trinh tải file, vui lòng tải lại.",
                                 icon: "error"
                             });
                         });

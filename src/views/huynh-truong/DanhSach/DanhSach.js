@@ -59,7 +59,7 @@ const DSHuynhTruong= () => {
         let isHuynhTruong = true;
         const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
 
-        console.log(response.data.data);
+        // console.log(response.data.data);
 
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
@@ -98,7 +98,7 @@ const DSHuynhTruong= () => {
           };
         }));
         setUsersData(fetchedData);
-        console.log(fetchedData)
+        // console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);

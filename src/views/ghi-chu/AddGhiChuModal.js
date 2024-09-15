@@ -54,7 +54,7 @@ function AddGhiChuModal({ show, handleClose, onAddGhiChu  }) {
         mota,
       };
       onAddGhiChu(newGhiChu);
-      console.log(newGhiChu)
+      // console.log(newGhiChu)
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
         text: 'Thêm Ghi Chú thành công!',

@@ -83,7 +83,7 @@ function BacHocModal({ show, handleClose, bachoc, onReloadTable }) {
       moTa: formData.mota,      // Mapping the formData to the expected field
     };
 
-    console.log(BacHocData, bachoc.id)
+    // console.log(BacHocData, bachoc.id)
     try {
       const response = await axios.put(`${env.apiUrl}/api/bac-hoc/${bachoc.id}`, BacHocData, {
         headers: {

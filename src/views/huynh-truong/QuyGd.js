@@ -1,7 +1,13 @@
 import {
     CButton,
     CCol,
+    CDropdown,
+    CDropdownItem,
+    CDropdownMenu,
+    CDropdownToggle,
     CFormInput,
+    CFormSelect,
+    CFormTextarea,
     CModal,
     CModalBody,
     CModalFooter,
@@ -9,21 +15,13 @@ import {
     CModalTitle,
     CRow,
     CTableDataCell,
-    CDropdown,
-    CDropdownToggle,
-    CDropdownMenu,
-    CDropdownItem,
-    CFormSelect,
-    CFormTextarea,
 } from '@coreui/react';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import Table from '../table/Table';
-import WidgetsBrand from './WidgetsBrand';
-import axios from 'axios';
-import env from '../../env';
-import '../doan-sinh/DoanSinhCss/DanhSach.css';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 import apiClient from '../../apiClient';
+import '../doan-sinh/DoanSinhCss/DanhSach.css';
+import Table from '../table/Table';
+import WidgetsBrand from './WidgetsBrand';
 
 const QuyGD = () => {
     const [searchName, setSearchName] = useState('');
@@ -171,7 +169,6 @@ const QuyGD = () => {
                 text: 'Số tiền phải lớn hơn hoặc bằng 0.',
                 showConfirmButton: true,
             });
-            r
             return;
         }
         if (isNaN(newFund.soTien)) {
