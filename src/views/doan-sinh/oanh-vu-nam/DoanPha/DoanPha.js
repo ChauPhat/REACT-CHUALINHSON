@@ -17,7 +17,7 @@ import '../../../doan-sinh/DoanSinhCss/DanhSach.css';
 import Table from '../../../table/Table';
 import UserModal from './UserModal';
 
-const DPThieuNu = () => {
+const DPOanhNam = () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
   const [searchRole, setSearchRole] = useState('')
@@ -106,7 +106,7 @@ const DPThieuNu = () => {
       <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
-          <h3>Đoàn Phả Thiếu Nữ </h3>
+          <h3>Đoàn Phả Oanh Vũ Nam </h3>
         </CCol>
       </CRow>
       <Table
@@ -127,4 +127,4 @@ const DPThieuNu = () => {
   )
 }
 
-export default DPThieuNu
+export default DPOanhNam

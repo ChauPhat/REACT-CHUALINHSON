@@ -7,7 +7,7 @@ import {
     CTableDataCell
 } from '@coreui/react';
 import React, { useEffect, useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
 import Table from '../../table/Table';
@@ -26,6 +26,17 @@ const DDNganhThanh = () => {
     const [lichSinhHoatDoan, setLichSinhHoatDoan] = useState([]);
     const [selectedYear, setSelectedYear] = useState(currentYear);
     const [selectedLichSinhHoatDoan, setSelectedLichSinhHoatDoan] = useState();
+    const [formData, setFormData] = useState({});
+    const [isEditing, setIsEditing] = useState(false);
+    const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        getLichSinhHoatDoan();
+    }, []);
+
+    useEffect(() => {
+        onChangeSelectedLichSinhHoatDoan();
+    }, [selectedLichSinhHoatDoan]);
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
@@ -43,35 +54,30 @@ const DDNganhThanh = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await apiClient.post(`/api/lich-sinh-hoat-doan?`, null, {
-                        params: {
-                            doanId: doanId,
-                            year: selectedYear
-                        }
-                    });
                     let timerInterval;
                     Swal.fire({
                         title: "Vui lòng đợi xử lý thông tin!",
-                        html: "Tự động đóng sau <b></b> mili giây.",
-                        timer: 2000,
+                        timer: 5000,
                         timerProgressBar: true,
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
-                            getLichSinhHoatDoan();
                             Swal.showLoading();
-                            const timer = Swal.getPopup().querySelector("b");
-                            timerInterval = setInterval(() => {
-                                timer.textContent = `${Swal.getTimerLeft()}`;
-                            }, 100);
+                            apiClient.post(`/api/lich-sinh-hoat-doan?`, null, {
+                                params: {
+                                    doanId: doanId,
+                                    year: selectedYear
+                                }
+                            });
                         },
                         willClose: () => {
+                            getLichSinhHoatDoan();
                             clearInterval(timerInterval);
                         }
                     }).then(() => {
                         Swal.fire({
                             icon: 'success',
-                            title: response.data.message
+                            title: `Tạo lịch năm ${selectedYear} thành công`
                         })
                     });
                 } catch (error) {
@@ -80,10 +86,6 @@ const DDNganhThanh = () => {
             }
         })
     }
-
-    useEffect(() => {
-        getLichSinhHoatDoan();
-    }, [])
 
     const getLichSinhHoatDoan = () => {
         apiClient.get(`/api/lich-sinh-hoat-doan`, {
@@ -117,6 +119,7 @@ const DDNganhThanh = () => {
         <CTableDataCell width={'30%'} className="fixed-width-column">Năm</CTableDataCell>,
         <CTableDataCell width={'10%'} className="fixed-width-column"></CTableDataCell>,
     ];
+
     const headerCells = [
         <CFormInput className='fixed-width-input'
             type="search"
@@ -139,10 +142,10 @@ const DDNganhThanh = () => {
         ''
     ];
 
-    const checkDiemDanhDTOS = (item) => {
+    const onChangeSelectedLichSinhHoatDoan = () => {
         var tempFormData = {};
         let userId = JSON.parse(localStorage.getItem('user'))?.user_id;
-        item.diemDanhDTOS.forEach(diemDanhDTO => {
+        selectedLichSinhHoatDoan?.diemDanhDTOS?.forEach(diemDanhDTO => {
             tempFormData = {
                 ...tempFormData,
                 [diemDanhDTO.diemDanhId]: {
@@ -155,6 +158,9 @@ const DDNganhThanh = () => {
             }
         });
         setFormData(tempFormData);
+    }
+
+    const checkDiemDanhDTOS = (item) => {
         if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
             setSelectedLichSinhHoatDoan(item)
         } else {
@@ -168,8 +174,6 @@ const DDNganhThanh = () => {
                 })
         }
     }
-
-    const [formData, setFormData] = useState({});
 
     const handleCoMatChange = (checked, diemDanhDTO) => {
         setFormData({
@@ -202,7 +206,6 @@ const DDNganhThanh = () => {
             let timerInterval;
             Swal.fire({
                 title: "Vui lòng đợi xử lý thông tin!",
-                // html: "Tự động đóng sau <b></b> mili giây.",
                 timer: 2000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
@@ -210,10 +213,6 @@ const DDNganhThanh = () => {
                 didOpen: () => {
                     getLichSinhHoatDoan();
                     Swal.showLoading();
-                    // const timer = Swal.getPopup().querySelector("b");
-                    // timerInterval = setInterval(() => {
-                    //     timer.textContent = `${Swal.getTimerLeft()}`;
-                    // }, 100);
                 },
                 willClose: () => {
                     clearInterval(timerInterval);
@@ -231,11 +230,10 @@ const DDNganhThanh = () => {
         }
     }
 
-
-    const [isEditing, setIsEditing] = useState(false);
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
     }
+
     const renderRow = (item) => (
         <>
             <CTableDataCell>{item.sttTuan}</CTableDataCell>
@@ -251,9 +249,6 @@ const DDNganhThanh = () => {
             </CTableDataCell>
         </>
     );
-    const getTodayDateString = () => {
-        return new Date().toISOString().split('T')[0];
-    }
 
     const isFuture = (date) => {
         const givenDate = new Date(date);
@@ -270,8 +265,6 @@ const DDNganhThanh = () => {
         return givenDate < now;
     }
 
-    const [show, setShow] = useState(false);
-
     const handleClose = () => {
         setShow(false);
         setIsEditing(false);
@@ -280,7 +273,6 @@ const DDNganhThanh = () => {
     const renderLichSinhHoatDoan = () => {
         return selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
             let doanSinh = element.doanSinhDetailDTO;
-            console.log(doanSinh);
             return (<tr className='align-items-center'>
                 <td>
                     <img
@@ -356,9 +348,7 @@ const DDNganhThanh = () => {
                 <Modal.Footer>
                     <div className="form-check form-switch" >
                         <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
-                            checked={isEditing} onChange={handleEditToggle} 
-                            disabled={isPastExact(selectedLichSinhHoatDoan?.ngaySinhHoat)} 
-                            />
+                            checked={isEditing} onChange={handleEditToggle} disabled={isPastExact(selectedLichSinhHoatDoan?.ngaySinhHoat)} />
                         <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
                     </div>
                     <div className="footer-buttons">
@@ -368,8 +358,6 @@ const DDNganhThanh = () => {
                         <Button variant="danger" onClick={handleClose}>
                             Close
                         </Button>
-                        {/* <button type="button" className="btn btn-primary" disabled={!isEditing} onClick={handleSaveDiemDanh}>Lưu</button>
-                        <button type="button" className="btn btn-secondary" onClick={handleClose}>Thoát</button> */}
                     </div>
                 </Modal.Footer>
             </Modal>
