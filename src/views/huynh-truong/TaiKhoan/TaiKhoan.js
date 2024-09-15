@@ -204,7 +204,7 @@ const TaiKhoanHuynhTruong = () => {
               clearInterval(timerInterval);
             }
           }).then(() => {
-            console.log(response.data, accountId, isActive, updated);
+            // console.log(response.data, accountId, isActive, updated);
             setUpdated(response.data);
             Swal.fire({
               icon: 'success',

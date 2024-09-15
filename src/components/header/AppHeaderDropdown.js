@@ -53,7 +53,7 @@ const logout = async () => {
           icon: 'success',
           title: 'Đăng xuất thành công!'
         }).then(() => {
-          localStorage.clear();
+          clearLocalStorage();
           const event = new Event('storage');
           window.dispatchEvent(event);
           window.location.href = '/#login';
@@ -61,6 +61,12 @@ const logout = async () => {
       }
     }
   })
+}
+
+const clearLocalStorage = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('tokenExpiry');
 }
 
 const AppHeaderDropdown = () => {
