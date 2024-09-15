@@ -22,7 +22,7 @@ function UserModal({ show, handleClose, user }) {
           apiClient.get(`/api/roles/get-all`),
           apiClient.get(`/api/bac-hoc`)
         ]);
-  
+
         if (rolesResponse.data.status === 'OK') {
           const filteredRoles = rolesResponse.data.data.filter(
             (role) => !role.isHuynhTruong && role.doanId === 5
@@ -31,7 +31,7 @@ function UserModal({ show, handleClose, user }) {
         } else {
           console.error('Lỗi khi lấy dữ liệu roles:', rolesResponse.data.message);
         }
-  
+
         if (bacHocResponse.data.status === 'OK') {
           const filteredBacHoc = bacHocResponse.data.data.filter(
             (bac) => bac.capBac === "Đoàn Sinh"
@@ -39,15 +39,15 @@ function UserModal({ show, handleClose, user }) {
           setBacHoc(filteredBacHoc);
         } else {
           console.error('Lỗi khi lấy dữ liệu Bậc Học:', bacHocResponse.data.message);
-        }        
+        }
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
     };
-  
+
     fetchData();
   }, []);
-  
+
 
   useEffect(() => {
     setFormData(prevFormData => ({
@@ -106,11 +106,12 @@ function UserModal({ show, handleClose, user }) {
         hoTen: formData.name,
         ngaySinh: formData.ngaysinh,
         sdt: formData.phone,
+        createdDate: formData.registered,
         email: formData.email,
         isHuynhTruong: formData.isHuynhTruong,
         phapDanh: formData.phapDanh,
         gioiTinh: formData.gender === "Male",
-        // updatedDate: new Date().toISOString().split('T')[0],
+        updatedDate: new Date().toISOString().split('T')[0],
         diaChi: formData.address,
         sdtGd: formData.phone || "",
         avatar: selectedFile ? selectedFile.name : user.avatar,
@@ -189,7 +190,7 @@ function UserModal({ show, handleClose, user }) {
 
           <label>Pháp Danh</label>
           <input
-            id="phapdanh" name="phapdanh" className="form-control" type="text"
+            id="phapDanh" name="phapDanh" className="form-control" type="text"
             value={formData.phapDanh}
             onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}
@@ -221,10 +222,10 @@ function UserModal({ show, handleClose, user }) {
               {formData.tenchucvu1 || 'Chọn Chức Vụ'}
             </option>
             {roles.map((role) => (
-            <option key={role.roleId} value={role.roleId}>
-              {role.roleName}
-            </option>
-          ))}
+              <option key={role.roleId} value={role.roleId}>
+                {role.roleName}
+              </option>
+            ))}
           </CFormSelect>
 
           <label>Ngày Sinh</label>
@@ -254,7 +255,7 @@ function UserModal({ show, handleClose, user }) {
           <label>Giới Tính</label>
           <div className="radio-group">
             <label className="radio-inline">
-              <input type="radio" name="gender" value="Male"
+              <input type="radio" id='gender' name="gender" value="Male"
                 checked={formData.gender === "Male"}
                 onChange={() => handleGenderChange(true)}
                 disabled={!isEditing} />
@@ -286,12 +287,34 @@ function UserModal({ show, handleClose, user }) {
             ))}
           </CFormSelect>
 
+          <label>Trại Huấn Luyện</label>
+          <input
+            id="tenTraiHuanLuyen" name="tenTraiHuanLuyen" className="form-control" type="text"
+            value={formData.tenTraiHuanLuyen}
+            onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing}
+          />
+          {/* <CFormSelect
+            name="bacHoc"
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            disabled={!isEditing}
+          >
+            <option value={formData.bacHocId} >
+              {formData.traiHuanLuyenId || 'Chọn Trại'}
+            </option>
+            {bacHoc.map((bac) => (
+              <option key={bac.bacHocId} value={bac.bacHocId}>
+                {bac.tenBacHoc}
+              </option>
+            ))}
+          </CFormSelect> */}
 
           <label for="exampleFormControlInput1">Địa Chỉ</label>
-          <textarea id='diachi' name='diachi' class="form-control" rows="3" value={formData.address}
+          <textarea id='address' name='address' class="form-control" rows="3" value={formData.address}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing}></textarea>
 
-<label>Họ Tên Cha</label>
+          <label>Họ Tên Cha</label>
           <input
             id="hoTenCha" name="hoTenCha" className="form-control" type="text"
             value={formData.hoTenCha}
@@ -299,7 +322,7 @@ function UserModal({ show, handleClose, user }) {
             readOnly={!isEditing} disabled={!isEditing}
           />
 
-<label>Họ Tên Mẹ</label>
+          <label>Họ Tên Mẹ</label>
           <input
             id="hoTenMe" name="hoTenMe" className="form-control" type="text"
             value={formData.hoTenMe}
@@ -307,7 +330,7 @@ function UserModal({ show, handleClose, user }) {
             readOnly={!isEditing} disabled={!isEditing}
           />
 
-          <label for="exampleFormControlInput1">Số Điện Thoại Người Dám Hộ</label>
+          <label for="exampleFormControlInput1">Số Điện Thoại Gia Đình</label>
           <input id="sdtgd" name="sdtgd" class="form-control" type="text" value={formData.sdtgd}
             onChange={handleInputChange} readonly={!isEditing} disabled={!isEditing} />
 
@@ -331,10 +354,10 @@ function UserModal({ show, handleClose, user }) {
             <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
           </div>
           <div className="footer-buttons">
-            <Button  variant="success" disabled={!isEditing} onClick={handleSave}>
+            <Button variant="success" disabled={!isEditing} onClick={handleSave}>
               Save
             </Button>
-            <Button  variant="danger" onClick={handleClose}>
+            <Button variant="danger" onClick={handleClose}>
               Close
             </Button>
           </div>
