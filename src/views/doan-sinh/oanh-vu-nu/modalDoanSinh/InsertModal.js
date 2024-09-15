@@ -68,10 +68,10 @@ function InsertModal({ show, handleClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+  
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'gioiTinh' ? value === 'true' : value,
     }));
   };
 
@@ -286,10 +286,10 @@ function InsertModal({ show, handleClose }) {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button  variant="success" onClick={handleSave}>
+        <Button variant="success" onClick={handleSave}>
           Save
         </Button>
-        <Button  variant="danger" onClick={handleClose}>
+        <Button variant="danger" onClick={handleClose}>
           Close
         </Button>
       </Modal.Footer>

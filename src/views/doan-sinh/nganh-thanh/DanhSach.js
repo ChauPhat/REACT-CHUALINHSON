@@ -33,7 +33,8 @@ const DSNganhThanh = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
-  const [filename, setFilename] = useState('DanhSachNganhThanh.xlsx');
+  const [filename, setFilename] = useState('DanhSachOanhNam.xlsx');
+
   useEffect(() => {
     const layDuLieu = async () => {
       try {
@@ -52,7 +53,7 @@ const DSNganhThanh = () => {
           const doanSinhDetails = item.doanSinhDetails || [];
           const lichSuHocs = item.lichSuHocs || [];
           const roleId1 = item.roleId1 || {};
-          const roleId2 = item.roleId1 || {};
+
 
           return {
             id: item.userId,
@@ -66,12 +67,11 @@ const DSNganhThanh = () => {
             hoTenCha: item.hoTenCha,
             hoTenMe: item.hoTenMe,
             idchucvu1: roleId1.roleId,
+            isHuynhTruong: item.isHuynhTruong,
             tenchucvu1: roleId1.roleName,
-            idchucvu2: roleId2.roleName,
-            tenchucvu2: roleId2.roleName,
             status: item.isActive ? 'Active' : 'Inactive',
             email: item.email,
-            gender: item.gioiTinh ? "Male" : "Female",
+            gender: item.gioiTinh,
             address: item.diaChi,
             vaitro: doanSinhDetails[0]?.role,
             sdtgd: item.sdtGd,
@@ -81,10 +81,16 @@ const DSNganhThanh = () => {
             mota: doanSinhDetails[0]?.moTa,
             tendoan: doanSinhDetails[0]?.tenDoan,
             tenBacHoc: lichSuHocs[0]?.tenBacHoc,
-            bacHocId: lichSuHocs[0]?.bacHocId
+            bacHocId: lichSuHocs[0]?.bacHocId,
+            traiHuanLuyenId: item.traiHuanLuyenId,
+            tenTraiHuanLuyen: item.tenTraiHuanLuyen,
+            nhiemKyDoans: item.nhiemKyDoans,
+            doanSinhDetails: item.doanSinhDetails,
           };
         }));
         setUsersData(fetchedData);
+
+        
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
@@ -135,8 +141,7 @@ const DSNganhThanh = () => {
     const nameMatch = (user.name || '').toLowerCase().includes(searchName.toLowerCase());
 
     // Thêm điều kiện lọc cho cả hai trường chức vụ
-    const chucVuMatch = (user.tenchucvu1 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase()) ||
-      (user.tenchucvu2 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
+    const chucVuMatch = (user.tenchucvu1 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
 
     const roleMatch = (user.vaitro || '').toLowerCase().includes(searchRole.toLowerCase());
     const statusMatch = (user.status || '').toLowerCase().includes(searchStatus.toLowerCase());
@@ -192,7 +197,7 @@ const DSNganhThanh = () => {
     <>
       <CTableDataCell>
         <CImage
-          src={user.avatar || '/path/to/default/avatar.png'}
+          src={user.avatar}
           size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
         />
       </CTableDataCell>
@@ -207,22 +212,18 @@ const DSNganhThanh = () => {
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
-
-        <CDropdown  >
+        <CDropdown variant="btn-group" direction="center">
           <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem className="custom-dropdown-item" variant="outline" onClick={() => handleShowModal(user)}>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleShowModal(user)}>
               Thông tin
             </CDropdownItem>
-            <CDropdownItem className="custom-dropdown-item"
-              onClick={() => handleToggleStatus(user)}
-            >
+            <CDropdownItem className='custom-dropdown-item'
+              onClick={() => handleToggleStatus(user)}>
               {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
-
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-
       </CTableDataCell>
     </>
   );
@@ -246,7 +247,7 @@ const DSNganhThanh = () => {
         },
         params: {
           filename: filename, 
-          idDoan:'5'
+          idDoan:'1'
         },
         responseType: 'arraybuffer',
       });
@@ -254,7 +255,6 @@ const DSNganhThanh = () => {
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-      
   
       // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
@@ -291,7 +291,6 @@ const DSNganhThanh = () => {
       });
     }
   };
-
   const headers = [
     <CTableDataCell width={'5%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'25%'} className="fixed-width-column">Tên || Pháp Danh</CTableDataCell>,
