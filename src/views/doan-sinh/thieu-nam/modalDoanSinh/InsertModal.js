@@ -43,7 +43,7 @@ function InsertModal({ show, handleClose }) {
 
         if (rolesResponse.data.status === 'OK') {
           const filteredRoles = rolesResponse.data.data.filter(
-            (role) => !role.isHuynhTruong && role.doanId === 4
+            (role) => !role.isHuynhTruong && role.doanId === 3
           );
           setRoles(filteredRoles);
         } else {
