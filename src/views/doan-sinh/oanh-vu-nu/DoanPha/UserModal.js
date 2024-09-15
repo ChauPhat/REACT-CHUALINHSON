@@ -2,49 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import './UserModal.css';
 import env from '../../../../env'
-function UserModal({ show, handleClose, user, handleRoleChange}) {
-  const [checkedCount, setCheckedCount] = useState(0);
-  const [isEditing, setIsEditing] = useState(false); // State for edit mode
-  const [formData, setFormData] = useState({ ...user, gender: user.gender ? "Male" : "Female" });
 
-
+function UserModal({ show, handleClose, nhiemKyDoan}) {
+  const [user, setUser] = useState(nhiemKyDoan?.pureUser || {});
+  const [isEditing, setIsEditing] = useState(false); 
+  
   useEffect(() => {
-    // Update formData when user data changes
-    setFormData({ ...user, gender: user.gender ? "Male" : "Female" });
-  }, [user]);
-
-  const handleCheck = (event) => {
-    const newCheckedCount = event.target.checked ? checkedCount + 1 : checkedCount - 1;
-    setCheckedCount(newCheckedCount);
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleGenderChange = (value) => {
-    setFormData({
-      ...formData,
-      gender: value ? "Male" : "Female",
-    });
-  };
-
-  const handleSave = () => {
-    // Implement save logic here
-    // Example: Call handleRoleChange or update state with new formData
-    console.log('Saving data:', formData);
-
-    setIsEditing(false); // Disable editing mode after saving
-  };
-
+    setUser(nhiemKyDoan?.pureUser || {});
+  }, [nhiemKyDoan]);
+  
   return (
     <Modal show={show} scrollable onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -52,79 +18,84 @@ function UserModal({ show, handleClose, user, handleRoleChange}) {
       </Modal.Header>
       <Modal.Body>
         <div className="avatar-container">
-          <img src={` ${env.apiUrl}/api/file/get-img?userId=${user.id}&t=${Date.now()} `} alt="Avatar" className="user-avatar" />
+          <img src={`${env.userAvatarUrl + nhiemKyDoan.pureUser?.avatar || ''}`} alt="Avatar" className="user-avatar" />
         </div>
-
         <div className="form-group">
           <label htmlFor="name">Họ Và Tên</label>
           <div className="input-group">
             <input
               id="name" name="name" className="form-control" type="text"
-              value={formData.name} onChange={handleInputChange}
+              value={user.hoTen}
+              // onChange={handleInputChange}
               readOnly={!isEditing} disabled={!isEditing}/>
             <span className="input-group-text" id="basic-addon2">{user.id}</span>
           </div>
 
           <label htmlFor="phapdanh">Pháp Danh</label>
           <input name="phapdanh" className="form-control" type="text"
-            value={formData.phapdanh} onChange={handleInputChange}
+            value={user.phapDanh}
+            // onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
           <label htmlFor="phapdanh">Vai Trò</label>
           <input name="phapdanh" className="form-control" type="text"
-            value={formData.roleOfDoanTruong} onChange={handleInputChange}
+            value={nhiemKyDoan.role} 
+            // onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
           <label htmlFor="email">Email</label>
           <input name="email" className="form-control" type="email"
-            value={formData.email} onChange={handleInputChange}
+            value={user.email} 
+            // onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
           <label htmlFor="birthDate">Ngày Sinh</label>
           <input name="birthDate" className="form-control" type="date"
-            value={formData.birthDate} onChange={handleInputChange}
+            value={user.ngaySinh} 
+            // onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
-          <label htmlFor="registered">Ngày Gia Nhập</label>
+          <label htmlFor="registered">Ngày Kết Thúc Nhiệm Kỳ</label>
           <input name="registered" className="form-control" type="date"
-            value={formData.registered} onChange={handleInputChange}
+            value={nhiemKyDoan.endDate} 
+            // onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing}/>
 
           <label htmlFor="phone">Số Điện Thoại</label>
-          <input  name="phone"  className="form-control" type="text" value={formData.phone} 
-          onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}/>
+          <input  name="phone"  className="form-control" type="text" value={user.sdt} 
+          // onChange={handleInputChange} 
+          readOnly={!isEditing} disabled={!isEditing}/>
 
           <label>Giới Tính</label>
             <div className="radio-group">
             <label className="radio-inline">
               <input type="radio" name="gender" value="Male"
-                checked={formData.gender === "Male"}
+                checked={user.gioiTinh}
                 onChange={() => handleGenderChange(true)}
                 disabled={!isEditing} />
               Nam
             </label>
             <label className="radio-inline">
               <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"} 
+                checked={!user.gioiTinh} 
                 onChange={() => handleGenderChange(false)}
                 disabled={!isEditing} />
               Nữ
             </label>
             </div>
-
           <label htmlFor="address">Địa Chỉ</label>
           <textarea name="address" className="form-control" id="exampleFormControlTextarea1" rows="3"
-            value={formData.address} onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}
+            value={user.diaChi} 
+            // onChange={handleInputChange} 
+            readOnly={!isEditing} disabled={!isEditing}
           ></textarea>
         </div>
       </Modal.Body>
       <Modal.Footer>
         <div className="footer-container">
-          <div className="form-check form-switch">
-    
+          <div className="form-check form-switch">    
           </div>
-          <div className="footer-buttons">
-      
+          <div className="footer-buttons">      
              <Button variant="danger" onClick={handleClose}>
               Close
             </Button> 
