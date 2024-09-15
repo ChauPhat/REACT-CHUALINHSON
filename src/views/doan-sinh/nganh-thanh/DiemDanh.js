@@ -356,7 +356,9 @@ const DDNganhThanh = () => {
                 <Modal.Footer>
                     <div className="form-check form-switch" >
                         <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"
-                            checked={isEditing} onChange={handleEditToggle} disabled={isPastExact(selectedLichSinhHoatDoan?.ngaySinhHoat)} />
+                            checked={isEditing} onChange={handleEditToggle} 
+                            disabled={isPastExact(selectedLichSinhHoatDoan?.ngaySinhHoat)} 
+                            />
                         <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Chỉnh Sửa</label>
                     </div>
                     <div className="footer-buttons">
