@@ -77,31 +77,33 @@ const Home = () => {
     <>
       <CRow xs={{ gutter: 3 }}>
         <CCol sm={6} md={8}>
-          <CTable align="middle" hover responsive scrollable style={{ maxHeight: '400px',minHeight: '400px', overflowY: 'auto',display:'block' }}>
-            <CTableHead className="text-nowrap">
-              <CTableRow>
-                <CTableHeaderCell className="bg-body-tertiary text-center">
-                  <CIcon icon={cilPeople} />
-                </CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Pháp Danh || Tên</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Vai Trò</CTableHeaderCell>
-                <CTableHeaderCell className="bg-body-tertiary">Vai Trò 2</CTableHeaderCell>
-                {/* <CTableHeaderCell className="bg-body-tertiary">Trạng Thái</CTableHeaderCell> */}
-              </CTableRow>
-            </CTableHead>
-            <CTableBody >
-              {tableExample.map((item, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell>
-                    <img src={`${item.avatar}`} style={{ width:'35px', height:'35px', borderRadius:'50%' }} alt="Avatar" />
-                  </CTableDataCell>
-                  <CTableDataCell>{item.user.name}</CTableDataCell>
-                  <CTableDataCell>{item.role1}</CTableDataCell>
-                  <CTableDataCell>{item.role2}</CTableDataCell>
+          <div style={{ maxHeight: '540px', overflowY: 'auto', display: 'block' }}>
+            <CTable align="middle" hover responsive style={{ minHeight: 'auto'}}>
+              <CTableHead className="text-nowrap">
+                <CTableRow>
+                  <CTableHeaderCell className="bg-body-tertiary text-center">
+                    <CIcon icon={cilPeople} />
+                  </CTableHeaderCell>
+                  <CTableHeaderCell className="bg-body-tertiary">Pháp Danh || Tên</CTableHeaderCell>
+                  <CTableHeaderCell className="bg-body-tertiary">Vai Trò</CTableHeaderCell>
+                  <CTableHeaderCell className="bg-body-tertiary">Vai Trò 2</CTableHeaderCell>
+                  {/* <CTableHeaderCell className="bg-body-tertiary">Trạng Thái</CTableHeaderCell> */}
                 </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+              </CTableHead>
+              <CTableBody>
+                {tableExample.map((item, index) => (
+                  <CTableRow key={index}>
+                    <CTableDataCell>
+                      <img src={`${item.avatar}`} style={{ width: '35px', height: '35px', borderRadius: '50%' }} alt="Avatar" />
+                    </CTableDataCell>
+                    <CTableDataCell>{item.user.name}</CTableDataCell>
+                    <CTableDataCell>{item.role1}</CTableDataCell>
+                    <CTableDataCell>{item.role2}</CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+          </div>
         </CCol>
         <CCol sm={6} md={4}>
           <WidgetsDropdown className="d-flex flex-column" />
@@ -110,7 +112,8 @@ const Home = () => {
       <br />
       <FiltersBarChart />
     </>
-  )
+  );
+  
 }
 
 export default Home
