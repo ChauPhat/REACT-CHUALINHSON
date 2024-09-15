@@ -166,11 +166,16 @@ const AppHeaderDropdown = () => {
       });
       Swal.fire({
         title: "Thành công.",
-        text: "Đổi mật khẩu thành công",
+        text: "Đổi thông tin thành công.",
         icon: "success"
     });
     } catch (error) {
       console.error("Lỗi cập nhật", error);
+      Swal.fire({
+        title: "Thành công.",
+        text: "Đổi thông tin không thành công.",
+        icon: "error"
+    });
     }
     // Sau khi lưu, tắt chế độ chỉnh sửa
     setIsEditing(false);
@@ -343,7 +348,7 @@ const AppHeaderDropdown = () => {
                 <CFormInput
                   type="text"
                   label="Họ tên"
-                  value={userProfile[0].hoTen || "Nên đọc Chú Đại Bi"}
+                  value={userProfile[0].hoTen || "Chưa có thông tin."}
                   disabled={!isEditing}
                   className="mb-3"
                   onChange={e => setUserProfile([{ ...userProfile[0], hoTen: e.target.value }])}
@@ -351,7 +356,7 @@ const AppHeaderDropdown = () => {
                 <CFormInput
                   type="text"
                   label="Pháp Danh"
-                  value={userProfile[0].phapDanh || "Chưa cập nhật"}
+                  value={userProfile[0].phapDanh || "Chưa có thông tin."}
                   disabled={!isEditing}
                   className="mb-3"
                   onChange={e => setUserProfile([{ ...userProfile[0], phapDanh: e.target.value }])}
@@ -384,7 +389,7 @@ const AppHeaderDropdown = () => {
                 <CFormInput
                   type="email"
                   label="Email"
-                  value={userProfile[0].email || "Nên đọc Chú Đại Bi"}
+                  value={userProfile[0].email || "Chưa có thông tin."}
                   disabled={!isEditing}
                   className="mb-3"
                   onChange={e => setUserProfile([{ ...userProfile[0], email: e.target.value }])}
@@ -392,7 +397,7 @@ const AppHeaderDropdown = () => {
                 <CFormInput
                   type="tel"
                   label="Số điện thoại"
-                  value={userProfile[0].sdt || "Nên đọc Chú Đại Bi"}
+                  value={userProfile[0].sdt || "Chưa có thông tin."}
                   disabled={!isEditing}
                   className="mb-3"
                   onChange={e => setUserProfile([{ ...userProfile[0], sdt: e.target.value }])}
@@ -400,7 +405,7 @@ const AppHeaderDropdown = () => {
                 <CFormInput
                   type="text"
                   label="Địa chỉ"
-                  value={userProfile[0].diaChi || "Nên đọc Chú Đại Bi"}
+                  value={userProfile[0].diaChi || "Chưa có thông tin."}
                   disabled={!isEditing}
                   className="mb-3"
                   onChange={e => setUserProfile([{ ...userProfile[0], diaChi: e.target.value }])}
