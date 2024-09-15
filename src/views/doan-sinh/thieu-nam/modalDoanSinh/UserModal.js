@@ -69,11 +69,22 @@ function UserModal({ show, handleClose, user }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+  
+    if (name === 'roleId1') {
+      const selectedRole = roles.find(role => role.roleId === parseInt(value));
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        roleId1: selectedRole ? selectedRole.roleId : '',
+        tenchucvu1: selectedRole ? selectedRole.roleName : '',
+      }));
+    } else {
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        [name]: value,
+      }));
+    }
   };
+  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -116,7 +127,7 @@ function UserModal({ show, handleClose, user }) {
         sdtGd: formData.phone || "",
         avatar: selectedFile ? selectedFile.name : user.avatar,
         isActive: formData.status === "Active",
-        roleId1: formData.idchucvu1 ? { roleId: formData.idchucvu1 } : null,
+        roleId1: formData.roleId1 ? { roleId: formData.roleId1 } : null,
 
         lichSuHocs: [
           {
