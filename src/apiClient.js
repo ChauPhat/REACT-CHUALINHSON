@@ -30,21 +30,21 @@ apiClient.interceptors.response.use(
         title: 'Tài khoản đang bị khóa',
         titleText: error.response.data?.message
       })
-    } else if (error.response?.status === 403) {
-      // console.error('fix the api usage: ', error?.request?.responseURL);
-      // Swal.fire({
-      //   icon: 'error',
-      //   title: 'fix api usage now!!!'
-      // })
-      Swal.fire({
-        icon: 'error',
-        title: 'Đã có người đăng nhập vào tài khoản này!'
-      }).then(() => {
-        localStorage.clear();    
-        const event = new Event('storage');
-        window.dispatchEvent(event);
-        window.location.href = '/#login';
-      })
+      // } else if (error.response?.status === 403) {
+      //   // console.error('fix the api usage: ', error?.request?.responseURL);
+      //   // Swal.fire({
+      //   //   icon: 'error',
+      //   //   title: 'fix api usage now!!!'
+      //   // })
+      //   // Swal.fire({
+      //   //   icon: 'error',
+      //   //   title: 'Đã có người đăng nhập vào tài khoản này!'
+      //   // }).then(() => {
+      //   //   localStorage.clear();    
+      //   //   const event = new Event('storage');
+      //   //   window.dispatchEvent(event);
+      //   //   window.location.href = '/#login';
+      //   // })
     } else {
       Swal.fire({
         icon: 'warning',

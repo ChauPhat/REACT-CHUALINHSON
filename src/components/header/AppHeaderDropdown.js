@@ -46,6 +46,9 @@ const logout = async () => {
     if (result.isConfirmed) {
       try {
         await apiClient.post(`/api/auth/logout`);
+      } catch (error) {
+        console.error(error);
+      } finally {
         Swal.fire({
           icon: 'success',
           title: 'Đăng xuất thành công!'
@@ -55,8 +58,6 @@ const logout = async () => {
           window.dispatchEvent(event);
           window.location.href = '/#login';
         });
-      } catch (error) {
-        console.error(error);
       }
     }
   })
@@ -168,7 +169,7 @@ const AppHeaderDropdown = () => {
         title: "Thành công.",
         text: "Đổi mật khẩu thành công",
         icon: "success"
-    });
+      });
     } catch (error) {
       console.error("Lỗi cập nhật", error);
     }
