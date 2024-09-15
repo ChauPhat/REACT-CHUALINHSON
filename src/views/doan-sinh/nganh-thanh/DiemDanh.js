@@ -202,22 +202,22 @@ const DDNganhThanh = () => {
         try {
             handleEditToggle();
             const payload = getFormData();
-            const response = await apiClient.post(`/api/diem-danh/save-or-update`, payload);
             let timerInterval;
             Swal.fire({
                 title: "Vui lòng đợi xử lý thông tin!",
-                timer: 2000,
+                timer: 3000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
-                    getLichSinhHoatDoan();
                     Swal.showLoading();
+                    apiClient.post(`/api/diem-danh/save-or-update`, payload);
                 },
                 willClose: () => {
                     clearInterval(timerInterval);
                 }
             }).then(() => {
+                getLichSinhHoatDoan();
                 Swal.fire({
                     icon: 'success',
                     title: 'Điểm danh thành công!'

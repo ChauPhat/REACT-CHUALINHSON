@@ -66,7 +66,7 @@ const GhiChu = () => {
 
   const filteredData = GhiChuData.filter((ghiChu) => {
     return (
-      (searchName === '' || (ghiChu.noteName && ghiChu.noteName.toLowerCase().includes(searchName.toLowerCase()))) 
+      (searchName === '' || (ghiChu.name && ghiChu.name.toLowerCase().includes(searchName.toLowerCase()))) 
     );
   });
 
