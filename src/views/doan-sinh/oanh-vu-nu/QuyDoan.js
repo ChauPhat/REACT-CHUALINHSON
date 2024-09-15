@@ -255,9 +255,6 @@ const QuyGD = () => {
             },
         });
         let data = objectExcel;
-        for (let i = 0; i < data.length; i++) {
-            data[i].ngayThem = formatDate(data[i].ngayThem);
-        }
         data.push(fundData2);
         
         try {
@@ -299,6 +296,7 @@ const QuyGD = () => {
                 text: 'Đã có lỗi xảy ra trong quá trình tải file.',
             });
         }
+        await fetchFundData();
     };
 
 
