@@ -79,7 +79,7 @@ const DSOanhNam = () => {
             address: item.diaChi,
             vaitro: doanSinhDetails[0]?.role,
             sdtgd: item.sdtGd,
-            isActive: doanSinhDetails[0]?.isActive ? 'Active' : 'Inactive',
+            // isActive: doanSinhDetails[0]?.isActive ? 'Active' : 'Inactive',
             doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
             ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
             ngayRoiDoan: doanSinhDetails[0]?.leftDate,
@@ -143,8 +143,8 @@ const DSOanhNam = () => {
     setChuyenDoanModal(null);
   };
 
-  const getBadgeClass = (isActive) => {
-    switch (isActive) {
+  const getBadgeClass = (status) => {
+    switch (status) {
       case 'Active':
         return 'bg-success';
       case 'Inactive':
@@ -168,12 +168,12 @@ const DSOanhNam = () => {
 
 
   const handleToggleStatus = async (user) => {
-    const newStatus = user.isActive === 'Active' ? 'Inactive' : 'Active';
+    const newStatus = user.status !== 'Active';
   
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      text: `Bạn có muốn ${newStatus ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -184,10 +184,10 @@ const DSOanhNam = () => {
   
     if (result.isConfirmed) {
       try {
-        await apiClient.put(`/api/users/active-user/${user.id}/${user.status ? 'true' : 'false'}`);
+        await apiClient.put(`/api/users/active-user/${user.id}/${newStatus}`);
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.id === user.id ? { ...u, status: newStatus } : u
+            u.id === user.id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u
           )
         );
         Swal.fire(
@@ -224,8 +224,8 @@ const DSOanhNam = () => {
       <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
       <CTableDataCell>{user.vaitro}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
-          {user.isActive}
+        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
+          {user.status}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
