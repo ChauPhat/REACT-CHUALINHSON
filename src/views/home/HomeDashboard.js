@@ -47,7 +47,6 @@ const Home = () => {
         });
         const users = response.data.data ; 
         setUsers(users);
-        console.log(users);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
