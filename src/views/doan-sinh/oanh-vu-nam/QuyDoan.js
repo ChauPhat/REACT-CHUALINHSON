@@ -56,6 +56,7 @@ const QuyGD = () => {
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedQuarter, setSelectedQuarter] = useState('0'); // Khởi tạo với giá trị mặc định '0'
     const [selectedNgayThem, setSelectedNgayThem] = useState('');
+    const [objectExcel, setObjectExcel] = useState([]);
 
     useEffect(() => {
         fetchFundData();
@@ -117,7 +118,7 @@ const QuyGD = () => {
                 totalAmount -= amount;
             }
         });
-
+        setObjectExcel(filteredData);
         setFundData2({ totalAmount, totalIncome, totalExpense });
     }, [filteredData]);
 
@@ -243,6 +244,61 @@ const QuyGD = () => {
         }
     };
 
+    const handleDownloadExcel = async () => {
+        Swal.fire({
+            title: 'Đang tạo file...',
+            text: 'Vui lòng chờ trong giây lát.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading(); // Hiển thị icon loading
+            },
+        });
+        let data = objectExcel;
+        for (let i = 0; i < data.length; i++) {
+            data[i].ngayThem = formatDate(data[i].ngayThem);
+        }
+        data.push(fundData2);
+        
+        try {
+            const response = await apiClient.post('/api/export-excel/quy', data, {
+                params: {
+                    filename: 'quy-doan-oanh-vu-nam.xlsx',
+                },
+                responseType: 'blob', // Quan trọng: Để nhận file nhị phân
+            });
+            
+            // Tạo link để tải file ngay sau khi file được tạo thành công
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'quy-doan-oanh-vu-nam.xlsx'); // Tên file
+            document.body.appendChild(link);
+    
+            Swal.fire({
+                icon: 'success',
+                title: 'File đã sẵn sàng để tải xuống!',
+                confirmButtonText: 'Tải xuống',
+                allowOutsideClick: false, 
+                allowEscapeKey: false, 
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tải file nếu người dùng chọn "Tải xuống"
+                    link.click();
+                }
+                // Xóa liên kết khỏi body sau khi người dùng đóng popup
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+            });
+    
+        } catch (error) {
+            console.error('Error downloading the Excel file', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi khi tải file',
+                text: 'Đã có lỗi xảy ra trong quá trình tải file.',
+            });
+        }
+    };
 
     const headers = useMemo(() => [
         <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
@@ -352,6 +408,9 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
+                    <CButton variant="outline" color="info" className='me-2' onClick={handleDownloadExcel}>
+                        Excel
+                    </CButton>
                     <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
@@ -380,10 +439,10 @@ const QuyGD = () => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton className='btn-success' onClick={handleUpdateMoTa}>
-                        Save
+                        Lưu
                     </CButton>
                     <CButton className='btn-danger' onClick={() => setModalVisible2(false)}>
-                        Close
+                        Thoát
                     </CButton>
                 </CModalFooter>
             </CModal>
@@ -451,10 +510,10 @@ const QuyGD = () => {
                 </CModalBody>
                 <CModalFooter>
                     <CButton className='btn-success' onClick={handleAddFund}>
-                        Save
+                        Lưu
                     </CButton>
                     <CButton className='btn-danger' onClick={() => setModalVisible(false)}>
-                        Close
+                        Thoát
                     </CButton>
 
                 </CModalFooter>
