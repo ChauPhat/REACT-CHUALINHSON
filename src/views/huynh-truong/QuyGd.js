@@ -100,7 +100,7 @@ const QuyGD = () => {
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
 
-        
+
         return matchesName && matchesYear && matchesQuarter && matchesNgayThem;
 
     }), [fundData, searchName, selectedYear, selectedQuarter, selectedNgayThem]);
@@ -255,11 +255,8 @@ const QuyGD = () => {
             },
         });
         let data = objectExcel;
-        for (let i = 0; i < data.length; i++) {
-            data[i].ngayThem = formatDate(data[i].ngayThem);
-        }
         data.push(fundData2);
-        
+
         try {
             const response = await apiClient.post('/api/export-excel/quy', data, {
                 params: {
@@ -267,20 +264,20 @@ const QuyGD = () => {
                 },
                 responseType: 'blob', // Quan trọng: Để nhận file nhị phân
             });
-            
+
             // Tạo link để tải file ngay sau khi file được tạo thành công
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', 'quy-gia-dinh.xlsx'); // Tên file
             document.body.appendChild(link);
-    
+
             Swal.fire({
                 icon: 'success',
                 title: 'File đã sẵn sàng để tải xuống!',
                 confirmButtonText: 'Tải xuống',
-                allowOutsideClick: false, 
-                allowEscapeKey: false, 
+                allowOutsideClick: false,
+                allowEscapeKey: false,
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Tải file nếu người dùng chọn "Tải xuống"
@@ -290,7 +287,7 @@ const QuyGD = () => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url); // Giải phóng URL đối tượng
             });
-    
+
         } catch (error) {
             console.error('Error downloading the Excel file', error);
             Swal.fire({
@@ -299,6 +296,7 @@ const QuyGD = () => {
                 text: 'Đã có lỗi xảy ra trong quá trình tải file.',
             });
         }
+        await fetchFundData();
     };
 
     const headers = useMemo(() => [
