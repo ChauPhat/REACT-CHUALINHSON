@@ -197,6 +197,7 @@ const QuyGD = () => {
                 timer: 1500,
             });
             await fetchFundData();
+            setModalVisible(false);
             setNewFund({
                 tenThuChi: '',
                 moTa: '',
@@ -232,6 +233,7 @@ const QuyGD = () => {
                         title: 'Cập nhật thành công!',
                         showConfirmButton: true,
                     });
+                    setModalVisible2(false);
                 }
             } catch (error) {
                 console.error('Error updating fund:', error);
