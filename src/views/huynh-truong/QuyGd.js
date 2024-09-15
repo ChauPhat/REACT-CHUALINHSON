@@ -58,6 +58,7 @@ const QuyGD = () => {
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedQuarter, setSelectedQuarter] = useState('0'); // Khởi tạo với giá trị mặc định '0'
     const [selectedNgayThem, setSelectedNgayThem] = useState('');
+    const [objectExcel, setObjectExcel] = useState([]);
 
     useEffect(() => {
         fetchFundData();
@@ -68,10 +69,6 @@ const QuyGD = () => {
         try {
             const response = await apiClient.get(`/api/quy-gia-dinh/get-list-lich-quy-gia-dinh`);
             const apiData = response.data.data;
-
-            console.log(apiData);
-
-
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyGiaDinhs.map((item) => ({
                     lichSuQuyGiaDinhId: item.lichSuQuyGiaDinhId,
@@ -102,7 +99,8 @@ const QuyGD = () => {
         const matchesNgayThem = selectedNgayThem === '' || fund.ngayThem.toLowerCase().includes(selectedNgayThem.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        console.log(fundData);
+
+
         return matchesName && matchesYear && matchesQuarter && matchesNgayThem;
 
     }), [fundData, searchName, selectedYear, selectedQuarter, selectedNgayThem]);
@@ -123,7 +121,7 @@ const QuyGD = () => {
                 totalAmount -= amount;
             }
         });
-
+        setObjectExcel(filteredData);
         setFundData2({ totalAmount, totalIncome, totalExpense });
     }, [filteredData]);
 
@@ -247,6 +245,59 @@ const QuyGD = () => {
         }
     };
 
+    const handleDownloadExcel = async () => {
+        Swal.fire({
+            title: 'Đang tạo file...',
+            text: 'Vui lòng chờ trong giây lát.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading(); // Hiển thị icon loading
+            },
+        });
+        let data = objectExcel;
+        data.push(fundData2);
+
+        try {
+            const response = await apiClient.post('/api/export-excel/quy', data, {
+                params: {
+                    filename: 'quy-gia-dinh.xlsx',
+                },
+                responseType: 'blob', // Quan trọng: Để nhận file nhị phân
+            });
+
+            // Tạo link để tải file ngay sau khi file được tạo thành công
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'quy-gia-dinh.xlsx'); // Tên file
+            document.body.appendChild(link);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'File đã sẵn sàng để tải xuống!',
+                confirmButtonText: 'Tải xuống',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tải file nếu người dùng chọn "Tải xuống"
+                    link.click();
+                }
+                // Xóa liên kết khỏi body sau khi người dùng đóng popup
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url); // Giải phóng URL đối tượng
+            });
+
+        } catch (error) {
+            console.error('Error downloading the Excel file', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi khi tải file',
+                text: 'Đã có lỗi xảy ra trong quá trình tải file.',
+            });
+        }
+        await fetchFundData();
+    };
 
     const headers = useMemo(() => [
         <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
@@ -356,6 +407,9 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
+                    <CButton variant="outline" color="info" className='me-2' onClick={handleDownloadExcel}>
+                        Excel
+                    </CButton>
                     <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
