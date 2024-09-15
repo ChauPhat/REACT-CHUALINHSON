@@ -58,6 +58,7 @@ const QuyGD = () => {
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedQuarter, setSelectedQuarter] = useState('0'); // Khởi tạo với giá trị mặc định '0'
     const [selectedNgayThem, setSelectedNgayThem] = useState('');
+    const [objectExcel, setObjectExcel] = useState([]);
 
     useEffect(() => {
         fetchFundData();
@@ -68,10 +69,6 @@ const QuyGD = () => {
         try {
             const response = await apiClient.get(`/api/quy-gia-dinh/get-list-lich-quy-gia-dinh`);
             const apiData = response.data.data;
-
-            console.log(apiData);
-
-
             const formattedData = apiData.flatMap((fund) =>
                 fund.lichSuQuyGiaDinhs.map((item) => ({
                     lichSuQuyGiaDinhId: item.lichSuQuyGiaDinhId,
@@ -102,7 +99,8 @@ const QuyGD = () => {
         const matchesNgayThem = selectedNgayThem === '' || fund.ngayThem.toLowerCase().includes(selectedNgayThem.toLowerCase());
         const matchesYear = selectedYear === '' || fund.year === parseInt(selectedYear);
         const matchesQuarter = selectedQuarter === '0' || fund.quy === parseInt(selectedQuarter);
-        console.log(fundData);
+
+        
         return matchesName && matchesYear && matchesQuarter && matchesNgayThem;
 
     }), [fundData, searchName, selectedYear, selectedQuarter, selectedNgayThem]);
@@ -123,7 +121,7 @@ const QuyGD = () => {
                 totalAmount -= amount;
             }
         });
-
+        setObjectExcel(filteredData);
         setFundData2({ totalAmount, totalIncome, totalExpense });
     }, [filteredData]);
 
@@ -247,6 +245,34 @@ const QuyGD = () => {
         }
     };
 
+    const handleDownloadExcel = async () => {
+        console.log(objectExcel);
+        let data = objectExcel;
+        for (let i = 0; i < data.length; i++) {
+            data[i].ngayThem = formatDate(data[i].ngayThem);
+        }
+        data.push(fundData2);
+        try {
+            const response = await apiClient.post('/api/export-excel/quy-gia-dinh', data, {
+                params: {
+                    filename: 'quy-gia-dinh.xlsx',
+                },
+                responseType: 'blob', // Quan trọng: Để nhận file nhị phân
+            });
+
+            // Tạo link để tải file
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'quy-gia-dinh.xlsx'); // Tên file
+            document.body.appendChild(link);
+            link.click();
+
+        } catch (error) {
+            console.error('Error downloading the Excel file', error);
+        }
+    };
+
 
     const headers = useMemo(() => [
         <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
@@ -356,6 +382,9 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
+                    <CButton variant="outline" color="info" className='me-2' onClick={handleDownloadExcel}>
+                        Excel
+                    </CButton>
                     <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
