@@ -45,14 +45,14 @@ const handleGenderChange = (newGender) => {
 const DSHuynhTruong= () => {
   const [searchName, setSearchName] = useState('')
   const [searchRegistered, setSearchRegistered] = useState('')
-  const [searchRole, setSearchRole] = useState('')
+  const [searchRole1, setSearchRole1] = useState('')
   const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
   const [filename, setFilename] = useState('DanhSachHuynhTruong.xlsx');
-
+  const [searchRole2, setSearchRole2] = useState('')
   useEffect(() => {
     const layDuLieu = async () => {
       try {
@@ -98,6 +98,7 @@ const DSHuynhTruong= () => {
           };
         }));
         setUsersData(fetchedData);
+        console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -167,10 +168,8 @@ const DSHuynhTruong= () => {
 
   const filteredData = usersData.filter((user) => {
     return (
-      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) &&
-      (searchRegistered === '' || formatDateToDDMMYYYY(user.registered).includes(searchRegistered)) &&
-      (searchRole === '' || user.role.toLowerCase().includes(searchRole.toLowerCase())) &&
-      (searchStatus === '' || user.status.toLowerCase().includes(searchStatus.toLowerCase()))
+      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) 
+ 
     );
   });
 
@@ -254,9 +253,9 @@ const DSHuynhTruong= () => {
   const headers = [
     <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
     <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
+    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
+    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
+    <CTableDataCell width={'10%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
     <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>
   ];
   const headerCells = [
@@ -267,26 +266,9 @@ const DSHuynhTruong= () => {
       value={searchName}
       onChange={(e) => setSearchName(e.target.value)}
     />,
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo ngày đăng ký (dd-mm-yyyy)"
-      value={searchRegistered}
-      onChange={(e) => setSearchRegistered(e.target.value)}
-    />,
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo vai trò"
-      value={searchRole}
-      onChange={(e) => setSearchRole(e.target.value)}
-    />,
-
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo trạng thái"
-      value={searchStatus}
-      onChange={(e) => setSearchStatus(e.target.value)}
-    />,
-
+    '',
+    '',
+    '',
     '',
   ];
 
@@ -345,7 +327,7 @@ const DSHuynhTruong= () => {
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchRegistered, searchRole, searchStatus }}
+        searchCriteria={{ searchName, searchRole1, searchRole2, searchStatus }}
       />
 
 
