@@ -84,18 +84,18 @@
 
 
     const headers = [
-      <CTableDataCell width={'20%'} className="fixed-width-column">
+      <label width={'20%'} className="fixed-width-column d-block w-100 m-0">
         Ảnh
-      </CTableDataCell>,
-      <CTableDataCell width={'40%'} className="fixed-width-column">
+      </label>,
+      <label width={'40%'} className="fixed-width-column d-block w-100 m-0">
         Tên Bậc Học
-      </CTableDataCell>,
-      <CTableDataCell width={'20%'} className="fixed-width-column">
+      </label>,
+      <label width={'20%'} className="fixed-width-column d-block w-100 m-0">
         Cấp Bậc
-      </CTableDataCell>,
-      <CTableDataCell width={'20%'} className="fixed-width-column">
+      </label>,
+      <label width={'20%'} className="fixed-width-column d-block w-100 m-0">
         Thao tác
-      </CTableDataCell>,
+      </label>,
     ];
     
     const headerCells = [

@@ -17,7 +17,7 @@ const _nav = [
     component: CNavItem,
     name: 'Trang Chủ',
     to: '/',
-    icon: <CIcon icon={cilHouse} customClassName='nav-icon' />
+    icon: <CIcon icon={cilHouse} className='nav-icon' />
   },
   {
     component: CNavTitle,
@@ -27,14 +27,14 @@ const _nav = [
     component: CNavGroup,
     name: 'Danh Sách Đoàn Sinh',
     to: '/doan-sinh',
-    icon: <CIcon icon={cilGroup} customClassName='nav-icon' />,
+    icon: <CIcon icon={cilGroup} className='nav-icon' />,
     screen_id: '*.doan-sinh',
     items: [
       {
         component: CNavGroup,
         name: 'Đoàn Thiếu Nam',
         to: '/ds-doan-sinh',
-        icon: <CIcon icon={cilPlus} customClassName='nav-icon' />,
+        icon: <CIcon icon={cilPlus} className='nav-icon' />,
         // role: [Role.ROLE_DOANTRUONG_THIEUNAM],
         screen_id: '*.doan-sinh.doan-thieu-nam',
         items: [
@@ -68,7 +68,7 @@ const _nav = [
         component: CNavGroup,
         name: 'Đoàn Thiếu Nữ',
         to: '/ds-doan-sinh',
-        icon: <CIcon icon={cilPlus} customClassName='nav-icon' />,
+        icon: <CIcon icon={cilPlus} className='nav-icon' />,
         // role: [Role.ROLE_DOANTRUONG_THIEUNU],
         screen_id: '*.doan-sinh.doan-thieu-nu',
         items: [
@@ -102,7 +102,7 @@ const _nav = [
         component: CNavGroup,
         name: 'Đoàn Oanh Vũ Nữ',
         to: '/ds-doan-sinh',
-        icon: <CIcon icon={cilPlus} customClassName='nav-icon' />,
+        icon: <CIcon icon={cilPlus} className='nav-icon' />,
         // role: [Role.ROLE_DOANTRUONG_OANHVUNU],
         screen_id: '*.doan-sinh.doan-oanh-vu-nu',
         items: [
@@ -136,7 +136,7 @@ const _nav = [
         component: CNavGroup,
         name: 'Đoàn Oanh Vũ Nam',
         to: '/ds-doan-sinh',
-        icon: <CIcon icon={cilPlus} customClassName='nav-icon' />,
+        icon: <CIcon icon={cilPlus} className='nav-icon' />,
         // role: [Role.ROLE_DOANTRUONG_OANHVUNAM],
         screen_id: '*.doan-sinh.doan-oanh-vu-nam',
         items: [
@@ -170,7 +170,7 @@ const _nav = [
         component: CNavGroup,
         name: 'Ngành Thanh',
         to: '/ds-doan-sinh',
-        icon: <CIcon icon={cilPlus} customClassName='nav-icon' />,
+        icon: <CIcon icon={cilPlus} className='nav-icon' />,
         // role: [Role.ROLE_DOANTRUONG_NGANHTHANH],
         screen_id: '*.doan-sinh.nganh-thanh',
         items: [
@@ -206,7 +206,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Huynh Trưởng',
     to: '/huynh-truong',
-    icon: <CIcon icon={cilUserPlus} customClassName='nav-icon' />,
+    icon: <CIcon icon={cilUserPlus} className='nav-icon' />,
     // role: [Role.ROLE_ADMIN],
     screen_id: '*.huynh-truong',
     items: [
@@ -234,14 +234,14 @@ const _nav = [
     component: CNavItem,
     name: 'Quỹ Gia Đình',
     to: '/quygd',
-    icon: <CIcon icon={cilMoney} customClassName='nav-icon' />,
+    icon: <CIcon icon={cilMoney} className='nav-icon' />,
     role: ['Thủ Quỹ']
   },
   {
     component: CNavItem,
     name: 'Bậc Học',
     to: '/bac-hoc',
-    icon: <CIcon icon={cilBook} customClassName='nav-icon' />,
+    icon: <CIcon icon={cilBook} className='nav-icon' />,
     screen_id: '*.bac-hoc'
   },
   {
@@ -252,7 +252,7 @@ const _nav = [
     component: CNavItem,
     name: 'File Lưu Trữ',
     to: '/file-luu-tru',
-    icon: <CIcon icon={cilFile} customClassName='nav-icon' />
+    icon: <CIcon icon={cilFile} className='nav-icon' />
   },
   {
     component: CNavTitle,
@@ -262,13 +262,13 @@ const _nav = [
     component: CNavItem,
     name: 'Ghi Chú',
     to: '/ghi-chu',
-    icon: <CIcon icon={cilPencil} customClassName='nav-icon' />
+    icon: <CIcon icon={cilPencil} className='nav-icon' />
   },
   {
     component: CNavItem,
     name: 'Thông Báo',
     to: '/thong-bao',
-    icon: <CIcon icon={cilBell} customClassName='nav-icon' />
+    icon: <CIcon icon={cilBell} className='nav-icon' />
   }, 
 ];
 

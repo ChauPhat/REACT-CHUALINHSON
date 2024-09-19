@@ -15,6 +15,7 @@ import {
     CModalTitle,
     CRow,
     CTableDataCell,
+    CTableHeaderCell,
 } from '@coreui/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
@@ -299,27 +300,31 @@ const QuyGD = () => {
     };
 
     const headers = useMemo(() => [
-        <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Số tiền</CTableDataCell>,
-        <CTableDataCell width={'10%'} className="fixed-width-column">Mô tả</CTableDataCell>
+        <label  width={'30%'} className="fixed-width-column d-block w-100 m-0">Tên Thu Chi</label>,
+        <label  width={'30%'} className="fixed-width-column d-block w-100 m-0">Ngày</label>,
+        <label  width={'30%'} className="fixed-width-column d-block w-100 m-0">Số tiền</label>,
+        <label  width={'10%'} className="fixed-width-column d-block w-100 m-0">Mô tả</label>
     ], []);
 
     const headerCells = useMemo(() => [
+       
         <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo tên"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
-        />,
+        />
+   ,
+    
         <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo ngày"
             value={selectedNgayThem}
             onChange={(e) => setSelectedNgayThem(e.target.value)}
-        />,
-        '',
-        ''
+        />
+   ,
+    '',
+    ''
     ], [searchName, selectedNgayThem]);
 
 
@@ -406,10 +411,10 @@ const QuyGD = () => {
                         <option value="3">Quý 3</option>
                         <option value="4">Quý 4</option>
                     </CFormSelect>
-                    <CButton variant="outline" color="info" className='me-2' onClick={handleDownloadExcel}>
+                    <CButton  className='me-2 btn-outline-info' onClick={handleDownloadExcel}>
                         Excel
                     </CButton>
-                    <CButton variant="outline" color="info" onClick={() => setModalVisible(true)}>
+                    <CButton className='btn-outline-info' onClick={() => setModalVisible(true)}>
                         Thêm
                     </CButton>
                 </CCol>
@@ -436,10 +441,10 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton variant="success" className='btn-success' onClick={handleUpdateMoTa}>
+                    <CButton  className='btn-success' onClick={handleUpdateMoTa}>
                         Save
                     </CButton>
-                    <CButton variant="danger" className='btn-danger' onClick={() => setModalVisible2(false)}>
+                    <CButton  className='btn-danger' onClick={() => setModalVisible2(false)}>
                         Close
                     </CButton>
                 </CModalFooter>
@@ -507,10 +512,10 @@ const QuyGD = () => {
                     />
                 </CModalBody>
                 <CModalFooter>
-                    <CButton variant="success" className='btn-success' onClick={handleAddFund}>
+                    <CButton  className='btn-success' onClick={handleAddFund}>
                         Save
                     </CButton>
-                    <CButton variant="danger" className='btn-danger' onClick={() => setModalVisible(false)}>
+                    <CButton  className='btn-danger' onClick={() => setModalVisible(false)}>
                         Close
                     </CButton>
                 </CModalFooter>

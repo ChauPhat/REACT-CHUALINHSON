@@ -130,12 +130,12 @@ const GhiChu = () => {
 
   const headers = [
 
-    <CTableDataCell width={'50%'} className="fixed-width-column">
+    <label width={'50%'} className="fixed-width-column d-block w-100 m-0">
       Tên Ghi Chú
-    </CTableDataCell>,
-    <CTableDataCell width={'60%'} className="fixed-width-column">
+    </label>,
+    <label width={'60%'} className="fixed-width-column d-block w-100 m-0">
       Mô Tả
-    </CTableDataCell>,
+    </label>,
   ];
   
   const headerCells = [

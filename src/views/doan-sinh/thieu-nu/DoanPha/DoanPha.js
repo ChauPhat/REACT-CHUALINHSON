@@ -65,10 +65,10 @@ const DPThieuNu = () => {
   };
 
   const headers = [
-    <CTableDataCell width={'20%'} className="fixed-width-column">Ảnh</CTableDataCell>,
-    <CTableDataCell width={'40%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Vai trò </CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Thao tác</CTableDataCell>
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Ảnh</label>,
+    <label width={'40%'} className="fixed-width-column d-block w-100 m-0">Pháp Danh || Tên</label>,
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Vai trò </label>,
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Thao tác</label>
   ];
   const headerCells = [
     '',

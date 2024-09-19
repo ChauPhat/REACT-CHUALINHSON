@@ -302,10 +302,10 @@ const QuyGD = () => {
 
 
     const headers = useMemo(() => [
-        <CTableDataCell width={'30%'} className="fixed-width-column">Tên Thu Chi</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Số tiền</CTableDataCell>,
-        <CTableDataCell width={'10%'} className="fixed-width-column">Mô tả</CTableDataCell>
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Tên Thu Chi</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Ngày</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Số tiền</label>,
+        <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Mô tả</label>
     ], []);
 
     const headerCells = useMemo(() => [

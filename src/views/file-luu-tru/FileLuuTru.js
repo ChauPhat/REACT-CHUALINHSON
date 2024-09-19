@@ -7,7 +7,7 @@ import {
     CTableDataCell
 } from '@coreui/react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { authorizeRole } from '../../AuthorizationContext';
@@ -32,7 +32,7 @@ const FileLuuTru = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [fileData, setFileData] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
-    const fileInputRef = useState(null);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         fetchFiles();
@@ -266,19 +266,19 @@ const FileLuuTru = () => {
     }
 
     const headers = [
-        <CTableDataCell width={'50%'}>Tên</CTableDataCell>,
-        <CTableDataCell width={'40%'} >Ngày</CTableDataCell>,
-        <CTableDataCell width={'10%'} ></CTableDataCell>,
+        <label width={'50%'} className='fixed-width-column d-block w-100 m-0'>Tên</label>,
+        <label width={'45%'} className='fixed-width-column d-block w-100 m-0'>Ngày</label>,
+        <label width={'5%'} className='fixed-width-column d-block w-100 m-0'></label>,
 
     ];
     const headerCells = [
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo tên"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
         />,
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo ngày (dd-mm-yyyy)"
             value={searchRegistered}
