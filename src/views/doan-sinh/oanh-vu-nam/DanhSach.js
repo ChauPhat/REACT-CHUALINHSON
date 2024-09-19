@@ -312,12 +312,12 @@ const DSOanhNam = () => {
     }
   };
   const headers = [
-    <CTableDataCell width={'5%'} className="fixed-width-column">Ảnh</CTableDataCell>,
-    <CTableDataCell width={'25%'} className="fixed-width-column">Tên || Pháp Danh</CTableDataCell>,
-    <CTableDataCell width={'25%'} className="fixed-width-column">Chức vụ</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Vai trò</CTableDataCell>,
-    <CTableDataCell width={'15%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>,
+    <label width={'5%'} className="fixed-width-column d-block w-100 m-0">Ảnh</label>,
+    <label width={'25%'} className="fixed-width-column d-block w-100 m-0">Tên || Pháp Danh</label>,
+    <label width={'25%'} className="fixed-width-column d-block w-100 m-0">Chức vụ</label>,
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Vai trò</label>,
+    <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Trạng thái</label>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Thao tác</label>,
   ];
 
   const headerCells = [

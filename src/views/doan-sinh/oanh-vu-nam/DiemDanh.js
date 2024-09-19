@@ -114,10 +114,10 @@ const DDOanhNam = () => {
     });
 
     const headers = [
-        <CTableDataCell width={'30%'} className="fixed-width-column">Tuần</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày sinh hoạt</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Năm</CTableDataCell>,
-        <CTableDataCell width={'10%'} className="fixed-width-column"></CTableDataCell>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Tuần</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Ngày sinh hoạt</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Năm</label>,
+        <label width={'10%'} className="fixed-width-column d-block w-100 m-0"></label>,
     ];
 
     const headerCells = [
