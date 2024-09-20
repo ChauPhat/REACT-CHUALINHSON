@@ -114,3 +114,9 @@
     margin-right: auto;
     /* Pushes the form-switch to the left */
 }
+
+[disabled] {
+    pointer-events: none; /* Prevents any mouse interactions */
+    cursor: default; /* Shows the default cursor */
+    opacity: 0.5; /* Optional: makes it look disabled */
+}

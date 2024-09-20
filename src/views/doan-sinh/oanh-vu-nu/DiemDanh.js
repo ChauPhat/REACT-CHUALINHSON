@@ -12,7 +12,8 @@ import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
 import Table from '../../table/Table';
 import '../DoanSinhCss/DanhSach.css';
-import './DiemDanh.css';
+import '../DoanSinhCss/DiemDanh.css';
+
 const DDOanhNu = () => {
     const [searchTerm, setSearchTerm] = useState({
         tuan: '',
@@ -36,6 +37,14 @@ const DDOanhNu = () => {
     useEffect(() => {
         onChangeSelectedLichSinhHoatDoan();
     }, [selectedLichSinhHoatDoan]);
+
+    const diemDanhVar = {
+        coMat: 'X',
+        coPhep: 'P',
+        khongPhep: 'K',
+        checkboxCoMat: 'checkbox-coMat',
+        checkboxCoPhep: 'checkbox-coPhep'
+    };
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
@@ -174,12 +183,15 @@ const DDOanhNu = () => {
         }
     }
 
-    const handleCoMatChange = (checked, diemDanhDTO) => {
+    const handleCoMatChange = (checked, id, diemDanhDTO) => {
+        console.log(checked, id);
         setFormData({
             ...formData,
             [diemDanhDTO.diemDanhId]: {
                 ...formData[diemDanhDTO.diemDanhId],
-                coMat: checked
+                coMat: (id.startsWith(diemDanhVar.checkboxCoMat) && checked) ? diemDanhVar.coMat
+                    : (id.startsWith(diemDanhVar.checkboxCoPhep) && checked) ? diemDanhVar.coPhep
+                        : diemDanhVar.khongPhep
             }
         });
     }
@@ -228,6 +240,7 @@ const DDOanhNu = () => {
             console.error(error);
         }
     }
+
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
     }
@@ -249,6 +262,7 @@ const DDOanhNu = () => {
     );
 
     const isFuture = (date) => {
+        // return false;
         const givenDate = new Date(date);
         const now = new Date();
         givenDate.setHours(0, 0, 0, 0);
@@ -257,6 +271,7 @@ const DDOanhNu = () => {
     }
 
     const isPastExact = (date) => {
+        // return false;
         const givenDate = new Date(date);
         const now = new Date();
         now.setHours(0, 0, 0, 0);
@@ -286,8 +301,15 @@ const DDOanhNu = () => {
                 <td>{doanSinh.tenDoan}</td>
                 <td className=''>
                     <div className="checkbox-con">
-                        <input id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
-                            checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}>
+                        <input id={`checkbox-coMat-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                            checked={formData[element.diemDanhId]?.coMat === diemDanhVar.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, e.target.id, element)}>
+                        </input>
+                    </div>
+                </td>
+                <td className=''>
+                    <div className="checkbox-con">
+                        <input id={`checkbox-coPhep-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                            checked={formData[element.diemDanhId]?.coMat === diemDanhVar.coPhep || false} onChange={(e) => handleCoMatChange(e.target.checked, e.target.id, element)}>
                         </input>
                     </div>
                 </td>
@@ -334,7 +356,8 @@ const DDOanhNu = () => {
                                     <th >Tên</th>
                                     <th >Ngày sinh hoạt</th>
                                     <th >Đoàn</th>
-                                    <th >Trạng thái</th>
+                                    <th >Có mặt</th>
+                                    <th >Có phép</th>
                                 </tr>
                             </thead>
                             <tbody>
