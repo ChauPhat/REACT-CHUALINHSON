@@ -1,6 +1,10 @@
 import {
     CButton,
     CCol,
+    CDropdown,
+    CDropdownItem,
+    CDropdownMenu,
+    CDropdownToggle,
     CFormInput,
     CFormSelect,
     CRow,
@@ -29,6 +33,7 @@ const DDOanhNam = () => {
     const [formData, setFormData] = useState({});
     const [isEditing, setIsEditing] = useState(false);
     const [show, setShow] = useState(false);
+    const [isHuynhTruong, setIsHuynhTruong] = useState();
 
     useEffect(() => {
         getLichSinhHoatDoan();
@@ -161,7 +166,9 @@ const DDOanhNam = () => {
                     coMat: diemDanhDTO.coMat,
                     lichSinhHoatDoanId: diemDanhDTO.lichSinhHoatDoanId,
                     userUpdate: userId,
-                    doanSinhDetailId: diemDanhDTO.doanSinhDetailDTO.doanSinhDetailId
+                    doanSinhDetailDTO: diemDanhDTO.doanSinhDetailDTO,
+                    nhiemKyDoanDTO: diemDanhDTO.nhiemKyDoanDTO,
+                    changed: false
                 }
             }
         });
@@ -172,23 +179,46 @@ const DDOanhNam = () => {
         if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
             setSelectedLichSinhHoatDoan(item)
         } else {
-            apiClient.put(`/api/lich-sinh-hoat-doan/${item.lichSinhHoatDoanId}/diem-danh`)
-                .then(response => {
-                    getLichSinhHoatDoan();
-                    setSelectedLichSinhHoatDoan(response.data.data);
+            try {
+                let timerInterval;
+                let responseData;
+                Swal.fire({
+                    title: "Vui lòng đợi xử lý thông tin!",
+                    timer: 2500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        apiClient.put(
+                            `/api/lich-sinh-hoat-doan/diem-danh`, null, {
+                            params: {
+                                lichSinhHoatDoanId: item.lichSinhHoatDoanId,
+                                isActive: true
+                            }
+                        }
+                        ).then(response => {
+                            responseData = response.data.data;
+                        })
+                    },
+                    willClose: () => {
+                        getLichSinhHoatDoan();
+                        setSelectedLichSinhHoatDoan(responseData);
+                        clearInterval(timerInterval);
+                    }
                 })
-                .catch(error => {
-                    console.error(error);
-                })
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 
     const handleCoMatChange = (checked, id, diemDanhDTO) => {
-        console.log(checked, id);
         setFormData({
             ...formData,
             [diemDanhDTO.diemDanhId]: {
                 ...formData[diemDanhDTO.diemDanhId],
+                changed: true,
                 coMat: (id.startsWith(diemDanhVar.checkboxCoMat) && checked) ? diemDanhVar.coMat
                     : (id.startsWith(diemDanhVar.checkboxCoPhep) && checked) ? diemDanhVar.coPhep
                         : diemDanhVar.khongPhep
@@ -197,19 +227,24 @@ const DDOanhNam = () => {
     }
 
     const getFormData = () => {
-        var keys = Object.keys(formData);
+        const qualifiedFormData = Object.fromEntries(
+            Object.entries(formData).filter(([key, value]) => value.changed === true)
+        );
+        var keys = Object.keys(qualifiedFormData);
         return keys?.map(key => {
             return {
                 diemDanhId: key,
-                coMat: formData[key].coMat,
-                lichSinhHoatDoanId: formData[key].lichSinhHoatDoanId,
-                userUpdate: formData[key].userUpdate,
-                doanSinhDetailId: formData[key].doanSinhDetailId
+                coMat: qualifiedFormData[key].coMat,
+                lichSinhHoatDoanId: qualifiedFormData[key].lichSinhHoatDoanId,
+                userUpdate: qualifiedFormData[key].userUpdate,
+                doanSinhDetailDTO: qualifiedFormData[key].doanSinhDetailDTO,
+                nhiemKyDoanDTO: qualifiedFormData[key].nhiemKyDoanDTO
             }
         })
     }
 
     const handleSaveDiemDanh = async () => {
+        let isFailed = false;
         try {
             handleEditToggle();
             const payload = getFormData();
@@ -222,22 +257,24 @@ const DDOanhNam = () => {
                 allowEscapeKey: false,
                 didOpen: () => {
                     Swal.showLoading();
-                    apiClient.post(`/api/diem-danh/save-or-update`, payload);
+                    apiClient.put(`/api/diem-danh/bulk-update`, payload);
                 },
                 willClose: () => {
                     clearInterval(timerInterval);
                 }
-            }).then(() => {
+            });
+        } catch {
+            isFailed = true
+        } finally {
+            if (!isFailed) {
                 getLichSinhHoatDoan();
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Điểm danh thành công!'
+                    icon: isFailed ? 'error' : 'success',
+                    title: `Điểm danh ${isFailed ? 'thất bại' : 'thành công'}!`
                 }).then(() => {
                     handleClose();
                 })
-            });
-        } catch (error) {
-            console.error(error);
+            }
         }
     }
 
@@ -251,12 +288,22 @@ const DDOanhNam = () => {
             <CTableDataCell>{formatDate(item.ngaySinhHoat)}</CTableDataCell>
             <CTableDataCell>{item.nam}</CTableDataCell>
             <CTableDataCell>
-                <CButton color="info"
-                    disabled={isFuture(item.ngaySinhHoat)}
-                    onClick={() => { checkDiemDanhDTOS(item); setShow(true); }}
-                    variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Điểm danh
-                </CButton>
+                <CDropdown>
+                    <CDropdownToggle variant="outline" color="info"
+                        disabled={isFuture(item.ngaySinhHoat)}>Điểm danh</CDropdownToggle>
+                    <CDropdownMenu>
+                        <CDropdownItem className="custom-dropdown-item"
+                            onClick={() => { setIsHuynhTruong(true); checkDiemDanhDTOS(item); setShow(true); }}
+                            variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Điểm danh huynh trưởng
+                        </CDropdownItem>
+                        <CDropdownItem className="custom-dropdown-item"
+                            onClick={() => { setIsHuynhTruong(false); checkDiemDanhDTOS(item); setShow(true); }}
+                            variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Điểm danh đoàn sinh
+                        </CDropdownItem>
+                    </CDropdownMenu>
+                </CDropdown>
             </CTableDataCell>
         </>
     );
@@ -281,24 +328,27 @@ const DDOanhNam = () => {
     const handleClose = () => {
         setShow(false);
         setIsEditing(false);
+        setSelectedLichSinhHoatDoan(null);
     }
 
-    const renderLichSinhHoatDoan = () => {
-        return selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
-            let doanSinh = element.doanSinhDetailDTO;
+    const renderDiemDanhs = () => {
+        const qualifiedDiemDanhDTOS = selectedLichSinhHoatDoan?.diemDanhDTOS?.filter(
+            (diemDanhDTO) => (isHuynhTruong ? diemDanhDTO?.nhiemKyDoanDTO : diemDanhDTO?.doanSinhDetailDTO));
+        return qualifiedDiemDanhDTOS?.map((element) => {
+            let person = isHuynhTruong ? element.nhiemKyDoanDTO : element.doanSinhDetailDTO;
             return (<tr className='align-items-center'>
                 <td>
                     <img
-                        src={`${doanSinh.avatar}`}
+                        src={`${person.avatar}`}
                         alt="Ảnh"
                         className="rounded-image"
                         width="50"
                         height="50"
                     />
                 </td>
-                <td>{doanSinh.hoTen}</td>
+                <td>{person.hoTen}</td>
                 <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
-                <td>{doanSinh.tenDoan}</td>
+                <td>{person.tenDoan}</td>
                 <td className=''>
                     <div className="checkbox-con">
                         <input id={`checkbox-coMat-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
@@ -319,6 +369,7 @@ const DDOanhNam = () => {
 
     return (
         <div className="container-fluid">
+
             <CRow className="mb-3 d-flex">
                 <CCol className="d-flex align-items-center flex-grow-1">
                     <h3>Lịch sinh hoạt đoàn Oanh Vũ Nam</h3>
@@ -361,7 +412,7 @@ const DDOanhNam = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {renderLichSinhHoatDoan()}
+                                {renderDiemDanhs()}
                             </tbody>
                         </table>
                     </div>
@@ -386,4 +437,4 @@ const DDOanhNam = () => {
     );
 }
 
-export default DDOanhNam
+export default DDThieuNu
