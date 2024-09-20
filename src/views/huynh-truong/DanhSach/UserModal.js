@@ -108,7 +108,7 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
   };
 
   const handleSave = async () => {
-    console.log('Saving user:', formData);
+    // console.log('Saving user:', formData);
 
     try {
       // Chuẩn bị dữ liệu cần gửi
@@ -143,7 +143,7 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
         doanSinhDetails: formData.doanSinhDetails,
       };
 
-      console.log('Update data:', updateData);
+      // console.log('Update data:', updateData);
       // return; 
       const response = await apiClient.put(`/api/users/${updateData.userId}`, updateData,);
 

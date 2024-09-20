@@ -165,19 +165,19 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       accountDTO: null,
       traiHuanLuyenId: 1
     };
-    console.log(formData)
+    // console.log(formData)
 
     try {
       // First API call to add Bac Hoc
       const response = await apiClient.post(`/api/users/create-user`, formData);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       
       if (selectedFile) {
         try {
           const fileFormData = new FormData();
           fileFormData.append('file', selectedFile);
           const userId = response.data.data.userId
-          console.log(userId);
+          // console.log(userId);
           
           // Second API call to upload the file
           await apiClient.post(`/api/files/images/upload?userId=${userId}`, fileFormData, {

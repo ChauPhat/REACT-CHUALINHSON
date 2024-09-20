@@ -7,7 +7,7 @@ import {
     CTableDataCell
 } from '@coreui/react';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { authorizeRole } from '../../AuthorizationContext';
@@ -32,7 +32,7 @@ const FileLuuTru = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [fileData, setFileData] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
-    const fileInputRef = useState(null);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         fetchFiles();
@@ -174,7 +174,7 @@ const FileLuuTru = () => {
                         .then(response => {
                             let timerInterval;
                             Swal.fire({
-                                title: "Đang tải ảnh lên hệ thống!",
+                                title: "Đang tải file lên hệ thống!",
                                 html: "Vui lòng chờ trong <b></b> s.",
                                 timer: 2500,
                                 timerProgressBar: true,
@@ -195,7 +195,7 @@ const FileLuuTru = () => {
                                 if (result.dismiss === Swal.DismissReason.timer) {
                                     MySwal.fire({
                                         title: "Thông báo!",
-                                        text: "Tải ảnh thành công.",
+                                        text: "Tải file thành công.",
                                         icon: "success"
                                     }).then((result) => {
                                         if (result.isConfirmed) {
@@ -210,7 +210,7 @@ const FileLuuTru = () => {
                         .catch(error => {
                             MySwal.fire({
                                 title: "Thông báo!",
-                                text: "Có lỗi sinh ra trong quá trinh tải ảnh, vui lòng tải lại.",
+                                text: "Có lỗi sinh ra trong quá trinh tải file, vui lòng tải lại.",
                                 icon: "error"
                             });
                         });
@@ -266,19 +266,19 @@ const FileLuuTru = () => {
     }
 
     const headers = [
-        <CTableDataCell width={'50%'}>Tên</CTableDataCell>,
-        <CTableDataCell width={'40%'} >Ngày</CTableDataCell>,
-        <CTableDataCell width={'10%'} ></CTableDataCell>,
+        <label width={'50%'} className='fixed-width-column d-block w-100 m-0'>Tên</label>,
+        <label width={'45%'} className='fixed-width-column d-block w-100 m-0'>Ngày</label>,
+        <label width={'5%'} className='fixed-width-column d-block w-100 m-0'></label>,
 
     ];
     const headerCells = [
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo tên"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
         />,
-        <CFormInput
+        <CFormInput className='fixed-width-input'
             type="search"
             placeholder="Tìm theo ngày (dd-mm-yyyy)"
             value={searchRegistered}

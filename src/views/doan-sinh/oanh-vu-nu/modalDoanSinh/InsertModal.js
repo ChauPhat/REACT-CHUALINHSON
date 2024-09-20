@@ -133,7 +133,7 @@ function InsertModal({ show, handleClose }) {
   
     try {
       const response = await apiClient.post(`/api/users/create-user`, payload);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       if (selectedFile) {
         try {
           const fileFormData = new FormData();

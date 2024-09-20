@@ -59,7 +59,7 @@ const DSHuynhTruong= () => {
         let isHuynhTruong = true;
         const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
 
-        console.log(response.data.data);
+        // console.log(response.data.data);
 
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
@@ -98,7 +98,7 @@ const DSHuynhTruong= () => {
           };
         }));
         setUsersData(fetchedData);
-        console.log(fetchedData)
+        // console.log(fetchedData)
       } catch (error) {
 
         console.error('Lỗi khi gọi API:', error);
@@ -251,12 +251,12 @@ const DSHuynhTruong= () => {
     }
   };
   const headers = [
-    <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
-    <CTableDataCell width={'30%'} className="fixed-width-column">Pháp Danh || Tên</CTableDataCell>,
-    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
-    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Ảnh</label>,
+    <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Pháp Danh || Tên</label>,
+    <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Vai trò 1</label>,
+    <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Vai trò 2</label>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Trạng thái</label>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Thao tác</label>
   ];
   const headerCells = [
     '',

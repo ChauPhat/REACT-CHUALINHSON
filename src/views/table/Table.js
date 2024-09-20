@@ -62,7 +62,7 @@ const Table = ({ headers, headerCells, items, renderRow, searchCriteria }) => {
                 <CTableHead>
                     <CTableRow className="g-3 align-middle" >
                         {headers.map((header, index) => (
-                            <CTableHeaderCell key={index}>{header}</CTableHeaderCell>
+                            <CTableHeaderCell className='align-middle' key={index}>{header}</CTableHeaderCell>
                         ))}
                     </CTableRow>
                     <CTableRow className="align-middle">

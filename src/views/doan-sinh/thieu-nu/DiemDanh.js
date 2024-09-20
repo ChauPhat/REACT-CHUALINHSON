@@ -1,6 +1,10 @@
 import {
     CButton,
     CCol,
+    CDropdown,
+    CDropdownItem,
+    CDropdownMenu,
+    CDropdownToggle,
     CFormInput,
     CFormSelect,
     CRow,
@@ -12,7 +16,7 @@ import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
 import Table from '../../table/Table';
 import '../DoanSinhCss/DanhSach.css';
-import './DiemDanh.css';
+import '../DoanSinhCss/DiemDanh.css';
 
 const DDThieuNu = () => {
     const [searchTerm, setSearchTerm] = useState({
@@ -29,6 +33,7 @@ const DDThieuNu = () => {
     const [formData, setFormData] = useState({});
     const [isEditing, setIsEditing] = useState(false);
     const [show, setShow] = useState(false);
+    const [isHuynhTruong, setIsHuynhTruong] = useState();
 
     useEffect(() => {
         getLichSinhHoatDoan();
@@ -37,6 +42,14 @@ const DDThieuNu = () => {
     useEffect(() => {
         onChangeSelectedLichSinhHoatDoan();
     }, [selectedLichSinhHoatDoan]);
+
+    const diemDanhVar = {
+        coMat: 'X',
+        coPhep: 'P',
+        khongPhep: 'K',
+        checkboxCoMat: 'checkbox-coMat',
+        checkboxCoPhep: 'checkbox-coPhep'
+    };
 
     const handleYearChange = (event) => {
         setSelectedYear(event.target.value);
@@ -114,10 +127,10 @@ const DDThieuNu = () => {
     });
 
     const headers = [
-        <CTableDataCell width={'30%'} className="fixed-width-column">Tuần</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Ngày sinh hoạt</CTableDataCell>,
-        <CTableDataCell width={'30%'} className="fixed-width-column">Năm</CTableDataCell>,
-        <CTableDataCell width={'10%'} className="fixed-width-column"></CTableDataCell>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Tuần</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Ngày sinh hoạt</label>,
+        <label width={'30%'} className="fixed-width-column d-block w-100 m-0">Năm</label>,
+        <label width={'10%'} className="fixed-width-column d-block w-100 m-0"></label>,
     ];
 
     const headerCells = [
@@ -153,7 +166,9 @@ const DDThieuNu = () => {
                     coMat: diemDanhDTO.coMat,
                     lichSinhHoatDoanId: diemDanhDTO.lichSinhHoatDoanId,
                     userUpdate: userId,
-                    doanSinhDetailId: diemDanhDTO.doanSinhDetailDTO.doanSinhDetailId
+                    doanSinhDetailDTO: diemDanhDTO.doanSinhDetailDTO,
+                    nhiemKyDoanDTO: diemDanhDTO.nhiemKyDoanDTO,
+                    changed: false
                 }
             }
         });
@@ -164,41 +179,72 @@ const DDThieuNu = () => {
         if (item.diemDanhDTOS.length > 0 && item.diemDanhDTOS.some(value => Boolean(value))) {
             setSelectedLichSinhHoatDoan(item)
         } else {
-            apiClient.put(`/api/lich-sinh-hoat-doan/${item.lichSinhHoatDoanId}/diem-danh`)
-                .then(response => {
-                    getLichSinhHoatDoan();
-                    setSelectedLichSinhHoatDoan(response.data.data);
+            try {
+                let timerInterval;
+                let responseData;
+                Swal.fire({
+                    title: "Vui lòng đợi xử lý thông tin!",
+                    timer: 2500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        apiClient.put(
+                            `/api/lich-sinh-hoat-doan/diem-danh`, null, {
+                            params: {
+                                lichSinhHoatDoanId: item.lichSinhHoatDoanId,
+                                isActive: true
+                            }
+                        }
+                        ).then(response => {
+                            responseData = response.data.data;
+                        })
+                    },
+                    willClose: () => {
+                        getLichSinhHoatDoan();
+                        setSelectedLichSinhHoatDoan(responseData);
+                        clearInterval(timerInterval);
+                    }
                 })
-                .catch(error => {
-                    console.error(error);
-                })
+            } catch (error) {
+                console.error(error);
+            }
         }
     }
 
-    const handleCoMatChange = (checked, diemDanhDTO) => {
+    const handleCoMatChange = (checked, id, diemDanhDTO) => {
         setFormData({
             ...formData,
             [diemDanhDTO.diemDanhId]: {
                 ...formData[diemDanhDTO.diemDanhId],
-                coMat: checked
+                changed: true,
+                coMat: (id.startsWith(diemDanhVar.checkboxCoMat) && checked) ? diemDanhVar.coMat
+                    : (id.startsWith(diemDanhVar.checkboxCoPhep) && checked) ? diemDanhVar.coPhep
+                        : diemDanhVar.khongPhep
             }
         });
     }
 
     const getFormData = () => {
-        var keys = Object.keys(formData);
+        const qualifiedFormData = Object.fromEntries(
+            Object.entries(formData).filter(([key, value]) => value.changed === true)
+        );
+        var keys = Object.keys(qualifiedFormData);
         return keys?.map(key => {
             return {
                 diemDanhId: key,
-                coMat: formData[key].coMat,
-                lichSinhHoatDoanId: formData[key].lichSinhHoatDoanId,
-                userUpdate: formData[key].userUpdate,
-                doanSinhDetailId: formData[key].doanSinhDetailId
+                coMat: qualifiedFormData[key].coMat,
+                lichSinhHoatDoanId: qualifiedFormData[key].lichSinhHoatDoanId,
+                userUpdate: qualifiedFormData[key].userUpdate,
+                doanSinhDetailDTO: qualifiedFormData[key].doanSinhDetailDTO,
+                nhiemKyDoanDTO: qualifiedFormData[key].nhiemKyDoanDTO
             }
         })
     }
 
     const handleSaveDiemDanh = async () => {
+        let isFailed = false;
         try {
             handleEditToggle();
             const payload = getFormData();
@@ -211,22 +257,24 @@ const DDThieuNu = () => {
                 allowEscapeKey: false,
                 didOpen: () => {
                     Swal.showLoading();
-                    apiClient.post(`/api/diem-danh/save-or-update`, payload);
+                    apiClient.put(`/api/diem-danh/bulk-update`, payload);
                 },
                 willClose: () => {
                     clearInterval(timerInterval);
                 }
-            }).then(() => {
+            });
+        } catch {
+            isFailed = true
+        } finally {
+            if (!isFailed) {
                 getLichSinhHoatDoan();
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Điểm danh thành công!'
+                    icon: isFailed ? 'error' : 'success',
+                    title: `Điểm danh ${isFailed ? 'thất bại' : 'thành công'}!`
                 }).then(() => {
                     handleClose();
                 })
-            });
-        } catch (error) {
-            console.error(error);
+            }
         }
     }
 
@@ -240,17 +288,28 @@ const DDThieuNu = () => {
             <CTableDataCell>{formatDate(item.ngaySinhHoat)}</CTableDataCell>
             <CTableDataCell>{item.nam}</CTableDataCell>
             <CTableDataCell>
-                <CButton color="info"
-                    disabled={isFuture(item.ngaySinhHoat)}
-                    onClick={() => { checkDiemDanhDTOS(item); setShow(true); }}
-                    variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Điểm danh
-                </CButton>
+                <CDropdown>
+                    <CDropdownToggle variant="outline" color="info"
+                        disabled={isFuture(item.ngaySinhHoat)}>Điểm danh</CDropdownToggle>
+                    <CDropdownMenu>
+                        <CDropdownItem className="custom-dropdown-item"
+                            onClick={() => { setIsHuynhTruong(true); checkDiemDanhDTOS(item); setShow(true); }}
+                            variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Điểm danh huynh trưởng
+                        </CDropdownItem>
+                        <CDropdownItem className="custom-dropdown-item"
+                            onClick={() => { setIsHuynhTruong(false); checkDiemDanhDTOS(item); setShow(true); }}
+                            variant="outline" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Điểm danh đoàn sinh
+                        </CDropdownItem>
+                    </CDropdownMenu>
+                </CDropdown>
             </CTableDataCell>
         </>
     );
 
     const isFuture = (date) => {
+        // return false;
         const givenDate = new Date(date);
         const now = new Date();
         givenDate.setHours(0, 0, 0, 0);
@@ -259,6 +318,7 @@ const DDThieuNu = () => {
     }
 
     const isPastExact = (date) => {
+        // return false;
         const givenDate = new Date(date);
         const now = new Date();
         now.setHours(0, 0, 0, 0);
@@ -268,28 +328,38 @@ const DDThieuNu = () => {
     const handleClose = () => {
         setShow(false);
         setIsEditing(false);
+        setSelectedLichSinhHoatDoan(null);
     }
 
-    const renderLichSinhHoatDoan = () => {
-        return selectedLichSinhHoatDoan?.diemDanhDTOS?.map((element) => {
-            let doanSinh = element.doanSinhDetailDTO;
+    const renderDiemDanhs = () => {
+        const qualifiedDiemDanhDTOS = selectedLichSinhHoatDoan?.diemDanhDTOS?.filter(
+            (diemDanhDTO) => (isHuynhTruong ? diemDanhDTO?.nhiemKyDoanDTO : diemDanhDTO?.doanSinhDetailDTO));
+        return qualifiedDiemDanhDTOS?.map((element) => {
+            let person = isHuynhTruong ? element.nhiemKyDoanDTO : element.doanSinhDetailDTO;
             return (<tr className='align-items-center'>
                 <td>
                     <img
-                        src={`${doanSinh.avatar}`}
+                        src={`${person.avatar}`}
                         alt="Ảnh"
                         className="rounded-image"
                         width="50"
                         height="50"
                     />
                 </td>
-                <td>{doanSinh.hoTen}</td>
+                <td>{person.hoTen}</td>
                 <td>{formatDate(selectedLichSinhHoatDoan.ngaySinhHoat)}</td>
-                <td>{doanSinh.tenDoan}</td>
+                <td>{person.tenDoan}</td>
                 <td className=''>
                     <div className="checkbox-con">
-                        <input id={`checkbox-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
-                            checked={formData[element.diemDanhId]?.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, element)}>
+                        <input id={`checkbox-coMat-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                            checked={formData[element.diemDanhId]?.coMat === diemDanhVar.coMat || false} onChange={(e) => handleCoMatChange(e.target.checked, e.target.id, element)}>
+                        </input>
+                    </div>
+                </td>
+                <td className=''>
+                    <div className="checkbox-con">
+                        <input id={`checkbox-coPhep-${element.diemDanhId}`} type="checkbox" disabled={!isEditing}
+                            checked={formData[element.diemDanhId]?.coMat === diemDanhVar.coPhep || false} onChange={(e) => handleCoMatChange(e.target.checked, e.target.id, element)}>
                         </input>
                     </div>
                 </td>
@@ -299,6 +369,7 @@ const DDThieuNu = () => {
 
     return (
         <div className="container-fluid">
+
             <CRow className="mb-3 d-flex">
                 <CCol className="d-flex align-items-center flex-grow-1">
                     <h3>Lịch sinh hoạt đoàn Thiếu Nữ</h3>
@@ -336,11 +407,12 @@ const DDThieuNu = () => {
                                     <th >Tên</th>
                                     <th >Ngày sinh hoạt</th>
                                     <th >Đoàn</th>
-                                    <th >Trạng thái</th>
+                                    <th >Có mặt</th>
+                                    <th >Có phép</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {renderLichSinhHoatDoan()}
+                                {renderDiemDanhs()}
                             </tbody>
                         </table>
                     </div>

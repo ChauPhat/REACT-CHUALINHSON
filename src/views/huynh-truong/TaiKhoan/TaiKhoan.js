@@ -114,13 +114,13 @@ const TaiKhoanHuynhTruong = () => {
   };
 
   const headers = [
-    <CTableDataCell width={'10%'} className="fixed-width-column">Ảnh</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Họ Và Tên</CTableDataCell>,
-    <CTableDataCell width={'20%'} className="fixed-width-column">Ngày Tạo</CTableDataCell>,
-    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 1</CTableDataCell>,
-    <CTableDataCell width={'15%'} className="fixed-width-column">Vai trò 2</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Trạng thái</CTableDataCell>,
-    <CTableDataCell width={'10%'} className="fixed-width-column">Thao tác</CTableDataCell>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Ảnh</label>,
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Họ Và Tên</label>,
+    <label width={'20%'} className="fixed-width-column d-block w-100 m-0">Ngày Tạo</label>,
+    <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Vai trò 1</label>,
+    <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Vai trò 2</label>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Trạng thái</label>,
+    <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Thao tác</label>,
   ];
   const headerCells = [
     '',
@@ -204,7 +204,7 @@ const TaiKhoanHuynhTruong = () => {
               clearInterval(timerInterval);
             }
           }).then(() => {
-            console.log(response.data, accountId, isActive, updated);
+            // console.log(response.data, accountId, isActive, updated);
             setUpdated(response.data);
             Swal.fire({
               icon: 'success',

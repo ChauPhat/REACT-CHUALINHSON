@@ -33,7 +33,7 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-      <div  customClassName="sidebar-brand-full" height={32}><h5> GĐPT LINH SƠN <CAvatar src={logo}/></h5></div>
+      <div  className="sidebar-brand-full" height={32}><h5> GĐPT LINH SƠN <CAvatar src={logo}/></h5></div>
         <CCloseButton
           className="d-lg-none"
           dark
