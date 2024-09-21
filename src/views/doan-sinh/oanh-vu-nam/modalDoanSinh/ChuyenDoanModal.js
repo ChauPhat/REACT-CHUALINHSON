@@ -44,24 +44,6 @@ function ChuyenDoanModal({ show, handleClose, user }) {
         setIsEditing(prevState => !prevState);
     };
 
-    //   const handleInputChange = (e) => {
-    //     const { name, value } = e.target;
-
-    //     if (name === 'roleId1') {
-    //       const selectedRole = roles.find(role => role.roleId === parseInt(value));
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         roleId1: selectedRole ? selectedRole.roleId : '',
-    //         tenchucvu1: selectedRole ? selectedRole.roleName : '',
-    //       }));
-    //     } else {
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         [name]: value,
-    //       }));
-    //     }
-    //   };
-
     const handleRoleChange = (e) => {
         const selectedRoleId = e.target.value;
         const selectedRole = roles.find((role) => role.roleId === parseInt(selectedRoleId));

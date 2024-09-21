@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 function InsertModal({ show, handleClose }) {
   const [roles, setRoles] = useState([]);
   const [bacHoc, setBacHoc] = useState([]);
+  const [trai, setTrai] = useState([]);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
@@ -16,19 +17,30 @@ function InsertModal({ show, handleClose }) {
     email: '',
     phapDanh: '',
     gioiTinh: true,
-    createdDate: '',
+    createdDate: new Date().toISOString().split('T')[0],
     isHuynhTruong: false,
-    updatedDate: '',
+    updatedDate: new Date().toISOString().split('T')[0],
     diaChi: '',
-    sdtGd: '',
+    sdtCha:'',
+    sdtMe:'',
     avatar: '',
     isActive: true,
-    lichSuHocs: [{bacHocId:''}],
-    traiHuanLuyenId: '',
+    lichSuHocs: 
+      [
+        {
+        bacHocId:'',
+        ngayKetThucBacHoc:''
+        }
+      ],
+    lichSuTraiHuanLuyenDTOS: 
+      [{
+        traiHuanLuyenId:'',
+        ngayKetThucTrai:''
+      }],
     hoTenCha: '',
     hoTenMe: '',
     roleId1: { roleId: '' },
-    roleId2: null
+
   });
 
   const fileInputRef = useRef(null);
@@ -36,9 +48,10 @@ function InsertModal({ show, handleClose }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [rolesResponse, bacHocResponse] = await Promise.all([
+        const [rolesResponse, bacHocResponse, traiResponse] = await Promise.all([
           apiClient.get(`/api/roles/get-all`),
-          apiClient.get(`/api/bac-hoc`)
+          apiClient.get(`/api/bac-hoc`),
+          apiClient.get(`/api/trai-huan-luyen`)
         ]);
 
         if (rolesResponse.data.status === 'OK') {
@@ -57,6 +70,15 @@ function InsertModal({ show, handleClose }) {
           setBacHoc(filteredBacHoc);
         } else {
           console.error('Lỗi khi lấy dữ liệu Bậc Học:', bacHocResponse.data.message);
+        }
+
+        if (traiResponse.data.status === 'OK') {
+          const filteredTrai= traiResponse.data.data.filter(
+            (trai) => !trai.isHuynhTruong
+          );
+          setTrai(filteredTrai);
+        } else {
+          console.error('Lỗi khi lấy dữ liệu trại:', traiResponse.data.message);
         }
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
@@ -95,7 +117,7 @@ function InsertModal({ show, handleClose }) {
 
   const handleSave = async () => {
     const {
-      hoTen, ngaySinh, sdt, email, roleId1,bacHocId, hoTenCha, hoTenMe, avatar, diaChi, sdtGd,
+      hoTen, ngaySinh, sdt, email, roleId1, bacHocId, hoTenCha, hoTenMe, traiHuanLuyenId
     } = formData;
   
     if (!hoTen || !ngaySinh || !sdt || !email || !roleId1 || !hoTenCha || !hoTenMe) {
@@ -120,20 +142,26 @@ function InsertModal({ show, handleClose }) {
       isHuynhTruong: formData.isHuynhTruong,
       updatedDate: formData.updatedDate,
       diaChi: formData.diaChi,
-      sdtGd: formData.sdtGd,
       avatar: formData.avatar,
       isActive: formData.isActive,
       roleId1:  roleId1 ? { roleId: roleId1 } : null,
-      roleId2: null,
-      lichSuHocs: bacHocId ? [{ bacHocId: bacHocId }] : [],
-      traiHuanLuyenId: formData.traiHuanLuyenId='1',
+      lichSuHocs: bacHoc ? [{
+        bacHocId: bacHocId,
+        ngayKetThuc: formData.ngayKetThucBacHoc
+      }] : null,
+      lichSuTraiHuanLuyenDTOS: trai ? [{ 
+        traiHuanLuyenId: traiHuanLuyenId,
+        ngayKetThuc: formData.ngayKetThucTrai
+      }] : null,
       hoTenCha: formData.hoTenCha,
       hoTenMe: formData.hoTenMe,
+      sdtCha: formData.sdtCha,
+      sdtMe: formData.sdtMe,
     };
-  
+    console.log(payload);
     try {
       const response = await apiClient.post(`/api/users/create-user`, payload);
-      // console.log(response.data.data);
+      console.log(response.data.data);
       if (selectedFile) {
         try {
           const fileFormData = new FormData();
@@ -198,7 +226,7 @@ function InsertModal({ show, handleClose }) {
       <Modal.Body>
         <div className="avatar-container text-center mb-3">
           <img
-            src={avatarPreview || 'path/to/default/avatar.png'}
+            src={avatarPreview || formData.avatar}
             alt="Avatar"
             onClick={handleAvatarClick}
             style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}
@@ -231,9 +259,6 @@ function InsertModal({ show, handleClose }) {
           <label>Địa Chỉ</label>
           <textarea id='diachi' name='diaChi' value={formData.diaChi} className="form-control" rows="3" onChange={handleChange}></textarea>
 
-          <label>Số Điện Thoại Người Dám Hộ</label>
-          <input id="sdtgd" name="sdtGd" value={formData.sdtGd} className="form-control" type="text" onChange={handleChange} />
-
           <label>Giới Tính</label>
           <div className="mb-3">
             <label className="form-check-label">
@@ -259,7 +284,7 @@ function InsertModal({ show, handleClose }) {
           </div>
 
           <label>Bậc Học</label>
-          <CFormSelect name="bacHocId" onChange={handleChange}>
+          <CFormSelect name="bacHocId" value={formData.lichSuHocs.bacHocId} onChange={handleChange}>
             <option>Chọn Bậc Học</option>
             {bacHoc.map(bac => (
               <option key={bac.bacHocId} value={bac.bacHocId}>
@@ -267,6 +292,9 @@ function InsertModal({ show, handleClose }) {
               </option>
             ))}
           </CFormSelect>
+
+          <label>Ngày Kết Thúc Bậc Học</label>
+          <input id="ngayKetThucBacHoc" name="ngayKetThucBacHoc" value={formData.ngayKetThucBacHoc} className="form-control" type="date" onChange={handleChange} />
 
           <label>Chức Vụ</label>
           <CFormSelect name="roleId1" onChange={handleChange}>
@@ -278,11 +306,32 @@ function InsertModal({ show, handleClose }) {
             ))}
           </CFormSelect>
 
+          <label>Trại Huấn Luyện</label>
+          <CFormSelect name="traiHuanLuyenId" onChange={handleChange}>
+            <option>Chọn Trại Huấn Luyện</option>
+            {trai.map(trai => (
+              <option key={trai.traiHuanLuyenId} value={trai.traiHuanLuyenId}>
+                {trai.tenTraiHuanLuyen}
+              </option>
+            ))}
+          </CFormSelect>
+
+          <label>Ngày Kết Thúc Trại</label>
+          <input id="ngayKetThucTrai" name="ngayKetThucTrai" value={formData.ngayKetThucTrai} className="form-control" type="date" onChange={handleChange} />
+
+
           <label>Họ Tên Cha</label>
           <input id="hoTenCha" name="hoTenCha" value={formData.hoTenCha} className="form-control" type="text" onChange={handleChange} />
 
+          <label>Số Điện Thoại Cha</label>
+          <input id="sdtCha" name="sdtCha" value={formData.sdtCha} className="form-control" type="text" onChange={handleChange} />
+
           <label>Họ Tên Mẹ</label>
           <input id="hoTenMe" name="hoTenMe" value={formData.hoTenMe} className="form-control" type="text" onChange={handleChange} />
+
+          <label>Số Điện Thoại Mẹ</label>
+          <input id="sdtMe" name="sdtMe" value={formData.sdtMe} className="form-control" type="text" onChange={handleChange} />
+
         </div>
       </Modal.Body>
       <Modal.Footer>

@@ -29,7 +29,7 @@ const DSOanhNam = () => {
   const [searchName, setSearchName] = useState('');
   const [searchChucVuMatch, setSearchChucVuMatch] = useState('');
   const [searchRole, setSearchRole] = useState('');
-  const [searchStatus, setSearchStatus] = useState('');
+  const [searchIsActive, setSearchIsActive] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showChuyenDoan, setChuyenDoanModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -42,74 +42,70 @@ const DSOanhNam = () => {
   useEffect(() => {
     const layDuLieu = async () => {
       try {
-        const response = await apiClient.get('/api/users/get-list-user-with-id-doan/1',);
-        setPUsers(response.data.data);
-        let imageUrl;
-        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
-          try {
-            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`, {
-            });
-            imageUrl = (imageResponse.data.data)
-          } catch (error) {
-            console.error('Lỗi khi tải ảnh:', error);
-          }
+        const response = await apiClient.get(`/api/doan-sinh-details?doanId=1`);
+        setUsersData(response.data.data);
+        
 
+        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
           const doanSinhDetails = item.doanSinhDetails || [];
           const lichSuHocs = item.lichSuHocs || [];
+          const lichSuTraiHuanLuyenDTOS = item.lichSuTraiHuanLuyenDTOS || [];
           const roleId1 = item.roleId1 || {};
 
+          // Lấy lịch sử học mới nhất
+          const latestLichSuHoc = lichSuHocs.sort((a, b) => b.lichSuHocId - a.lichSuHocId)[0];
 
-          return {
-            id: item.userId,
-            idUX: item.userIdUx,
-            name: item.hoTen,
-            avatar: imageUrl,
-            registered: item.createdDate,
-            phapDanh: item.phapDanh,
-            ngaysinh: item.ngaySinh,
-            phone: item.sdt,
-            hoTenCha: item.hoTenCha,
-            hoTenMe: item.hoTenMe,
-            idchucvu1: roleId1.roleId,
-            isHuynhTruong: item.isHuynhTruong,
-            tenchucvu1: roleId1.roleName,
-            status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            address: item.diaChi,
-            vaitro: doanSinhDetails[0]?.role,
-            sdtgd: item.sdtGd,
-            // isActive: doanSinhDetails[0]?.isActive ? 'Active' : 'Inactive',
-            doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
-            ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
-            ngayRoiDoan: doanSinhDetails[0]?.leftDate,
-            mota: doanSinhDetails[0]?.moTa,
-            tendoan: doanSinhDetails[0]?.tenDoan,
-            tenBacHoc: lichSuHocs[0]?.tenBacHoc,
-            bacHocId: lichSuHocs[0]?.bacHocId,
-            traiHuanLuyenId: item.traiHuanLuyenId,
-            tenTraiHuanLuyen: item.tenTraiHuanLuyen,
-            nhiemKyDoans: item.nhiemKyDoans,
-            doanSinhDetails: item.doanSinhDetails,
-          };
+          const latestDoanSinhDetails = doanSinhDetails.sort((a, b) => b.doanSinhDetailId - a.doanSinhDetailId)[0];
+
+          // Lấy trại huấn luyện mới nhất
+          const latestTraiHuanLuyen = lichSuTraiHuanLuyenDTOS.sort((a, b) => b.lichSuTraiHuanLuyenId - a.lichSuTraiHuanLuyenId)[0];
+  
+            return {
+              userId: item.userId,
+              userIdUx: item.userIdUx,
+              hoTen: item.hoTen,
+              avatar: item.avatar,
+              createdDate: item.createdDate,
+              phapDanh: item.phapDanh,
+              ngaySinh: item.ngaySinh,
+              sdt: item.sdt,
+              hoTenCha: item.hoTenCha,
+              hoTenMe: item.hoTenMe,
+              sdtCha: item.sdtCha,
+              sdtMe: item.sdtMe,
+              roleId: roleId1.roleId,
+              isHuynhTruong: item.isHuynhTruong,
+              roleName: roleId1.roleName,
+              email: item.email,
+              gioiTinh: item.gioiTinh ,
+              diaChi: item.diaChi,
+              role: latestDoanSinhDetails?.role,
+              isActive: latestDoanSinhDetails?.isActive ? 'Active' : 'Inactive',
+              doanSinhDetailId: latestDoanSinhDetails?.doanSinhDetailId,
+              joinDate: latestDoanSinhDetails?.joinDate,
+              leftDate: latestDoanSinhDetails?.leftDate,
+              moTa: latestDoanSinhDetails?.moTa,
+              tenDoan: latestDoanSinhDetails?.tenDoan,
+              tenBacHoc: latestLichSuHoc?.tenBacHoc,
+              bacHocId: latestLichSuHoc?.bacHocId,
+              ngayKetThucBacHoc: latestLichSuHoc?.ngayKetThuc,
+              tenTraiHuanLuyen: latestTraiHuanLuyen?.tenTraiHuanLuyen,
+              traiHuanLuyenId: latestTraiHuanLuyen?.traiHuanLuyenId,
+              ngayKetThucTrai: latestTraiHuanLuyen?.ngayKetThuc,
+              nhiemKyDoans:item.nhiemKyDoans
+            };
         }));
+  
         setUsersData(fetchedData);
-
         
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
+        
       }
     };
+  
     layDuLieu();
   }, []);
-
-  const formatDateToDDMMYYYY = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
 
   const handleShowModal = (user) => {
     setSelectedUser(user);
@@ -143,8 +139,8 @@ const DSOanhNam = () => {
     setChuyenDoanModal(null);
   };
 
-  const getBadgeClass = (status) => {
-    switch (status) {
+  const getBadgeClass = (isActive) => {
+    switch (isActive) {
       case 'Active':
         return 'bg-success';
       case 'Inactive':
@@ -155,25 +151,26 @@ const DSOanhNam = () => {
   };
 
   const filteredData = usersData.filter((user) => {
-    const nameMatch = (user.name || '').toLowerCase().includes(searchName.toLowerCase());
+    const nameMatch = (user.hoTen || '').toLowerCase().includes(searchName.toLowerCase());
 
     // Thêm điều kiện lọc cho cả hai trường chức vụ
-    const chucVuMatch = (user.tenchucvu1 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
+    const chucVuMatch = (user.roleName || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
 
-    const roleMatch = (user.vaitro || '').toLowerCase().includes(searchRole.toLowerCase());
-    const statusMatch = (user.status || '').toLowerCase().includes(searchStatus.toLowerCase());
+    const roleMatch = (user.role || '').toLowerCase().includes(searchRole.toLowerCase());
+    // const isActiveMatch = (user.isActive || '').toLowerCase().includes(searchIsActive.toLowerCase());
 
-    return nameMatch && chucVuMatch && roleMatch && statusMatch;
+    // return nameMatch && chucVuMatch && roleMatch && isActiveMatch;
+    return nameMatch && chucVuMatch && roleMatch;
   });
 
 
-  const handleToggleStatus = async (user) => {
-    const newStatus = user.status !== 'Active';
+  const handleToggleisActive = async (user) => {
+    const newisActive = user.isActive !== 'Active';
   
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${newStatus ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      text: `Bạn có muốn ${newisActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -184,10 +181,10 @@ const DSOanhNam = () => {
   
     if (result.isConfirmed) {
       try {
-        await apiClient.put(`/api/users/active-user/${user.id}/${newStatus}`);
+        await apiClient.patch(`/api/doan-sinh-details/activate?doanSinhDetailId=${user.userId}&isActive=${newisActive}`);
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.id === user.id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u
+            u.id === user.id ? { ...u, isActive: u.isActive === 'Active' ? 'Inactive' : 'Active' } : u
           )
         );
         Swal.fire(
@@ -219,13 +216,13 @@ const DSOanhNam = () => {
         />
       </CTableDataCell>
       <CTableDataCell>
-        <div>{user.name} || {user.phapDanh}</div>
+        <div>{user.hoTen} || {user.phapDanh}</div>
       </CTableDataCell>
-      <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
-      <CTableDataCell>{user.vaitro}</CTableDataCell>
+      <CTableDataCell>{user.roleName}</CTableDataCell>
+      <CTableDataCell>{user.role}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
-          {user.status}
+        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
+          {user.isActive }
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -236,8 +233,8 @@ const DSOanhNam = () => {
               Thông tin
             </CDropdownItem>
             <CDropdownItem className='custom-dropdown-item'
-              onClick={() => handleToggleStatus(user)}>
-              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              onClick={() => handleToggleisActive(user)}>
+              {user.isActive === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
             <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(pUsers.find(u => u.userId === user.id))}>
               Chuyển Đoàn
@@ -343,8 +340,8 @@ const DSOanhNam = () => {
     <CFormInput className='fixed-width-input'
       type="search"
       placeholder="Tìm theo trạng thái"
-      value={searchStatus}
-      onChange={(e) => setSearchStatus(e.target.value)}
+      value={searchIsActive}
+      onChange={(e) => setSearchIsActive(e.target.value)}
     />,
     '',
   ];
@@ -367,7 +364,7 @@ const DSOanhNam = () => {
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchChucVuMatch, searchRole, searchStatus }}
+        searchCriteria={{ searchName, searchChucVuMatch, searchRole, searchIsActive }}
       />
 
       {selectedUser && (
