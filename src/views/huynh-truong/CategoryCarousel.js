@@ -13,7 +13,7 @@ const CategoryCarousel = ({ categories }) => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 20000,
-    arrows: true, 
+    arrows: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -45,10 +45,10 @@ const CategoryCarousel = ({ categories }) => {
         {categories.map((category, index) => (
           <div key={index} className="category-item">
             <div className="profile-card">
-              <img src={category.avatar} alt={category.name} className="profile-image" />
+              <img src={category.avatar} alt={category.hoTen} className="profile-image" />
               <div className="profile-info">
-                <h3>{category.name}</h3>
-                <p>{category.role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</p>
+                <h3>{category.hoTen}</h3>
+                <p>{category.isHuynhTruong ? 'Huynh Trưởng' : 'Đoàn Sinh'}</p>
               </div>
             </div>
           </div>
