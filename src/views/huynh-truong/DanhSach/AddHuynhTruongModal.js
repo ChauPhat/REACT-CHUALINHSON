@@ -5,8 +5,6 @@ import {
   CCol, CFormSelect,
 } from '@coreui/react'
 import './UserModal.css';
-import axios from 'axios';
-import env from '../../../env'
 import Swal from 'sweetalert2';
 import apiClient from '../../../apiClient';
 
@@ -19,6 +17,8 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
   const [birthDate, setBirthDate] = useState('');
   const [registered, setRegistered] = useState('');
   const [phone, setPhone] = useState('');
+  const [sdtCha, setSdtCha] = useState('');
+  const [sdtMe, setSdtMe] = useState('');
   const [address, setAddress] = useState('');
   const [gender, setGender] = useState('Male');
   const [errors, setErrors] = useState({});
@@ -26,8 +26,15 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
   const [rolesWithDoanId, setRolesWithDoanId] = useState([]);
   const [rolesWithoutDoanId, setRolesWithoutDoanId] = useState([]);
   const fileInputRef = useRef(null);
-  const [bacHoc, setBacHoc] = useState('');
+  const [bacHoc, setBacHoc] = useState(0);
   const [bacHocList, setBacHocList] = useState([]);
+  const [ngayKetThucBacHoc, setNgayKetThucBacHoc] = useState('');
+  const [capList, setCapList] = useState([]);
+  const [capId, setCapId] = useState(0);
+  const [ngayKetThucCap, setNgayKetThucCap] = useState('');
+  const [traiHuanLuyenList, setTraiHuanLuyenList] = useState([]);
+  const [traiHuanLuyenId, setTraiHuanLuyenId] = useState(0);
+  const [ngayKetThucTraiHuanLuyen, setNgayKetThucTraiHuanLuyen] = useState('');
 
   useEffect(() => {
     setRegistered(new Date().toISOString().split('T')[0]);
@@ -56,8 +63,28 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       }
     };
 
+    const fetchCap = async () => {
+      try {
+        const response = await apiClient.get(`/api/cap`);
+        setCapList(response.data.data);
+      } catch (error) {
+        console.error('Error fetching Bac Hoc:', error);
+      }
+    };
+
+    const fetchTraiHuanLuyen = async () => {
+      try {
+        const response = await apiClient.get(`/api/trai-huan-luyen`);
+        setTraiHuanLuyenList(response.data.data);
+      } catch (error) {
+        console.error('Error fetching Bac Hoc:', error);
+      }
+    };
+
     fetchRoles();
     fetchBacHoc();
+    fetchCap();
+    fetchTraiHuanLuyen();
   }, []);
 
 
@@ -88,6 +115,12 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       case 'phone':
         setPhone(value);
         break;
+      case 'sdtCha':
+        setSdtCha(value);
+        break;
+      case 'sdtMe':
+        setSdtMe(value);
+        break;
       case 'gender':
         setGender(value);
         break;
@@ -96,6 +129,22 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
         break;
       case 'address':
         setAddress(value);
+        break;
+      case 'cap':
+        setCapId(value);
+        break;
+      case 'traiHuanLuyen':
+        setTraiHuanLuyenId(value);
+        break;
+      case 'ngayKetThucBacHoc':
+        setNgayKetThucBacHoc(value);
+        break;
+      case 'ngayKetThucCap':
+        setNgayKetThucCap(value);
+        break;
+      case 'ngayKetThucTraiHuanLuyen':
+        setNgayKetThucTraiHuanLuyen(value);
+        break;
       default:
         break;
     }
@@ -122,9 +171,32 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
     } if (!phone) {
       newErrors.phone = 'Số điện thoại là bắt buộc';
       isValid = false;
-    } if (!gender) {
+    }
+    if (!gender) {
       newErrors.gender = 'Giới tính là bắt buộc';
       isValid = false;
+    }
+    // Bắt buộc chọn "Ngày kết thúc bậc học" nếu đã chọn "Bậc học"
+    if (bacHoc) {
+      if (!ngayKetThucBacHoc) {
+        newErrors.ngayKetThucBacHoc = 'Ngày kết thúc bậc học là bắt buộc';
+        isValid = false;
+      }
+    }
+
+    // Bắt buộc chọn "Ngày kết thúc cấp" nếu đã chọn "Cấp"
+    if (capId) {
+      if (!ngayKetThucCap) {
+        newErrors.ngayKetThucCap = 'Ngày kết thúc cấp là bắt buộc';
+        isValid = false;
+      }
+    }
+
+    if (traiHuanLuyenId) {
+      if (!ngayKetThucTraiHuanLuyen) {
+        newErrors.ngayKetThucTraiHuanLuyen = 'Ngày kết thúc trại huấn luyện là bắt buộc';
+        isValid = false;
+      }
     }
 
     setErrors(newErrors);
@@ -137,7 +209,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
 
     const result = await Swal.fire({
       title: 'Xác nhận!',
-      text: 'Bạn có chắc chắn muốn thêm Huynh Trưởng  này không?',
+      text: 'Bạn có chắc chắn muốn thêm Huynh Trưởng này không?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Có, thêm!',
@@ -151,6 +223,8 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       hoTen: name,
       ngaySinh: birthDate,
       sdt: phone,
+      sdtCha: sdtCha,
+      sdtMe: sdtMe,
       email: email,
       phapDanh: phapdanh,
       gioiTinh: gender === 'Male', // true for Male, false for Female
@@ -161,24 +235,37 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       isActive: true,
       roleId1: role1 ? { roleId: role1 } : null, // Assume role1 comes from a select input
       roleId2: role2 ? { roleId: role2 } : null, // Assume role2 comes from a select input
-      lichSuHocs: bacHoc ? [{ bacHocId: bacHoc }] : [], // Assume bacHoc comes from a select input 
+      lichSuHocs: bacHoc ? [{
+        bacHocId: Number(bacHoc),
+        ngayKetThuc: ngayKetThucBacHoc
+      }] : null, // Assume bacHoc comes from a select input 
+      lichSuCapDTOS: capId ? [{
+        capId: Number(capId),
+        ngayKetThuc: ngayKetThucCap
+      }] : null, // Assume capId comes from a select input
       accountDTO: null,
-      traiHuanLuyenId: 1
+      lichSuTraiHuanLuyenDTOS: traiHuanLuyenId ? [{
+        traiHuanLuyenId: Number(traiHuanLuyenId),
+        ngayKetThuc: ngayKetThucTraiHuanLuyen
+      }] : null, // Assume traiHuanLuyenId comes from a select input
     };
+
+
     // console.log(formData)
+    // return;
 
     try {
       // First API call to add Bac Hoc
       const response = await apiClient.post(`/api/users/create-user`, formData);
       // console.log(response.data.data);
-      
+      let data = response.data.data;
       if (selectedFile) {
         try {
           const fileFormData = new FormData();
           fileFormData.append('file', selectedFile);
           const userId = response.data.data.userId
           // console.log(userId);
-          
+
           // Second API call to upload the file
           await apiClient.post(`/api/files/images/upload?userId=${userId}`, fileFormData, {
             headers: {
@@ -197,21 +284,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
         }
       }
 
-      // Only proceed if both actions succeed
-      const newHuynhTruong = {
-        id: response.data.data.bacHocId,
-        name,
-        role1,
-        role2,
-        phapdanh,
-        email,
-        birthDate,
-        registered,
-        phone,
-        address,
-        gender,
-      };
-      onAddHuynhTruong(newHuynhTruong);
+
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
         text: 'Thêm Huynh Trưởng Thành Công!',
@@ -219,6 +292,7 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
         timer: 2000,
         timerProgressBar: true,
       });
+      onAddHuynhTruong();
 
       setName('');
       setRole1('');
@@ -228,13 +302,28 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
       setBirthDate('');
       setRegistered('');
       setPhone('');
+      setSdtCha('');
+      setSdtMe('');
       setAddress('');
       setGender('Male');
       setSelectedFile(null);
+      setErrors({});
+      setRolesWithDoanId([]);
+      setRolesWithoutDoanId([]);
+      fileInputRef.current.value = null;
+      setBacHoc(0);
+      setBacHocList([]);
+      setNgayKetThucBacHoc('');
+      setCapList([]);
+      setCapId(0);
+      setNgayKetThucCap('');
+      setTraiHuanLuyenList([]);
+      setTraiHuanLuyenId(0);
+      setNgayKetThucTraiHuanLuyen('');
       handleClose();
     } catch (error) {
       // Handle error when adding Bac Hoc
-      const errorMessage = error.response?.data?.message || 'Thêm bậc học thất bại.';
+      const errorMessage = error.response?.data?.message || 'Thêm thất bại.';
       Swal.fire({
         title: 'Thông báo từ hệ thống!',
         text: errorMessage,
@@ -329,6 +418,58 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
             ))}
           </CFormSelect>
 
+          <label htmlFor="ngayKetThucBacHoc">Ngày Kết Thúc Bậc Học</label>
+          <input
+            id="ngayKetThucBacHoc" name="ngayKetThucBacHoc" className={`form-control ${errors.ngayKetThucBacHoc ? 'is-invalid' : ''}`}
+            type="date" value={ngayKetThucBacHoc} onChange={handleInputChange} required disabled={bacHoc === 0 || bacHoc === ""}
+
+          />
+          {errors.ngayKetThucBacHoc && <div className="invalid-feedback">{errors.ngayKetThucBacHoc}</div>}
+
+          <label htmlFor="cap">Cấp</label>
+          <CFormSelect
+            name="cap"
+            aria-label="Chọn cấp"
+            value={capId} // Correctly assign the state value here
+            onChange={handleInputChange} // Handle change correctly
+          >
+            <option value="">Chọn cấp</option>
+            {capList.map((cap) => (
+              <option key={cap.capId} value={cap.capId}>
+                {cap.capName}
+              </option>
+            ))}
+          </CFormSelect>
+
+          <label htmlFor="ngayKetThucCap">Ngày Kết Thúc Cấp</label>
+          <input
+            id="ngayKetThucCap" name="ngayKetThucCap" className={`form-control ${errors.ngayKetThucCap ? 'is-invalid' : ''}`}
+            type="date" value={ngayKetThucCap} onChange={handleInputChange} required disabled={capId === 0 || capId === ""}
+          />
+          {errors.ngayKetThucCap && <div className="invalid-feedback">{errors.ngayKetThucCap}</div>}
+
+          <label htmlFor="traiHuanLuyen">Trại Huấn Luyện</label>
+          <CFormSelect
+            name="traiHuanLuyen"
+            aria-label="Chọn trại huấn luyện"
+            value={traiHuanLuyenId} // Correctly assign the state value here
+            onChange={handleInputChange} // Handle change correctly
+          >
+            <option value="">Chọn trại huấn luyện</option>
+            {traiHuanLuyenList.map((trai) => (
+              <option key={trai.traiHuanLuyenId} value={trai.traiHuanLuyenId}>
+                {trai.tenTraiHuanLuyen}
+              </option>
+            ))}
+          </CFormSelect>
+
+          <label htmlFor="ngayKetThucTraiHuanLuyen">Ngày Kết Thúc Cấp</label>
+          <input
+            id="ngayKetThucTraiHuanLuyen" name="ngayKetThucTraiHuanLuyen" className={`form-control ${errors.ngayKetThucTraiHuanLuyen ? 'is-invalid' : ''}`}
+            type="date" value={ngayKetThucTraiHuanLuyen} onChange={handleInputChange} required disabled={traiHuanLuyenId === 0 || traiHuanLuyenId === ""}
+          />
+          {errors.ngayKetThucTraiHuanLuyen && <div className="invalid-feedback">{errors.ngayKetThucTraiHuanLuyen}</div>}
+
           <label htmlFor="email">Email</label>
           <input
             name="email" className="form-control"
@@ -356,6 +497,20 @@ function AddHuynhTruongModal({ show, handleClose, onAddHuynhTruong }) {
             type="text" value={phone} onChange={handleInputChange} required
           />
           {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+
+          <label htmlFor="sdtCha">Số Điện Thoại Cha</label>
+          <input
+            id="sdtCha" name="sdtCha" className={`form-control ${errors.sdtCha ? 'is-invalid' : ''}`}
+            type="text" value={sdtCha} onChange={handleInputChange} required
+          />
+          {errors.sdtCha && <div className="invalid-feedback">{errors.sdtCha}</div>}
+
+          <label htmlFor="sdtMe">Số Điện Thoại Mẹ</label>
+          <input
+            id="sdtMe" name="sdtMe" className={`form-control ${errors.sdtMe ? 'is-invalid' : ''}`}
+            type="text" value={sdtMe} onChange={handleInputChange} required
+          />
+          {errors.sdtMe && <div className="invalid-feedback">{errors.sdtMe}</div>}
 
           <label>Giới Tính</label>
           <div className="radio-group">

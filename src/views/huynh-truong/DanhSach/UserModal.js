@@ -5,25 +5,27 @@ import {
   CCol, CFormSelect,
 } from '@coreui/react'
 import './UserModal.css';
-import env from '../../../env'
 import Swal from 'sweetalert2';
-import axios from 'axios';
 import apiClient from '../../../apiClient';
 
-function UserModal({ show, handleClose, user, handleRoleChange }) {
+function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [initialImageUrl, setInitialImageUrl] = useState('');
-  const [rolesWithDoanId, setRolesWithDoanId] = useState([]);
-  const [rolesWithoutDoanId, setRolesWithoutDoanId] = useState([]);
+  const [role1List, setRole1List] = useState([]);
+  const [role2List, setRole2List] = useState([]);
   const [bacHocList, setBacHocList] = useState([]);
+  const [capList, setCapList] = useState([]);
+  const [traiHuanLuyenList, setTraiHuanLuyenList] = useState([]);
   const [formData, setFormData] = useState({
     ...user,
-    gender: user.gender ? 'Male' : 'Female',
-    role1: user.role1 || '',
-    role2: user.role2 || '',
-    bacHoc: user.bacHoc || '',
+    latestTraiHuanLuyenId: user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].traiHuanLuyenId,
+    latestBacHocId: user.lichSuHocs.slice(-1)[0].bacHocId,
+    latestCapId: user.lichSuCapDTOS.slice(-1)[0].capId,
+    latestNgayKetThucTraiHuanLuyen: user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc,
+    latestNgayKetThucBacHoc: user.lichSuHocs.slice(-1)[0].ngayKetThuc,
+    latestNgayKetThucCap: user.lichSuCapDTOS.slice(-1)[0].ngayKetThuc,
+
   });
 
   useEffect(() => {
@@ -32,11 +34,11 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
         // Fetch roles as before
         const response = await apiClient.get(`/api/roles?isHuynhTruong=true`);
         const fetchedRoles = response.data.data;
-        const rolesWithDoanId = fetchedRoles.filter((role) => role.doanId !== null);
-        const rolesWithoutDoanId = fetchedRoles.filter((role) => role.doanId === null);
+        const role1List = fetchedRoles.filter((role) => role.doanId !== null);
+        const role2List = fetchedRoles.filter((role) => role.doanId === null);
 
-        setRolesWithDoanId(rolesWithDoanId);
-        setRolesWithoutDoanId(rolesWithoutDoanId);
+        setRole1List(role1List);
+        setRole2List(role2List);
       } catch (error) {
         console.error('Error fetching roles:', error);
       }
@@ -51,23 +53,33 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
       }
     };
 
+    const fetchCap = async () => {
+      try {
+        const response = await apiClient.get(`/api/cap`);
+        setCapList(response.data.data);
+      } catch (error) {
+        console.error('Error fetching Bac Hoc:', error);
+      }
+    };
+
+    const fetchTraiHuanLuyen = async () => {
+      try {
+        const response = await apiClient.get(`/api/trai-huan-luyen`);
+        setTraiHuanLuyenList(response.data.data);
+      } catch (error) {
+        console.error('Error fetching Bac Hoc:', error);
+      }
+    };
+
+    console.log(formData);
+
+
     fetchRoles();
     fetchBacHoc();
+    fetchCap();
+    fetchTraiHuanLuyen();
   }, []);
 
-
-
-  useEffect(() => {
-    setFormData({
-      ...user,
-      gender: user.gender ? 'Male' : 'Female',
-      role1: user.idrole1 || '',
-      role2: user.idrole2 || '',
-      bacHoc: user.bacHoc ? user.bacHoc.bacHocId : '',
-    }
-    );
-
-  }, [user]);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -103,42 +115,64 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
   const handleGenderChange = (value) => {
     setFormData({
       ...formData,
-      gender: value ? "Male" : "Female",
+      gioiTinh: value === 'Male' ? true : false,
     });
   };
 
   const handleSave = async () => {
-    // console.log('Saving user:', formData);
+    console.log('Saving user:', formData);
+    return;
 
     try {
       // Chuẩn bị dữ liệu cần gửi
       const updateData = {
-        userId: formData.id,
-        userIdUx: formData.idUX,
-        hoTen: formData.name,
-        ngaySinh: formData.birthDate,
-        sdt: formData.phone,
+        userId: formData.userId,
+        userIdUx: formData.userIdUx,
+        hoTen: formData.hoTen,
+        ngaySinh: formData.ngaySinh,
+        sdt: formData.sdt,
         email: formData.email,
-        phapDanh: formData.phapdanh,
-        gioiTinh: formData.gender === "Male",
-        createdDate: user.createdDate, // Giữ nguyên ngày tạo
+        phapDanh: formData.phapDanh,
+        gioiTinh: formData.gioiTinh,
+        createdDate: formData.createdDate, // Giữ nguyên ngày tạo
         updatedDate: new Date().toISOString().split('T')[0], // Lấy ngày hiện tại
-        diaChi: formData.address,
-        sdtGd: formData.phone || "", // Thêm sdtGd nếu cần
-        avatar: selectedFile ? selectedFile.name : user.avatar, // Lấy tên file ảnh
+        diaChi: formData.diaChi, // Thêm sdtGd nếu cần
+        avatar: selectedFile ? selectedFile.name : formData.avatar, // Lấy tên file ảnh
         isHuynhTruong: formData.isHuynhTruong,
         isActive: formData.isActive,
-        roleId1: formData.role1 ? { roleId: formData.role1 } : null,
+        roleId1: formData.role1 ? {
+          roleId: formData.role1,
+          userId: formData.userId,
+        } : null,
         roleId2: formData.role2 ? { roleId: formData.role2 } : null,
         lichSuHocs: [
+          ...formData.lichSuHocs,
           {
             bacHocId: formData.bacHoc,
-            userId: formData.id,
+            userId: formData.userId,
+            ngayKetThuc: formData.ngayKetThucBacHoc,
           },
         ],
-        traiHuanLuyenId: formData.traiHuanLuyenId,
+        lichSuCapDTOS: [
+          ...formData.lichSuCapDTOS,
+          {
+            capId: formData.cap,
+            userId: formData.userId,
+            ngayKetThuc: formData.ngayKetThucCap,
+          },
+        ],
+        lichSuTraiHuanLuyenDTOS: [
+          ...formData.lichSuTraiHuanLuyenDTOS,
+          {
+            traiHuanLuyenId: formData.traiHuanLuyen,
+            userId: formData.userId,
+            ngayKetThuc: formData.ngayKetThucTraiHuanLuyen,
+          },
+        ],
         hoTenCha: formData.hoTenCha,
         hoTenMe: formData.hoTenMe,
+        sdtCha: formData.sdtCha,
+        sdtMe: formData.sdtMe,
         nhiemKyDoans: formData.nhiemKyDoans,
         doanSinhDetails: formData.doanSinhDetails,
       };
@@ -153,7 +187,10 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
           title: 'Thành công!',
           text: 'Cập nhật thông tin người dùng thành công!',
           icon: 'success',
+          timer: 2000,
+          timerProgressBar: true,
         });
+        handleChangeHuynhTruong();
         handleClose(); // Đóng modal sau khi lưu thành công
       } else {
         console.error('Failed to update user');
@@ -172,7 +209,7 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
       <Modal.Body>
         <div className="avatar-container">
           <img width={100}
-            src={selectedFile ? URL.createObjectURL(selectedFile) : initialImageUrl}
+            src={selectedFile ? URL.createObjectURL(selectedFile) : (formData.avatar || '')}
             alt="Avatar"
             className="bachoc-avatar"
           />
@@ -182,28 +219,28 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
         </div>
 
         <div className="form-group">
-          <label htmlFor="name">Họ Và Tên</label>
+          <label htmlFor="hoTen">Họ Và Tên</label>
           <div className="input-group">
             <input
-              id="name" name="name" className="form-control" type="text"
-              value={formData.name} onChange={handleInputChange}
+              id="hoTen" name="hoTen" className="form-control" type="text"
+              value={formData.hoTen || ''} onChange={handleInputChange}
               readOnly={!isEditing} disabled={!isEditing} />
-            <span className="input-group-text" id="basic-addon2">{user.idUX}</span>
+            <span className="input-group-text" id="basic-addon2">{formData.userIdUx || ''}</span>
           </div>
 
-          <label htmlFor="role">Chức Vụ</label>
+          <label htmlFor="roleId1">Chức Vụ</label>
           <CContainer className="px-1">
             <CRow>
               <CCol>
                 <CFormSelect
-                  name="role1"
+                  name="roleId1"
                   aria-label="Chức Vụ 1"
-                  value={formData.role1}
+                  value={formData.roleId1 ? formData.roleId1.roleId : ""}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                 >
                   <option value="">Chọn chức vụ 1</option>
-                  {rolesWithDoanId.map((role) => (
+                  {role1List.map((role) => (
                     <option key={role.roleId} value={role.roleId}>
                       {role.roleName}
                     </option>
@@ -212,14 +249,14 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
               </CCol>
               <CCol>
                 <CFormSelect
-                  name="role2"
+                  name="roleId2"
                   aria-label="Chức Vụ 2"
-                  value={formData.role2}
+                  value={formData.roleId2 ? formData.roleId2.roleId : ""}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                 >
                   <option value="">Chọn chức vụ 2</option>
-                  {rolesWithoutDoanId.map((role) => (
+                  {role2List.map((role) => (
                     <option key={role.roleId} value={role.roleId}>
                       {role.roleName}
                     </option>
@@ -229,18 +266,16 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
             </CRow>
           </CContainer>
 
-
-
-          <label htmlFor="phapdanh">Pháp Danh</label>
-          <input name="phapdanh" className="form-control" type="text"
-            value={formData.phapdanh} onChange={handleInputChange}
+          <label htmlFor="phapDanh">Pháp Danh</label>
+          <input name="phapDanh" className="form-control" type="text"
+            value={formData.phapDanh || ''} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing} />
 
 
-          <label htmlFor="bacHoc">Bậc Học</label>
+          <label htmlFor="latestBacHocId">Bậc Học</label>
           <CFormSelect
-            name="bacHoc"
-            value={formData.bacHoc}
+            name="latestBacHocId"
+            value={formData.latestBacHocId}
             onChange={handleInputChange}
             disabled={!isEditing}
           >
@@ -252,47 +287,95 @@ function UserModal({ show, handleClose, user, handleRoleChange }) {
             ))}
           </CFormSelect>
 
-          <label htmlFor="email">Email</label>
-          <input name="email" className="form-control" type="email"
-            value={formData.email} onChange={handleInputChange}
+          <label htmlFor="latestNgayKetThucBacHoc">Ngày Kết Thúc Bậc Học</label>
+          <input name="latestNgayKetThucBacHoc" className="form-control" type="date"
+            value={formData.latestNgayKetThucBacHoc} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing} />
 
-          <label htmlFor="registered">Ngày Sinh</label>
-          <input name="registered" className="form-control" type="date"
-            value={formData.birthDate} onChange={handleInputChange}
+          <label htmlFor="latestCapId">Cấp</label>
+          <CFormSelect
+            name="latestCapId"
+            value={formData.latestCapId}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          >
+            <option value="">Chọn cấp</option>
+            {capList.map((cap) => (
+              <option key={cap.capId} value={cap.capId}>
+                {cap.capName}
+              </option>
+            ))}
+          </CFormSelect>
+
+          <label htmlFor="latestNgayKetThucCap">Ngày Kết Thúc Cấp</label>
+          <input name="latestNgayKetThucCap" className="form-control" type="date"
+            value={formData.latestNgayKetThucCap} onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing} />
+
+          <label htmlFor="latestTraiHuanLuyenId">Trại Huấn Luyện</label>
+          <CFormSelect
+            name="latestTraiHuanLuyenId"
+            value={formData.latestTraiHuanLuyenId}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+          >
+            <option value="">Chọn trại huấn luyện</option>
+            {traiHuanLuyenList.map((trai) => (
+              <option key={trai.traiHuanLuyenId} value={trai.traiHuanLuyenId}>
+                {trai.tenTraiHuanLuyen}
+              </option>
+            ))}
+          </CFormSelect>
+
+          <label htmlFor="latestNgayKetThucTraiHuanLuyen">Ngày Kết Thúc Trại Huấn Luyện</label>
+          <input name="latestNgayKetThucTraiHuanLuyen" className="form-control" type="date"
+            value={formData.latestNgayKetThucTraiHuanLuyen} onChange={handleInputChange}
+            readOnly={!isEditing} disabled={!isEditing} />
+
+          <label htmlFor="ngaySinh">Ngày Sinh</label>
+          <input name="ngaySinh" className="form-control" type="date"
+            value={formData.ngaySinh} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing} />
 
 
-          <label htmlFor="registered">Ngày Gia Nhập</label>
-          <input name="registered" className="form-control" type="date"
-            value={formData.registered} onChange={handleInputChange}
+          <label htmlFor="createdDate">Ngày Gia Nhập</label>
+          <input name="createdDate" className="form-control" type="date"
+            value={formData.createdDate} onChange={handleInputChange}
             readOnly={!isEditing} disabled={!isEditing} />
 
-          <label htmlFor="phone">Số Điện Thoại</label>
-          <input name="phone" className="form-control" type="text" value={formData.phone}
+          <label htmlFor="sdt">Số Điện Thoại</label>
+          <input name="sdt" className="form-control" type="text" value={formData.sdt}
+            onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
+
+          <label htmlFor="sdtCha">Số Điện Thoại Cha</label>
+          <input name="sdtCha" className="form-control" type="text" value={formData.sdtCha || ""}
+            onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
+
+          <label htmlFor="sdtMe">Số Điện Thoại Mẹ</label>
+          <input name="sdtMe" className="form-control" type="text" value={formData.sdtMe || ""}
             onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
           <label>Giới Tính</label>
           <div className="radio-group">
             <label className="radio-inline">
-              <input type="radio" name="gender" value="Male"
-                checked={formData.gender === "Male"}
+              <input type="radio" name="gioiTinh" value='Male'
+                checked={formData.gioiTinh}
                 onChange={() => handleGenderChange(true)}
                 disabled={!isEditing} />
               Nam
             </label>
             <label className="radio-inline">
-              <input type="radio" name="gender" value="Female"
-                checked={formData.gender === "Female"}
+              <input type="radio" name="gioiTinh" value='Female'
+                checked={!formData.gioiTinh}
                 onChange={() => handleGenderChange(false)}
                 disabled={!isEditing} />
               Nữ
             </label>
           </div>
 
-          <label htmlFor="address">Địa Chỉ</label>
-          <textarea name="address" className="form-control" id="exampleFormControlTextarea1" rows="3"
-            value={formData.address} onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}
+          <label htmlFor="diaChi">Địa Chỉ</label>
+          <textarea name="diaChi" className="form-control" id="exampleFormControlTextarea1" rows="3"
+            value={formData.diaChi} onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing}
           ></textarea>
         </div>
       </Modal.Body>
