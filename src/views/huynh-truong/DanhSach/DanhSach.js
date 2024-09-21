@@ -23,101 +23,98 @@ import '../../doan-sinh/DoanSinhCss/DanhSach.css'
 import apiClient from '../../../apiClient';
 import Swal from 'sweetalert2';
 import AddHuynhTruongModal from './AddHuynhTruongModal';
-import { right } from '@popperjs/core';
 
 
-const getBadgeClass = (status) => {
-  switch (status) {
-    case 'Active':
-      return 'custom-badge-success';
-    case 'Inactive':
-      return 'custom-badge-danger';
-  }
-}
 
-const handleGenderChange = (newGender) => {
-  setUser(prevUser => ({
-    ...prevUser,
-    gender: newGender
-  }));
-};
 
-const DSHuynhTruong= () => {
+
+
+const DSHuynhTruong = () => {
   const [searchName, setSearchName] = useState('')
-  const [searchRegistered, setSearchRegistered] = useState('')
-  const [searchRole1, setSearchRole1] = useState('')
-  const [searchStatus, setSearchStatus] = useState('')
   const [usersData, setUsersData] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => setShowAddModal(false);
   const [filename, setFilename] = useState('DanhSachHuynhTruong.xlsx');
-  const [searchRole2, setSearchRole2] = useState('')
+
   useEffect(() => {
-    const layDuLieu = async () => {
-      try {
-        let isHuynhTruong = true;
-        const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
-
-        // console.log(response.data.data);
-
-        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
-          const latestBacHoc = item.lichSuHocs ? item.lichSuHocs[0] : null;
-          const bacHocId = latestBacHoc ? latestBacHoc.bacHocId : null;
-          const tenBacHoc = latestBacHoc ? latestBacHoc.tenBacHoc : '';
-
-          return {
-            id: item.userId,
-            idUX: item.userIdUx,
-            name: item.hoTen,
-            birthDate: item.ngaySinh,
-            phone: item.sdt,
-            email: item.email,
-            phapdanh: item.phapDanh,
-            gender: item.gioiTinh,
-            registered: item.createdDate,
-            isHuynhTruong: item.isHuynhTruong,
-            updatedDate: item.updatedDate,
-            address: item.diaChi,
-            sdtGd: item.sdtGd,
-            avatar: item.avatar,
-            isActive: item.isActive,
-            role1: item?.roleId1?.roleName,
-            role2: item?.roleId2?.roleName,
-            idrole1: item?.roleId1?.roleId,
-            idrole2: item?.roleId2?.roleId,
-            status: item.isActive ? 'Active' : 'Inactive',
-            admissionDate: item.ngayGiaNhapDoan,
-            group: item.doan ? item.doan.tenDoan : 'N/A',
-            bacHoc: bacHocId ? { bacHocId, tenBacHoc } : null,
-            traiHuanLuyenId: item.traiHuanLuyenId,
-            hoTenCha: item.hoTenCha,
-            hoTenMe: item.hoTenMe,
-            nhiemKyDoans: item.nhiemKyDoans,
-            doanSinhDetails: item.doanSinhDetails,
-          };
-        }));
-        setUsersData(fetchedData);
-        // console.log(fetchedData)
-      } catch (error) {
-
-        console.error('Lỗi khi gọi API:', error);
-      }
-    };
     layDuLieu();
   }, []);
 
-  const handleAddHuynhTruong = (newHuynhTruong) => {
-    setUsersData((prevData) => [...prevData, newHuynhTruong]);
+  const layDuLieu = async () => {
+    try {
+      let isHuynhTruong = true;
+      const response = await apiClient.get(`/api/users/get-list-huynh-truong/${isHuynhTruong}`);
+
+      // console.log(response.data.data);
+
+      const fetchedData = await Promise.all(response.data.data.map(async (item) => {
+        return {
+          userId: item.userId,
+          userIdUx: item.userIdUx,
+          hoTen: item.hoTen,
+          ngaySinh: item.ngaySinh,
+          sdt: item.sdt,
+          email: item.email,
+          phapDanh: item.phapDanh,
+          gioiTinh: item.gioiTinh,
+          createdDate: item.createdDate,
+          isHuynhTruong: item.isHuynhTruong,
+          updatedDate: item.updatedDate,
+          diaChi: item.diaChi,
+          avatar: item.avatar,
+          isActive: item.isActive,
+          roleId1: item.roleId1,
+          roleId2: item.roleId2,
+          accountDTO: item.accountDTO,
+          nhiemKyDoans: item.nhiemKyDoans,
+          doanSinhDetails: item.doanSinhDetails,
+          lichSuHocs: item.lichSuHocs,
+          lichSuCapDTOS: item.lichSuCapDTOS,
+          lichSuTraiHuanLuyenDTOS: item.lichSuTraiHuanLuyenDTOS,
+          hoTenCha: item.hoTenCha,
+          hoTenMe: item.hoTenMe,
+          hoTenNguoiTruyenGioi: item.hoTenNguoiTruyenGioi,
+          ngayQuyY: item.ngayQuyY,
+          sdtCha: item.sdtCha,
+          sdtMe: item.sdtMe,
+          ngayPhatNguyen: item.ngayPhatNguyen,
+        };
+      }));
+      setUsersData(fetchedData);
+      console.log(fetchedData);
+
+
+    } catch (error) {
+
+      console.error('Lỗi khi gọi API:', error);
+    }
   };
 
+  const handleAddHuynhTruong = () => {
+    layDuLieu();
+  };
+
+  const handleChangeHuynhTruong = () => {
+    layDuLieu();
+  };
+
+  const getBadgeClass = (status) => {
+    switch (status) {
+      case true:
+        return 'custom-badge-success';
+      case false:
+        return 'custom-badge-danger';
+    }
+  }
+
   const handleToggleStatus = async (user) => {
-    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+    // const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
 
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${newStatus === 'Active' ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      text: `Bạn có muốn ${user.isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -126,15 +123,20 @@ const DSHuynhTruong= () => {
       cancelButtonText: 'Hủy'
     });
 
+    if (user.isActive) {
+      var newIsActive = false;
+    } else {
+      var newIsActive = true;
+    }
+
     if (result.isConfirmed) {
       try {
-        let activeUser = newStatus === 'Active' ? true : false;
-        await apiClient.put(`/api/users/active-user/${user.id}/${activeUser}`, null);
+        await apiClient.put(`/api/users/active-user/${user.userId}/${newIsActive}`, null);
 
         // Cập nhật trạng thái người dùng trong dữ liệu local state
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.id === user.id ? { ...u, status: newStatus } : u
+            u.userId === user.userId ? { ...u, isActive: newIsActive } : u
           )
         );
 
@@ -157,19 +159,10 @@ const DSHuynhTruong= () => {
     }
   };
 
-
-  const formatDateToDDMMYYYY = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
   const filteredData = usersData.filter((user) => {
     return (
-      (searchName === '' || user.name.toLowerCase().includes(searchName.toLowerCase())) 
- 
+      (searchName === '' || user.hoTen.toLowerCase().includes(searchName.toLowerCase()))
+
     );
   });
 
@@ -206,22 +199,22 @@ const DSHuynhTruong= () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         params: {
-          filename: filename, 
+          filename: filename,
         },
         responseType: 'arraybuffer',
       });
-  
+
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-  
+
       // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
       a.href = url;
       a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
       document.body.appendChild(a); // Thêm liên kết vào body
-  
-      
+
+
       Swal.fire({
         icon: 'success',
         title: 'File đã sẵn sàng để tải xuống!',
@@ -277,12 +270,12 @@ const DSHuynhTruong= () => {
       <CTableDataCell>
         <CAvatar src={user.avatar} />
       </CTableDataCell>
-      <CTableDataCell>{user.phapdanh} || {user.name}</CTableDataCell>
-      <CTableDataCell>{user.role1}</CTableDataCell>
-      <CTableDataCell>{user.role2}</CTableDataCell>
+      <CTableDataCell>{user.phapDanh} || {user.hoTen}</CTableDataCell>
+      <CTableDataCell>{user.roleId1 ? user.roleId1.roleName : 'Chưa có vai trò'}</CTableDataCell>
+      <CTableDataCell>{user.roleId2 ? user.roleId2.roleName : 'Chưa có vai trò'}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
-          {user.status}
+        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
+          {user.isActive ? 'Active' : 'Inactive'}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -295,7 +288,7 @@ const DSHuynhTruong= () => {
             </CDropdownItem>
             <CDropdownItem className="custom-dropdown-item"
               onClick={() => handleToggleStatus(user)}>
-              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              {user.isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -314,7 +307,7 @@ const DSHuynhTruong= () => {
           <h3>Danh sách Huynh Trưởng</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{ marginRight: "5px" }}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
 
 
@@ -327,7 +320,7 @@ const DSHuynhTruong= () => {
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchRole1, searchRole2, searchStatus }}
+        searchCriteria={{ searchName }}
       />
 
 
@@ -336,7 +329,7 @@ const DSHuynhTruong= () => {
           show={showModal}
           handleClose={handleCloseModal}
           user={selectedUser}
-          handleGenderChange={handleGenderChange}
+          handleChangeHuynhTruong={handleChangeHuynhTruong}
         />
       )}
 
