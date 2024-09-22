@@ -24,14 +24,14 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
     ...user,
     latestRoleId1: user.roleId1 ? user.roleId1.roleId : '',
     latestRoleId2: user.roleId2 ? user.roleId2.roleId : '',
-    latestTraiHuanLuyenId: user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].traiHuanLuyenId,
-    latestBacHocId: user.lichSuHocs.slice(-1)[0].bacHocId,
-    latestCapId: user.lichSuCapDTOS.slice(-1)[0].capId,
-    latestNgayKetThucTraiHuanLuyen: user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc,
-    latestNgayKetThucBacHoc: user.lichSuHocs.slice(-1)[0].ngayKetThuc,
-    latestNgayKetThucCap: user.lichSuCapDTOS.slice(-1)[0].ngayKetThuc,
+    latestTraiHuanLuyenId: user.lichSuTraiHuanLuyenDTOS && user.lichSuTraiHuanLuyenDTOS.length > 0 ? user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].traiHuanLuyenId : '',
+    latestBacHocId: user.lichSuHocs && user.lichSuHocs.length > 0 ? user.lichSuHocs.slice(-1)[0].bacHocId : '',
+    latestCapId: user.lichSuCapDTOS && user.lichSuCapDTOS.length > 0 ? user.lichSuCapDTOS.slice(-1)[0].capId : '',
+    latestNgayKetThucTraiHuanLuyen: user.lichSuTraiHuanLuyenDTOS && user.lichSuTraiHuanLuyenDTOS.length > 0 ? user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc : '',
+    latestNgayKetThucBacHoc: user.lichSuHocs && user.lichSuHocs.length > 0 ? user.lichSuHocs.slice(-1)[0].ngayKetThuc : '',
+    latestNgayKetThucCap: user.lichSuCapDTOS && user.lichSuCapDTOS.length > 0 ? user.lichSuCapDTOS.slice(-1)[0].ngayKetThuc : '',
+});
 
-  });
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -230,7 +230,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
         accountDTO: formData.accountDTO,
         nhiemKyDoans: formData.nhiemKyDoans,
         doanSinhDetails: formData.doanSinhDetails,
-        lichSuHocs: formData.latestBacHocId !== formData.lichSuHocs.slice(-1)[0].bacHocId && formData.latestBacHocId !== '' ? [
+        lichSuHocs: formData.latestBacHocId !== (formData.lichSuHocs && formData.lichSuHocs.length > 0 ? formData.lichSuHocs.slice(-1)[0].bacHocId : '') && formData.latestBacHocId !== '' ? [
           ...formData.lichSuHocs,
           {
             bacHocId: formData.latestBacHocId,
@@ -238,7 +238,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
             ngayKetThuc: formData.latestNgayKetThucBacHoc,
           },
         ] : null,
-        lichSuCapDTOS: formData.latestCapId !== formData.lichSuCapDTOS.slice(-1)[0].capId && formData.latestCapId !== '' ? [
+        lichSuCapDTOS: formData.latestCapId !== (formData.lichSuCapDTOS && formData.lichSuCapDTOS.length > 0 ? formData.lichSuCapDTOS.slice(-1)[0].capId : '') && formData.latestCapId !== '' ? [
           ...formData.lichSuCapDTOS,
           {
             capId: formData.latestCapId,
@@ -246,7 +246,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
             ngayKetThuc: formData.latestNgayKetThucCap,
           },
         ] : null,
-        lichSuTraiHuanLuyenDTOS: formData.latestTraiHuanLuyenId !== formData.lichSuTraiHuanLuyenDTOS.slice(-1)[0].traiHuanLuyenId && formData.latestTraiHuanLuyenId ? [
+        lichSuTraiHuanLuyenDTOS: formData.latestTraiHuanLuyenId !== (formData.lichSuTraiHuanLuyenDTOS && formData.lichSuTraiHuanLuyenDTOS.length > 0 ? formData.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc : '') && formData.latestTraiHuanLuyenId !== '' ? [
           ...formData.lichSuTraiHuanLuyenDTOS,
           {
             traiHuanLuyenId: formData.latestTraiHuanLuyenId,
