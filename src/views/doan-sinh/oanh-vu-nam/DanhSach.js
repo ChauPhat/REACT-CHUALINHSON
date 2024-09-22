@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
   CBadge,
+  CImage,
   CTableDataCell,
   CRow,
   CFormInput,
   CButton,
   CCol,
-  CImage,
-  CDropdown,
   CDropdownItem,
-  CDropdownMenu,
+  CDropdown,
   CDropdownToggle,
-} from '@coreui/react';
-import axios from 'axios';
+  CDropdownMenu,
+} from '@coreui/react'
+
 import '../DoanSinhCss/DanhSach.css';
 import Table from '../../table/Table';
 import InsertModal from './modalDoanSinh/InsertModal'
 import UserModal from './modalDoanSinh/UserModal';
 import ChuyenDoanModal from './modalDoanSinh/ChuyenDoanModal'
-import env from '../../../env';
 import Swal from 'sweetalert2';
 import CategoryCarousel from "./modalDoanSinh/CategoryCarousel";
 import "slick-carousel/slick/slick.css";
@@ -26,90 +25,157 @@ import "slick-carousel/slick/slick-theme.css";
 import apiClient from '../../../apiClient';
 
 const DSOanhNam = () => {
-  const [searchName, setSearchName] = useState('');
-  const [searchChucVuMatch, setSearchChucVuMatch] = useState('');
-  const [searchRole, setSearchRole] = useState('');
-  const [searchStatus, setSearchStatus] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [showChuyenDoan, setChuyenDoanModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedPUser, setSelectedPUser] = useState(null);
-  const [pUsers, setPUsers] = useState([]);
+  const [searchName, setSearchName] = useState('')
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
-  const [filename, setFilename] = useState('DanhSachOanhNam.xlsx');
+  const handleShowAddModal = () => setShowInsertModal(true);
+  const handleCloseAddModal = () => setShowInsertModal(false);
+  const [filename, setFilename] = useState('DanhSachNganhThanh.xlsx');
 
   useEffect(() => {
-    const layDuLieu = async () => {
-      try {
-        const response = await apiClient.get('/api/users/get-list-user-with-id-doan/1',);
-        setPUsers(response.data.data);
-        let imageUrl;
-        const fetchedData = await Promise.all(response.data.data.map(async (item) => {
-          try {
-            const imageResponse = await apiClient.get(`/api/files/images/${item.userId}`, {
-            });
-            imageUrl = (imageResponse.data.data)
-          } catch (error) {
-            console.error('Lỗi khi tải ảnh:', error);
-          }
-
-          const doanSinhDetails = item.doanSinhDetails || [];
-          const lichSuHocs = item.lichSuHocs || [];
-          const roleId1 = item.roleId1 || {};
-
-
-          return {
-            id: item.userId,
-            idUX: item.userIdUx,
-            name: item.hoTen,
-            avatar: imageUrl,
-            registered: item.createdDate,
-            phapDanh: item.phapDanh,
-            ngaysinh: item.ngaySinh,
-            phone: item.sdt,
-            hoTenCha: item.hoTenCha,
-            hoTenMe: item.hoTenMe,
-            idchucvu1: roleId1.roleId,
-            isHuynhTruong: item.isHuynhTruong,
-            tenchucvu1: roleId1.roleName,
-            status: item.isActive ? 'Active' : 'Inactive',
-            email: item.email,
-            gender: item.gioiTinh,
-            address: item.diaChi,
-            vaitro: doanSinhDetails[0]?.role,
-            sdtgd: item.sdtGd,
-            // isActive: doanSinhDetails[0]?.isActive ? 'Active' : 'Inactive',
-            doanSinhDetailId: doanSinhDetails[0]?.doanSinhDetailId,
-            ngayGiaNhapDoan: doanSinhDetails[0]?.joinDate,
-            ngayRoiDoan: doanSinhDetails[0]?.leftDate,
-            mota: doanSinhDetails[0]?.moTa,
-            tendoan: doanSinhDetails[0]?.tenDoan,
-            tenBacHoc: lichSuHocs[0]?.tenBacHoc,
-            bacHocId: lichSuHocs[0]?.bacHocId,
-            traiHuanLuyenId: item.traiHuanLuyenId,
-            tenTraiHuanLuyen: item.tenTraiHuanLuyen,
-            nhiemKyDoans: item.nhiemKyDoans,
-            doanSinhDetails: item.doanSinhDetails,
-          };
-        }));
-        setUsersData(fetchedData);
-
-        
-      } catch (error) {
-        console.error('Lỗi khi gọi API:', error);
-      }
-    };
     layDuLieu();
   }, []);
 
-  const formatDateToDDMMYYYY = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+  const layDuLieu = async () => {
+    try {
+      const response = await apiClient.get(`/api/doan-sinh-details?doanId=1`);
+      // console.log(response.data.data.doanSinhDetails.slice(-1)[0]);
+    
+      const fetchedData = await Promise.all(response.data.data.map(async (item) => {
+        return {
+          userId: item.userId,
+          userIdUx: item.userIdUx,
+          hoTen: item.hoTen,
+          ngaySinh: item.ngaySinh,
+          sdt: item.sdt,
+          email: item.email,
+          phapDanh: item.phapDanh,
+          gioiTinh: item.gioiTinh,
+          createdDate: item.createdDate,
+          isHuynhTruong: item.isHuynhTruong,
+          updatedDate: item.updatedDate,
+          diaChi: item.diaChi,
+          avatar: item.avatar,
+          isActive: item.isActive,
+          roleId1: item.roleId1,
+          roleId2: item.roleId2,
+          accountDTO: item.accountDTO,
+          nhiemKyDoans: item.nhiemKyDoans,
+          doanSinhDetails: item.doanSinhDetails,
+          lichSuHocs: item.lichSuHocs,
+          lichSuCapDTOS: item.lichSuCapDTOS,
+          lichSuTraiHuanLuyenDTOS: item.lichSuTraiHuanLuyenDTOS,
+          hoTenCha: item.hoTenCha,
+          hoTenMe: item.hoTenMe,
+          hoTenNguoiTruyenGioi: item.hoTenNguoiTruyenGioi,
+          ngayQuyY: item.ngayQuyY,
+          sdtCha: item.sdtCha,
+          sdtMe: item.sdtMe,
+          ngayPhatNguyen: item.ngayPhatNguyen,
+        };
+      }));
+      setUsersData(fetchedData);
+      // console.log(fetchedData);
+
+
+    } catch (error) {
+
+      console.error('Lỗi khi gọi API:', error);
+    }
   };
+
+  const handleAddDoanSinh = () => {
+    layDuLieu();
+  };
+
+  const handleChangeDoanSinh = () => {
+    layDuLieu();
+  };
+
+  const getBadgeClass = (status) => {
+    switch (status) {
+      case true:
+        return 'custom-badge-success';
+      case false:
+        return 'custom-badge-danger';
+    }
+  }
+
+  const handleToggleStatus = async (user) => {
+    // const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+
+    // Hiển thị hộp thoại xác nhận
+    const result = await Swal.fire({
+      title: 'Bạn có chắc chắn?',
+      text: `Bạn có muốn ${user.doanSinhDetails.slice(-1)[0].isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Có, thay đổi nó!',
+      cancelButtonText: 'Hủy'
+    });
+
+    if (user.doanSinhDetails.slice(-1)[0].isActive) {
+      var newIsActive = false;
+    } else {
+      var newIsActive = true;
+    }
+
+    if (result.isConfirmed) {
+      try {
+        await apiClient.patch(`/api/doan-sinh-details/activate?doanSinhDetailId=${user.doanSinhDetails.slice(-1)[0].doanSinhDetailId}&isActive=${newIsActive}`, null);
+
+        // Cập nhật trạng thái người dùng trong dữ liệu local state
+
+
+        setUsersData(prevUsersData =>
+          prevUsersData.map(u => {
+            if (u.userId === user.userId) {
+              // Tạo bản sao của doanSinhDetails với phần tử cuối được cập nhật
+              const updatedDoanSinhDetails = [...u.doanSinhDetails];
+              updatedDoanSinhDetails[updatedDoanSinhDetails.length - 1].isActive = newIsActive;
+              
+              return { 
+                ...u, 
+                doanSinhDetails: updatedDoanSinhDetails
+              };
+            }
+            return u;
+          })
+        );
+        
+        
+
+        // Hiển thị thông báo thành công
+        Swal.fire(
+          'Thành công!',
+          `Trạng thái người dùng đã được cập nhật.`,
+          'success'
+        );
+
+      } catch (error) {
+        console.error('Lỗi khi cập nhật trạng thái:', error);
+        // Hiển thị thông báo lỗi
+        Swal.fire(
+          'Thất bại!',
+          'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
+          'error'
+        );
+      }
+    }
+  };
+
+  const filteredData = usersData.filter((user) => {
+    return (
+      (searchName === '' || user.hoTen.toLowerCase().includes(searchName.toLowerCase()))
+
+    );
+  });
+
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const handleShowModal = (user) => {
     setSelectedUser(user);
@@ -121,132 +187,6 @@ const DSOanhNam = () => {
     setSelectedUser(null);
   };
 
-  // Hàm để mở modal
-  const handleOpenInsertModal = () => {
-    setShowInsertModal(true);
-  };
-
-  // Hàm để đóng modal
-  const handleCloseInsertModal = () => {
-    setShowInsertModal(false);
-  };
-
-  // Hàm để mở modal
-  const handleOpenChuyenDoanModal = (user) => {
-    setSelectedUser(user);
-    setChuyenDoanModal(true);
-  };
-
-  // Hàm để đóng modal
-  const handleCloseChuyenDoanModal = () => {
-    setShowModal(false);
-    setChuyenDoanModal(null);
-  };
-
-  const getBadgeClass = (status) => {
-    switch (status) {
-      case 'Active':
-        return 'bg-success';
-      case 'Inactive':
-        return 'bg-danger';
-      default:
-        return 'bg-secondary';
-    }
-  };
-
-  const filteredData = usersData.filter((user) => {
-    const nameMatch = (user.name || '').toLowerCase().includes(searchName.toLowerCase());
-
-    // Thêm điều kiện lọc cho cả hai trường chức vụ
-    const chucVuMatch = (user.tenchucvu1 || '').toLowerCase().includes(searchChucVuMatch.toLowerCase());
-
-    const roleMatch = (user.vaitro || '').toLowerCase().includes(searchRole.toLowerCase());
-    const statusMatch = (user.status || '').toLowerCase().includes(searchStatus.toLowerCase());
-
-    return nameMatch && chucVuMatch && roleMatch && statusMatch;
-  });
-
-
-  const handleToggleStatus = async (user) => {
-    const newStatus = user.status !== 'Active';
-  
-    // Hiển thị hộp thoại xác nhận
-    const result = await Swal.fire({
-      title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${newStatus ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Có, thay đổi nó!',
-      cancelButtonText: 'Hủy'
-    });
-  
-    if (result.isConfirmed) {
-      try {
-        await apiClient.put(`/api/users/active-user/${user.id}/${newStatus}`);
-        setUsersData(prevUsersData =>
-          prevUsersData.map(u =>
-            u.id === user.id ? { ...u, status: u.status === 'Active' ? 'Inactive' : 'Active' } : u
-          )
-        );
-        Swal.fire(
-          'Thành công!',
-          `Trạng thái người dùng đã được cập nhật.`,
-          'success'
-        );
-  
-      } catch (error) {
-        console.error('Lỗi khi cập nhật trạng thái:', error);
-        Swal.fire(
-          'Thất bại!',
-          'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
-          'error'
-        );
-      }
-    }
-  };
-  
-
-  
-
-  const renderRow = (user) => (
-    <>
-      <CTableDataCell>
-        <CImage
-          src={user.avatar}
-          size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
-        />
-      </CTableDataCell>
-      <CTableDataCell>
-        <div>{user.name} || {user.phapDanh}</div>
-      </CTableDataCell>
-      <CTableDataCell>{user.tenchucvu1}</CTableDataCell>
-      <CTableDataCell>{user.vaitro}</CTableDataCell>
-      <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.status)}>
-          {user.status}
-        </CBadge>
-      </CTableDataCell>
-      <CTableDataCell>
-        <CDropdown variant="btn-group" direction="center">
-          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
-          <CDropdownMenu>
-            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleShowModal(user)}>
-              Thông tin
-            </CDropdownItem>
-            <CDropdownItem className='custom-dropdown-item'
-              onClick={() => handleToggleStatus(user)}>
-              {user.status === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
-            </CDropdownItem>
-            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(pUsers.find(u => u.userId === user.id))}>
-              Chuyển Đoàn
-            </CDropdownItem>
-          </CDropdownMenu>
-        </CDropdown>
-      </CTableDataCell>
-    </>
-  );
 
   const handleDownloadExtract = async () => {
     try {
@@ -261,28 +201,27 @@ const DSOanhNam = () => {
       });
 
       // Gọi API với các tham số
-      const response = await apiClient.get('api/export-excel/danh-sach-doan-sinh', {
+      const response = await apiClient.get('/api/export-excel/is-huynh-truong-is-active', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         params: {
-          filename: filename, 
-          idDoan:'1'
+          filename: filename,
         },
         responseType: 'arraybuffer',
       });
-  
+
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-  
+
       // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
       a.href = url;
       a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
       document.body.appendChild(a); // Thêm liên kết vào body
-  
-      
+
+
       Swal.fire({
         icon: 'success',
         title: 'File đã sẵn sàng để tải xuống!',
@@ -319,7 +258,6 @@ const DSOanhNam = () => {
     <label width={'15%'} className="fixed-width-column d-block w-100 m-0">Trạng thái</label>,
     <label width={'10%'} className="fixed-width-column d-block w-100 m-0">Thao tác</label>,
   ];
-
   const headerCells = [
     '',
     <CFormInput className='fixed-width-input'
@@ -328,37 +266,62 @@ const DSOanhNam = () => {
       value={searchName}
       onChange={(e) => setSearchName(e.target.value)}
     />,
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo chức vụ"
-      value={searchChucVuMatch}
-      onChange={(e) => setSearchChucVuMatch(e.target.value)}
-    />,
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo vai trò"
-      value={searchRole}
-      onChange={(e) => setSearchRole(e.target.value)}
-    />,
-    <CFormInput className='fixed-width-input'
-      type="search"
-      placeholder="Tìm theo trạng thái"
-      value={searchStatus}
-      onChange={(e) => setSearchStatus(e.target.value)}
-    />,
+    '',
+    '',
+    '',
     '',
   ];
 
+  const renderRow = (user) => (
+    <>
+      <CTableDataCell>
+        <CImage
+          src={user.avatar}
+          size="md" style={{ width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer' }}
+        />
+      </CTableDataCell>
+      <CTableDataCell>
+        <div>{user.hoTen} || {user.phapDanh}</div>
+      </CTableDataCell>
+      <CTableDataCell>{user.roleId1 ? user.roleId1.roleName : 'Chưa có vai trò'}</CTableDataCell>
+      <CTableDataCell>{user.doanSinhDetails ? user.doanSinhDetails.slice(-1)[0].role : 'Chưa có vai trò'}</CTableDataCell>
+      <CTableDataCell>
+        <CBadge id='custom-badge' className={user.doanSinhDetails.slice(-1)[0].isActive ? 'custom-badge-success' : 'custom-badge-danger'}>
+          {user.doanSinhDetails.slice(-1)[0].isActive ? 'Active' : 'Inactive'}
+        </CBadge>
+      </CTableDataCell>
+      <CTableDataCell>
+        <CDropdown variant="btn-group" direction="center">
+          <CDropdownToggle variant="outline" color="info">Xem</CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleShowModal(user)}>
+              Thông tin
+            </CDropdownItem>
+            <CDropdownItem className='custom-dropdown-item'
+              onClick={() => handleToggleStatus(user)}>
+              {user.doanSinhDetails.slice(-1)[0].isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+            </CDropdownItem>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)} disabled>
+              Chuyển Đoàn
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
+      </CTableDataCell>
+    </>
+  );
+
   return (
+
     <div className="container-fluid">
       <CategoryCarousel categories={usersData} />
+      <br />
       <CRow className="mb-3 d-flex">
         <CCol className="d-flex align-items-center flex-grow-1">
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
-          <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{ marginRight: "5px" }}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleShowAddModal} >Thêm</CButton>
         </CCol>
       </CRow>
 
@@ -367,32 +330,27 @@ const DSOanhNam = () => {
         headerCells={headerCells}
         items={filteredData}
         renderRow={renderRow}
-        searchCriteria={{ searchName, searchChucVuMatch, searchRole, searchStatus }}
+        searchCriteria={{ searchName }}
       />
+
 
       {selectedUser && (
         <UserModal
           show={showModal}
           handleClose={handleCloseModal}
           user={selectedUser}
+          handleChangeDoanSinh={handleChangeDoanSinh}
         />
       )}
 
       {showInsertModal && (
-        <InsertModal
-          show={showInsertModal}
-          handleClose={handleCloseInsertModal}
-      />
+        <InsertModal show={showInsertModal}
+          handleClose={handleCloseAddModal}
+          onAddDoanSinh={handleAddDoanSinh} />
       )}
-      {showChuyenDoan && (
-        <ChuyenDoanModal
-          show={showChuyenDoan}
-          handleClose={handleCloseChuyenDoanModal}
-          user={selectedUser}
-      />
-      )}
-    </div>
-  );
-};
 
-export default DSOanhNam;
+
+    </div>
+  )
+}
+export default DSOanhNam

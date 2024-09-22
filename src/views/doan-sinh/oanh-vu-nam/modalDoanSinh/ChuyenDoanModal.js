@@ -9,8 +9,8 @@ function ChuyenDoanModal({ show, handleClose, user }) {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({ ...user });
     const [roles, setRoles] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const fileInputRef = useRef(null);
+    // const [selectedFile, setSelectedFile] = useState(null);
+    // const fileInputRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -36,7 +36,7 @@ function ChuyenDoanModal({ show, handleClose, user }) {
     useEffect(() => {
         setFormData(prevFormData => ({
             ...prevFormData,
-            roleId1: roles.find(role => role.roleId === prevFormData.roleId1?.roleId) || null,
+            roleId1: formData.roleId1 || null,
         }));
     }, [roles]);
 
@@ -44,33 +44,14 @@ function ChuyenDoanModal({ show, handleClose, user }) {
         setIsEditing(prevState => !prevState);
     };
 
-    //   const handleInputChange = (e) => {
-    //     const { name, value } = e.target;
-
-    //     if (name === 'roleId1') {
-    //       const selectedRole = roles.find(role => role.roleId === parseInt(value));
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         roleId1: selectedRole ? selectedRole.roleId : '',
-    //         tenchucvu1: selectedRole ? selectedRole.roleName : '',
-    //       }));
-    //     } else {
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         [name]: value,
-    //       }));
-    //     }
-    //   };
-
-    const handleRoleChange = (e) => {
-        const selectedRoleId = e.target.value;
-        const selectedRole = roles.find((role) => role.roleId === parseInt(selectedRoleId));
-
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            roleId1: selectedRole || null
-        }));
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+          ...formData,
+          [name]: name === 'roleId1' ? parseInt(value) : value,
+        });
     };
+console.log(formData);
 
     const handleSave = async () => {
         try {
@@ -110,11 +91,12 @@ function ChuyenDoanModal({ show, handleClose, user }) {
                     <label>Chức Vụ</label>
                     <CFormSelect
                         name="roleId1"
-                        onChange={handleRoleChange}
-                        value={formData.roleId1?.roleId || ''}
-                        disabled={!isEditing}
+                        onChange={handleInputChange}
+                        readOnly={!isEditing} disabled={!isEditing}
                     >
-                        <option value="">{formData.tenchucvu1 || 'Chọn Chức Vụ'}</option>
+                        <option value={formData.roleId1} >
+                            {formData.roleName || 'Chọn Chức Vụ'}
+                        </option>
                         {roles.map((role) => (
                             <option key={role.roleId} value={role.roleId}>
                                 {role.roleName}
