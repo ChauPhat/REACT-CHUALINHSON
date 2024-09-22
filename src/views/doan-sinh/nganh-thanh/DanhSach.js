@@ -38,7 +38,9 @@ const DSNganhThanh = () => {
 
   const layDuLieu = async () => {
     try {
-      const response = await apiClient.get(`/api/doan-sinh-details?doanId=1`);
+      const response = await apiClient.get(`/api/doan-sinh-details?doanId=5`);
+      // console.log(response.data.data.doanSinhDetails.slice(-1)[0]);
+      
 
       const fetchedData = await Promise.all(response.data.data.map(async (item) => {
         return {
@@ -74,7 +76,7 @@ const DSNganhThanh = () => {
         };
       }));
       setUsersData(fetchedData);
-      console.log(fetchedData);
+      // console.log(fetchedData);
 
 
     } catch (error) {
@@ -106,7 +108,7 @@ const DSNganhThanh = () => {
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${user.isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      text: `Bạn có muốn ${user.doanSinhDetails.slice(-1)[0].isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -115,7 +117,7 @@ const DSNganhThanh = () => {
       cancelButtonText: 'Hủy'
     });
 
-    if (user.isActive) {
+    if (user.doanSinhDetails.slice(-1)[0].isActive) {
       var newIsActive = false;
     } else {
       var newIsActive = true;
@@ -123,14 +125,28 @@ const DSNganhThanh = () => {
 
     if (result.isConfirmed) {
       try {
-        await apiClient.put(`/api/users/active-user/${user.userId}/${newIsActive}`, null);
+        await apiClient.patch(`/api/doan-sinh-details/activate?doanSinhDetailId=${user.doanSinhDetails.slice(-1)[0].doanSinhDetailId}&isActive=${newIsActive}`, null);
 
         // Cập nhật trạng thái người dùng trong dữ liệu local state
+
+
         setUsersData(prevUsersData =>
-          prevUsersData.map(u =>
-            u.userId === user.userId ? { ...u, isActive: newIsActive } : u
-          )
+          prevUsersData.map(u => {
+            if (u.userId === user.userId) {
+              // Tạo bản sao của doanSinhDetails với phần tử cuối được cập nhật
+              const updatedDoanSinhDetails = [...u.doanSinhDetails];
+              updatedDoanSinhDetails[updatedDoanSinhDetails.length - 1].isActive = newIsActive;
+              
+              return { 
+                ...u, 
+                doanSinhDetails: updatedDoanSinhDetails
+              };
+            }
+            return u;
+          })
         );
+        
+        
 
         // Hiển thị thông báo thành công
         Swal.fire(
@@ -269,10 +285,10 @@ const DSNganhThanh = () => {
         <div>{user.hoTen} || {user.phapDanh}</div>
       </CTableDataCell>
       <CTableDataCell>{user.roleId1 ? user.roleId1.roleName : 'Chưa có vai trò'}</CTableDataCell>
-      <CTableDataCell>{user.doanSinhDetails ? user.doanSinhDetails.role : 'Chưa có vai trò'}</CTableDataCell>
+      <CTableDataCell>{user.doanSinhDetails ? user.doanSinhDetails.slice(-1)[0].role : 'Chưa có vai trò'}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={user.isActive ? 'custom-badge-success' : 'custom-badge-danger'}>
-          {user.isActive ? 'Active' : 'Inactive'}
+        <CBadge id='custom-badge' className={user.doanSinhDetails.slice(-1)[0].isActive ? 'custom-badge-success' : 'custom-badge-danger'}>
+          {user.doanSinhDetails.slice(-1)[0].isActive ? 'Active' : 'Inactive'}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -283,10 +299,10 @@ const DSNganhThanh = () => {
               Thông tin
             </CDropdownItem>
             <CDropdownItem className='custom-dropdown-item'
-              onClick={() => handleToggleisActive(user)}>
-              {user.isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              onClick={() => handleToggleStatus(user)}>
+              {user.doanSinhDetails.slice(-1)[0].isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
-            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)}>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)} disabled>
               Chuyển Đoàn
             </CDropdownItem>
           </CDropdownMenu>
