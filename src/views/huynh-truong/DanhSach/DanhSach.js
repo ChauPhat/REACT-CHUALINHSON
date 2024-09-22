@@ -82,7 +82,7 @@ const DSHuynhTruong = () => {
         };
       }));
       setUsersData(fetchedData);
-      console.log(fetchedData);
+      // console.log(fetchedData);
 
 
     } catch (error) {
