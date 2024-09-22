@@ -123,7 +123,7 @@ function InsertModal({ show, handleClose }) {
     if (!hoTen || !ngaySinh || !sdt || !email || !roleId1 || !hoTenCha || !hoTenMe) {
       Swal.fire({
         title: 'Lỗi!',
-        text: 'Các trường bắt buộc không được để trống!',
+        text: 'Hãy nhập tất cả các thông tin!',
         icon: 'warning',
         confirmButtonText: 'OK',
       });
@@ -161,7 +161,6 @@ function InsertModal({ show, handleClose }) {
     console.log(payload);
     try {
       const response = await apiClient.post(`/api/users/create-user`, payload);
-      console.log(response.data.data);
       if (selectedFile) {
         try {
           const fileFormData = new FormData();
@@ -226,7 +225,7 @@ function InsertModal({ show, handleClose }) {
       <Modal.Body>
         <div className="avatar-container text-center mb-3">
           <img
-            src={avatarPreview || formData.avatar}
+            src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
             alt="Avatar"
             onClick={handleAvatarClick}
             style={{ width: '100px', height: '100px', borderRadius: '50%', cursor: 'pointer' }}

@@ -44,22 +44,27 @@ const DSOanhNam = () => {
       try {
         const response = await apiClient.get(`/api/doan-sinh-details?doanId=1`);
         setUsersData(response.data.data);
-        
+
 
         const fetchedData = await Promise.all(response.data.data.map(async (item) => {
-          const doanSinhDetails = item.doanSinhDetails || [];
-          const lichSuHocs = item.lichSuHocs || [];
-          const lichSuTraiHuanLuyenDTOS = item.lichSuTraiHuanLuyenDTOS || [];
-          const roleId1 = item.roleId1 || {};
+//           let doanSinhDetail;
+//           try {
+//             const DoanSinhResponse = await apiClient.get(`/api/users/doan-sinh-detail?userId=${item.userId}`, {
+//             });
+//             doanSinhDetail = (DoanSinhResponse.data.data)
+// console.log(imageUrl);
 
-          // Lấy lịch sử học mới nhất
-          const latestLichSuHoc = lichSuHocs.sort((a, b) => b.lichSuHocId - a.lichSuHocId)[0];
+            const doanSinhDetails = item.doanSinhDetails || [];
+            const lichSuHocs = item.lichSuHocs || [];
+            const lichSuTraiHuanLuyenDTOS = item.lichSuTraiHuanLuyenDTOS || [];
+            const roleId1 = item.roleId1 || {};
 
-          const latestDoanSinhDetails = doanSinhDetails.sort((a, b) => b.doanSinhDetailId - a.doanSinhDetailId)[0];
+            const latestLichSuHoc = lichSuHocs.sort((a, b) => b.lichSuHocId - a.lichSuHocId)[0];
 
-          // Lấy trại huấn luyện mới nhất
-          const latestTraiHuanLuyen = lichSuTraiHuanLuyenDTOS.sort((a, b) => b.lichSuTraiHuanLuyenId - a.lichSuTraiHuanLuyenId)[0];
-  
+            const latestDoanSinhDetails = doanSinhDetails.sort((a, b) => b.doanSinhDetailId - a.doanSinhDetailId)[0];
+
+            const latestTraiHuanLuyen = lichSuTraiHuanLuyenDTOS.sort((a, b) => b.lichSuTraiHuanLuyenId - a.lichSuTraiHuanLuyenId)[0];
+
             return {
               userId: item.userId,
               userIdUx: item.userIdUx,
@@ -73,37 +78,46 @@ const DSOanhNam = () => {
               hoTenMe: item.hoTenMe,
               sdtCha: item.sdtCha,
               sdtMe: item.sdtMe,
-              roleId: roleId1.roleId,
+              roleId1: roleId1.roleId,
               isHuynhTruong: item.isHuynhTruong,
               roleName: roleId1.roleName,
               email: item.email,
-              gioiTinh: item.gioiTinh ,
+              gioiTinh: item.gioiTinh,
               diaChi: item.diaChi,
               role: latestDoanSinhDetails?.role,
-              isActive: latestDoanSinhDetails?.isActive ? 'Active' : 'Inactive',
+              isActive: latestDoanSinhDetails?.isActive,
               doanSinhDetailId: latestDoanSinhDetails?.doanSinhDetailId,
               joinDate: latestDoanSinhDetails?.joinDate,
               leftDate: latestDoanSinhDetails?.leftDate,
+              updatedDate: latestDoanSinhDetails?.updatedDate,
               moTa: latestDoanSinhDetails?.moTa,
               tenDoan: latestDoanSinhDetails?.tenDoan,
+              doanSinhDetails: item.doanSinhDetails,
+              lichSuHocs: item.lichSuHocs,
               tenBacHoc: latestLichSuHoc?.tenBacHoc,
               bacHocId: latestLichSuHoc?.bacHocId,
               ngayKetThucBacHoc: latestLichSuHoc?.ngayKetThuc,
+              lichSuTraiHuanLuyenDTOS: item.lichSuTraiHuanLuyenDTOS,
               tenTraiHuanLuyen: latestTraiHuanLuyen?.tenTraiHuanLuyen,
               traiHuanLuyenId: latestTraiHuanLuyen?.traiHuanLuyenId,
               ngayKetThucTrai: latestTraiHuanLuyen?.ngayKetThuc,
-              nhiemKyDoans:item.nhiemKyDoans
+              nhiemKyDoans: item.nhiemKyDoans
             };
+          // } catch (error) {
+          //   console.error('Lỗi khi tải Đoàn Sinh Detail:', error);
+          // }
         }));
-  
+
         setUsersData(fetchedData);
+        console.log(fetchedData);
         
+
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
-        
+
       }
     };
-  
+
     layDuLieu();
   }, []);
 
@@ -139,15 +153,8 @@ const DSOanhNam = () => {
     setChuyenDoanModal(null);
   };
 
-  const getBadgeClass = (isActive) => {
-    switch (isActive) {
-      case 'Active':
-        return 'bg-success';
-      case 'Inactive':
-        return 'bg-danger';
-      default:
-        return 'bg-secondary';
-    }
+  const handleChangeDoanSinh = () => {
+    layDuLieu();
   };
 
   const filteredData = usersData.filter((user) => {
@@ -165,12 +172,12 @@ const DSOanhNam = () => {
 
 
   const handleToggleisActive = async (user) => {
-    const newisActive = user.isActive !== 'Active';
-  
+    // const newisActive = user.isActive !== 'Active';
+
     // Hiển thị hộp thoại xác nhận
     const result = await Swal.fire({
       title: 'Bạn có chắc chắn?',
-      text: `Bạn có muốn ${newisActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
+      text: `Bạn có muốn ${user.isActive ? 'kích hoạt' : 'vô hiệu hóa'} người dùng này không?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -178,23 +185,34 @@ const DSOanhNam = () => {
       confirmButtonText: 'Có, thay đổi nó!',
       cancelButtonText: 'Hủy'
     });
-  
+
+    if (user.isActive) {
+      var newIsActive = false;
+    } else {
+      var newIsActive = true;
+    }
+
     if (result.isConfirmed) {
       try {
-        await apiClient.patch(`/api/doan-sinh-details/activate?doanSinhDetailId=${user.userId}&isActive=${newisActive}`);
+        await apiClient.patch(`/api/doan-sinh-details/activate?doanSinhDetailId=${user.doanSinhDetailId}&isActive=${newIsActive}`, null);
+
+        // Cập nhật trạng thái người dùng trong dữ liệu local state
         setUsersData(prevUsersData =>
           prevUsersData.map(u =>
-            u.id === user.id ? { ...u, isActive: u.isActive === 'Active' ? 'Inactive' : 'Active' } : u
+            u.userId === user.userId ? { ...u, isActive: newIsActive } : u
           )
         );
+
+        // Hiển thị thông báo thành công
         Swal.fire(
           'Thành công!',
           `Trạng thái người dùng đã được cập nhật.`,
           'success'
         );
-  
+
       } catch (error) {
         console.error('Lỗi khi cập nhật trạng thái:', error);
+        // Hiển thị thông báo lỗi
         Swal.fire(
           'Thất bại!',
           'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
@@ -203,9 +221,9 @@ const DSOanhNam = () => {
       }
     }
   };
-  
 
-  
+
+
 
   const renderRow = (user) => (
     <>
@@ -221,8 +239,8 @@ const DSOanhNam = () => {
       <CTableDataCell>{user.roleName}</CTableDataCell>
       <CTableDataCell>{user.role}</CTableDataCell>
       <CTableDataCell>
-        <CBadge id='custom-badge' className={getBadgeClass(user.isActive)}>
-          {user.isActive }
+        <CBadge id='custom-badge' className={user.isActive ? 'custom-badge-success' : 'custom-badge-danger'}>
+          {user.isActive ? 'Active' : 'Inactive'}
         </CBadge>
       </CTableDataCell>
       <CTableDataCell>
@@ -234,9 +252,9 @@ const DSOanhNam = () => {
             </CDropdownItem>
             <CDropdownItem className='custom-dropdown-item'
               onClick={() => handleToggleisActive(user)}>
-              {user.isActive === 'Active' ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
+              {user.isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
-            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(pUsers.find(u => u.userId === user.id))}>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)}>
               Chuyển Đoàn
             </CDropdownItem>
           </CDropdownMenu>
@@ -263,23 +281,23 @@ const DSOanhNam = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         params: {
-          filename: filename, 
-          idDoan:'1'
+          filename: filename,
+          idDoan: '1'
         },
         responseType: 'arraybuffer',
       });
-  
+
       // Tạo Blob từ dữ liệu phản hồi
       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
-  
+
       // Tạo phần tử liên kết để tải file
       const a = document.createElement('a');
       a.href = url;
       a.download = filename; // Sử dụng tên tệp mà bạn muốn đặt
       document.body.appendChild(a); // Thêm liên kết vào body
-  
-      
+
+
       Swal.fire({
         icon: 'success',
         title: 'File đã sẵn sàng để tải xuống!',
@@ -354,7 +372,7 @@ const DSOanhNam = () => {
           <h3>Danh sách Đoàn Sinh</h3>
         </CCol>
         <CCol className="d-flex justify-content-end">
-          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{marginRight:"5px"}}>Excel</CButton>
+          <CButton variant="outline" color="info" onClick={handleDownloadExtract} style={{ marginRight: "5px" }}>Excel</CButton>
           <CButton variant="outline" color="info" onClick={handleOpenInsertModal}>Thêm</CButton>
         </CCol>
       </CRow>
@@ -372,6 +390,7 @@ const DSOanhNam = () => {
           show={showModal}
           handleClose={handleCloseModal}
           user={selectedUser}
+          handleChangeDoanSinh={handleChangeDoanSinh}
         />
       )}
 
@@ -379,14 +398,14 @@ const DSOanhNam = () => {
         <InsertModal
           show={showInsertModal}
           handleClose={handleCloseInsertModal}
-      />
+        />
       )}
       {showChuyenDoan && (
         <ChuyenDoanModal
           show={showChuyenDoan}
           handleClose={handleCloseChuyenDoanModal}
           user={selectedUser}
-      />
+        />
       )}
     </div>
   );
