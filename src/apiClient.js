@@ -24,6 +24,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    return Promise.reject(error);
     if (error.response?.status === 423) {
       Swal.fire({
         icon: 'error',
