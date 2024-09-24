@@ -63,6 +63,15 @@ const TaiKhoanHuynhTruong = () => {
   //   ROLE_DOANTRUONG_NGANHTHANH: "Đoàn trưởng Ngành Thanh"
   // };
 
+  useEffect(() => {
+    const user = sessionStorage.getItem('user');
+    if (user) {
+      setSelectedUser(JSON.parse(user));
+      setShowModal(true);
+      sessionStorage.removeItem('user'); // Xóa thông tin người dùng sau khi đã sử dụng
+    }
+  }, []);
+
   const fetchAccountUsers = async () => {
     try {
       const response = await apiClient.get(`/api/account-users`);
