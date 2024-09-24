@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import {
   CRow, CContainer,
@@ -20,6 +21,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
   const [bacHocList, setBacHocList] = useState([]);
   const [capList, setCapList] = useState([]);
   const [traiHuanLuyenList, setTraiHuanLuyenList] = useState([]);
+  const [taiKhoan, setTaiKhoan] = useState(user.accountDTO !== null ? 'Đã có tài khoản' : 'Chưa có tài khoản');
   const [formData, setFormData] = useState({
     ...user,
     latestRoleId1: user.roleId1 ? user.roleId1.roleId : '',
@@ -30,7 +32,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
     latestNgayKetThucTraiHuanLuyen: user.lichSuTraiHuanLuyenDTOS && user.lichSuTraiHuanLuyenDTOS.length > 0 ? user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc : '',
     latestNgayKetThucBacHoc: user.lichSuHocs && user.lichSuHocs.length > 0 ? user.lichSuHocs.slice(-1)[0].ngayKetThuc : '',
     latestNgayKetThucCap: user.lichSuCapDTOS && user.lichSuCapDTOS.length > 0 ? user.lichSuCapDTOS.slice(-1)[0].ngayKetThuc : '',
-});
+  });
 
   const [errors, setErrors] = useState({});
 
@@ -285,6 +287,12 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleCreateAccount = () => {
+    sessionStorage.setItem('user', JSON.stringify(formData));
+    window.location.href = '#/huynh-truong/tai-khoan';
+  };
 
   return (
 
@@ -300,6 +308,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
           <CTabList variant="tabs">
             <CTab itemKey="thongTin">Thông tin</CTab>
             <CTab itemKey="chucVu">Chức vụ</CTab>
+            <CTab itemKey="taiKhoan">Tài khoản</CTab>
           </CTabList>
           <CTabContent>
             <CTabPanel className="p-3" itemKey="thongTin">
@@ -489,11 +498,19 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
 
               </div>
             </CTabPanel>
-            <CTabPanel className="p-3" itemKey="contact">
-              Contact tab content
-            </CTabPanel>
-            <CTabPanel className="p-3" itemKey="disabled">
-              Disabled tab content
+            <CTabPanel className="p-3" itemKey="taiKhoan">
+              <div className="container text-center">
+                <label className="h5 d-block mb-3">{taiKhoan}</label>
+                {taiKhoan === 'Chưa có tài khoản' && (
+                  <Button disabled={!isEditing}
+                    variant="primary"
+                    className="mt-3" 
+                    onClick={handleCreateAccount}
+                  >
+                    Tạo tài khoản
+                  </Button>
+                )}
+              </div>
             </CTabPanel>
           </CTabContent>
         </CTabs>

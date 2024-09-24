@@ -183,20 +183,20 @@ function UserModal({ show, handleClose, user, setUpdated }) {
           <img src={`${user.avatar}`} alt="Avatar" className="user-avatar" />
         </div>
 
-        <div class="form-group">
-          <label for="exampleFormControlInput1">Họ và tên</label>
-          <div class="input-group">
-            <input id="name" name="name" class="form-control" type="text" value={user.hoTen}
+        <div className="form-group">
+          <label htmlFor="exampleFormControlInput1">Họ và tên</label>
+          <div className="input-group">
+            <input id="name" name="name" className="form-control" type="text" value={user.hoTen}
               readOnly />
-            <span class="input-group-text " id="basic-addon2">{user.userIdUx}</span>
+            <span className="input-group-text " id="basic-addon2">{user.userIdUx}</span>
           </div>
 
-          <label for="exampleFormControlInput1">Tên người dùng</label>
-          <input id="userName" name="username" class="form-control" type="text" value={user.accountDTO?.username}
+          <label htmlFor="exampleFormControlInput1">Tên người dùng</label>
+          <input id="userName" name="username" className="form-control" type="text" value={user.accountDTO?.username}
             readOnly={user.accountDTO} onChange={handleInputChange} disabled={!isEditing} />
 
-          <label for="exampleFormControlInput1">Mật khẩu</label>
-          <input id="password" name="password" class="form-control" type="password" value={user.accountDTO?.password}
+          <label htmlFor="exampleFormControlInput1">Mật khẩu</label>
+          <input id="password" name="password" className="form-control" type="password" value={user.accountDTO?.password}
             onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
 
           <label htmlFor="roles">Cấp quyền màn hình</label>
@@ -218,8 +218,8 @@ function UserModal({ show, handleClose, user, setUpdated }) {
           {
             user.accountDTO
             && <>
-              <label for="exampleFormControlInput1">Ngày tạo</label>
-              <input id="registered" name="registered" class="form-control" type="text" value={formatDateToDDMMYYYY(user.accountDTO.createdDate)}
+              <label htmlFor="exampleFormControlInput1">Ngày tạo</label>
+              <input id="registered" name="registered" className="form-control" type="text" value={formatDateToDDMMYYYY(user.accountDTO.createdDate)}
                 readOnly />
             </>
           }
