@@ -5,9 +5,12 @@ import apiClient from '../../../../apiClient';
 import { CFormInput, CFormSelect } from '@coreui/react';
 import Swal from 'sweetalert2';
 
-function ChuyenDoanModal({ show, handleClose, user }) {
+function ChuyenDoanModal({ show, handleClose, user, handleChangeDoanSinh }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({ ...user });
+    const [formData, setFormData] = useState({
+        ...user,
+        roleIdNew: user.roleId1?.roleId,
+    });
     const [roles, setRoles] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const fileInputRef = useRef(null);
@@ -33,54 +36,49 @@ function ChuyenDoanModal({ show, handleClose, user }) {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            roleId1: roles.find(role => role.roleId === prevFormData.roleId1?.roleId) || null,
-        }));
-    }, [roles]);
-
     const handleEditToggle = () => {
         setIsEditing(prevState => !prevState);
     };
 
-    //   const handleInputChange = (e) => {
-    //     const { name, value } = e.target;
-
-    //     if (name === 'roleId1') {
-    //       const selectedRole = roles.find(role => role.roleId === parseInt(value));
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         roleId1: selectedRole ? selectedRole.roleId : '',
-    //         tenchucvu1: selectedRole ? selectedRole.roleName : '',
-    //       }));
-    //     } else {
-    //       setFormData(prevFormData => ({
-    //         ...prevFormData,
-    //         [name]: value,
-    //       }));
-    //     }
-    //   };
-
     const handleRoleChange = (e) => {
         const selectedRoleId = e.target.value;
-        const selectedRole = roles.find((role) => role.roleId === parseInt(selectedRoleId));
-
         setFormData(prevFormData => ({
             ...prevFormData,
-            roleId1: selectedRole || null
+            roleIdNew: Number(selectedRoleId),
         }));
     };
 
     const handleSave = async () => {
+        if (!formData.roleIdNew) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn chức vụ!',
+                icon: 'error',
+            });
+            return;
+        }
+
+        const updatedFormData = {
+            ...formData,
+            roleId1:
+            {
+                roleId: formData.roleIdNew
+            }
+        };
+
+        setFormData(updatedFormData);
+        console.log('formData:', updatedFormData);
+        // return;
+
         try {
-            const response = await apiClient.put(`/api/users/${formData.userId}`, formData);
-            if (response.status) {
+            const response = await apiClient.put(`/api/users/${updatedFormData.userId}`, updatedFormData);
+            if (response.status === 200) {
                 Swal.fire({
                     title: 'Thành công!',
                     text: 'Cập nhật thông tin người dùng thành công!',
                     icon: 'success',
                 });
+                handleChangeDoanSinh();
                 handleClose();
             } else {
                 console.error('Failed to update user');
@@ -109,9 +107,9 @@ function ChuyenDoanModal({ show, handleClose, user }) {
 
                     <label>Chức Vụ</label>
                     <CFormSelect
-                        name="roleId1"
+                        name="roleIdNew"
                         onChange={handleRoleChange}
-                        value={formData.roleId1?.roleId || ''}
+                        value={formData.roleIdNew}
                         disabled={!isEditing}
                     >
                         <option value="">{formData.tenchucvu1 || 'Chọn Chức Vụ'}</option>
