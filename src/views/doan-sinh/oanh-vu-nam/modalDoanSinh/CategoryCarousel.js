@@ -39,6 +39,22 @@ const CategoryCarousel = ({ categories }) => {
     ],
   };
 
+  if (categories.length === 1) {
+    return (
+      <div className="category-carousel">
+        <div className="category-item">
+          <div className="profile-card">
+            <img src={categories[0].avatar} alt={categories[0].hoTen} className="profile-image" />
+            <div className="profile-info">
+              <h3>{categories[0].hoTen}</h3>
+              <p>{categories[0].role === 'true' ? 'Huynh Trưởng' : 'Đoàn Sinh'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="category-carousel">
       <Slider {...settings}>

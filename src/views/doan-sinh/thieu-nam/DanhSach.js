@@ -24,7 +24,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import apiClient from '../../../apiClient';
 
-const DSThieuNam = () => {
+const DSNganhThanh = () => {
   const [searchName, setSearchName] = useState('')
   const [usersData, setUsersData] = useState([]);
   const [showInsertModal, setShowInsertModal] = useState(false);
@@ -39,10 +39,15 @@ const DSThieuNam = () => {
   const layDuLieu = async () => {
     try {
       const response = await apiClient.get(`/api/doan-sinh-details?doanId=3`);
-      // console.log(response.data.data.doanSinhDetails.slice(-1)[0]);
-      
-
       const fetchedData = await Promise.all(response.data.data.map(async (item) => {
+        // Lọc các doanSinhDetails không thỏa mãn điều kiện
+        const activeDoanSinhDetails = item.doanSinhDetails.filter(detail => detail.isActive && detail.doanId === 3);
+
+        // Nếu không có doanSinhDetails nào thỏa mãn, bỏ qua item này
+        if (activeDoanSinhDetails.length === 0) {
+          return null;
+        }
+
         return {
           userId: item.userId,
           userIdUx: item.userIdUx,
@@ -62,7 +67,7 @@ const DSThieuNam = () => {
           roleId2: item.roleId2,
           accountDTO: item.accountDTO,
           nhiemKyDoans: item.nhiemKyDoans,
-          doanSinhDetails: item.doanSinhDetails,
+          doanSinhDetails: activeDoanSinhDetails,
           lichSuHocs: item.lichSuHocs,
           lichSuCapDTOS: item.lichSuCapDTOS,
           lichSuTraiHuanLuyenDTOS: item.lichSuTraiHuanLuyenDTOS,
@@ -75,12 +80,12 @@ const DSThieuNam = () => {
           ngayPhatNguyen: item.ngayPhatNguyen,
         };
       }));
-      setUsersData(fetchedData);
-      // console.log(fetchedData);
 
-
+      // Loại bỏ các phần tử null khỏi fetchedData
+      const filteredData = fetchedData.filter(item => item !== null);
+      setUsersData(filteredData);
+      console.log(filteredData);
     } catch (error) {
-
       console.error('Lỗi khi gọi API:', error);
     }
   };
@@ -136,17 +141,17 @@ const DSThieuNam = () => {
               // Tạo bản sao của doanSinhDetails với phần tử cuối được cập nhật
               const updatedDoanSinhDetails = [...u.doanSinhDetails];
               updatedDoanSinhDetails[updatedDoanSinhDetails.length - 1].isActive = newIsActive;
-              
-              return { 
-                ...u, 
+
+              return {
+                ...u,
                 doanSinhDetails: updatedDoanSinhDetails
               };
             }
             return u;
           })
         );
-        
-        
+
+
 
         // Hiển thị thông báo thành công
         Swal.fire(
@@ -167,6 +172,51 @@ const DSThieuNam = () => {
     }
   };
 
+  const handleChuyenHuynhTruong = async (user) => {
+
+    // Hiển thị hộp thoại xác nhận
+    const result = await Swal.fire({
+      title: 'Bạn có chắc chắn?',
+      text: `Bạn có muốn thay đổi người dùng này thành huynh trưởng không?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Có, thay đổi nó!',
+      cancelButtonText: 'Hủy'
+    });
+
+   
+    user.isHuynhTruong = true;
+    if (result.isConfirmed) {
+      try {
+        await apiClient.put(`/api/users/${user.userId}`, user);
+
+        // xóa user cũ khỏi danh sách
+        setUsersData(prevUsersData =>
+          prevUsersData.filter(u => u.userId !== user.userId)
+        );
+
+        // Hiển thị thông báo thành công
+        Swal.fire(
+          'Thành công!',
+          `Trạng thái người dùng đã được cập nhật.`,
+          'success'
+        );
+
+      } catch (error) {
+        console.error('Lỗi khi cập nhật trạng thái:', error);
+        // Hiển thị thông báo lỗi
+        Swal.fire(
+          'Thất bại!',
+          'Đã xảy ra lỗi khi cập nhật trạng thái người dùng.',
+          'error'
+        );
+      }
+    }
+  }
+
+
   const filteredData = usersData.filter((user) => {
     return (
       (searchName === '' || user.hoTen.toLowerCase().includes(searchName.toLowerCase()))
@@ -176,6 +226,7 @@ const DSThieuNam = () => {
 
 
   const [showModal, setShowModal] = useState(false);
+  const [showChuyenDoanModal, setShowChuyenDoanModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const handleShowModal = (user) => {
@@ -185,6 +236,16 @@ const DSThieuNam = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleOpenChuyenDoanModal = (user) => {
+    setSelectedUser(user);
+    setShowChuyenDoanModal(true);
+  };
+
+  const handleCloseChuyenDoanModal = () => {
+    setShowChuyenDoanModal(false);
     setSelectedUser(null);
   };
 
@@ -302,8 +363,11 @@ const DSThieuNam = () => {
               onClick={() => handleToggleStatus(user)}>
               {user.doanSinhDetails.slice(-1)[0].isActive ? 'Tắt Trạng Thái' : 'Bật Trạng Thái'}
             </CDropdownItem>
-            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)} disabled>
+            <CDropdownItem className='custom-dropdown-item' variant="outline" onClick={() => handleOpenChuyenDoanModal(user)} >
               Chuyển Đoàn
+            </CDropdownItem>
+            <CDropdownItem className='custom-dropdown-item' variant="outline"  onClick={() => handleChuyenHuynhTruong(user)}>
+              Huynh Trưởng
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
@@ -350,8 +414,17 @@ const DSThieuNam = () => {
           onAddDoanSinh={handleAddDoanSinh} />
       )}
 
+      {selectedUser && (
+        <ChuyenDoanModal
+          show={showChuyenDoanModal}
+          handleClose={handleCloseChuyenDoanModal}
+          user={selectedUser}
+          handleChangeDoanSinh={handleChangeDoanSinh}
+        />
+      )}
+
 
     </div>
   )
 }
-export default DSThieuNam
+export default DSNganhThanh
