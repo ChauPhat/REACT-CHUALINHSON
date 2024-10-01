@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import { cilArrowBottom, cilArrowTop } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
@@ -11,12 +11,28 @@ import {
 import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 import { authorizeRole } from '../../AuthorizationContext'
+import apiClient from '../../apiClient'
 
 const WidgetsDropdown = (props) => {
   const widgetChartRef1 = useRef(null)
   const widgetChartRef2 = useRef(null)
+  const [tongSoDoanSinh, setTongSoDoanSinh] = useState(0)
+  const [tongSoHuynhTruong, setTongSoHuynhTruong] = useState(0)
+
 
   useEffect(() => {
+    const fetchThongKe = async () => {
+      try {
+        const response = await apiClient.get('/api/thong-ke/tong-doan-sinh-huynh-truong')
+        const data = response.data.data[0]
+        setTongSoDoanSinh(data.tongSoDoanSinh)
+        setTongSoHuynhTruong(data.tongSoHuynhTruong)
+      } catch (error) {
+        console.error('Error fetching thong ke:', error)
+      }
+    }
+
+    fetchThongKe()
     document.documentElement.addEventListener('ColorSchemeChange', () => {
       if (widgetChartRef1.current) {
         setTimeout(() => {
@@ -32,7 +48,8 @@ const WidgetsDropdown = (props) => {
         })
       }
     })
-  }, [widgetChartRef1, widgetChartRef2]);
+  }, [])
+
 
   const isAuthorized = authorizeRole(["Thủ Quỹ"]);
 
@@ -43,13 +60,13 @@ const WidgetsDropdown = (props) => {
           color="primary"
           value={
             <>
-              26K{' '}
-              <span className="fs-6 fw-normal">
+              {tongSoDoanSinh}{' '}
+              {/* <span className="fs-6 fw-normal">
                 (-12.4% <CIcon icon={cilArrowBottom} />)
-              </span>
+              </span> */}
             </>
           }
-          title="Tổng Đoàn Sinh"
+          title="Tổng số Đoàn Sinh"
 
           chart={
             <CChartLine
@@ -70,6 +87,9 @@ const WidgetsDropdown = (props) => {
               }}
               options={{
                 plugins: {
+                  tooltip: {
+                    enabled: false, // Tắt tooltip
+                  },
                   legend: {
                     display: false,
                   },
@@ -110,6 +130,11 @@ const WidgetsDropdown = (props) => {
                     hitRadius: 10,
                     hoverRadius: 4,
                   },
+                },
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
+                  events: [], 
                 },
               }}
             />
@@ -198,13 +223,13 @@ const WidgetsDropdown = (props) => {
           color="warning"
           value={
             <>
-              2.49%{' '}
-              <span className="fs-6 fw-normal">
+              {tongSoHuynhTruong}{' '}
+              {/* <span className="fs-6 fw-normal">
                 (84.7% <CIcon icon={cilArrowTop} />)
-              </span>
+              </span> */}
             </>
           }
-          title="Tổng Số Đoàn Sinh"
+          title="Tổng Số Huynh Trưởng"
           chart={
             <CChartLine
               className="mt-3"
@@ -223,6 +248,9 @@ const WidgetsDropdown = (props) => {
               }}
               options={{
                 plugins: {
+                  tooltip: {
+                    enabled: false, // Tắt tooltip
+                  },
                   legend: {
                     display: false,
                   },
@@ -246,6 +274,11 @@ const WidgetsDropdown = (props) => {
                     hitRadius: 10,
                     hoverRadius: 4,
                   },
+                },
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
+                  events: [], 
                 },
               }}
             />

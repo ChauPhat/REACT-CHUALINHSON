@@ -28,7 +28,7 @@ const FiltersBarChart = () => {
     ],
   });
 
-  const [filter, setFilter] = useState("quarter1"); // Mặc định là 10 tuần đầu
+  const [filter, setFilter] = useState("quarter1"); 
   const [year, setYear] = useState(new Date().getFullYear());
   const [allData, setAllData] = useState({ labels: [], doanSinhCoMat: [], doanSinhVangMat: [] });
 
@@ -40,14 +40,11 @@ const FiltersBarChart = () => {
         },
       });
       const data = response.data.data;
-
-      // Chuyển đổi dữ liệu
       const labels = data.map((item, index) => `Tuần ${index + 1}`);
       const doanSinhCoMat = data.map((item) => item.doanSinhCoMat);
       const doanSinhVangMat = data.map((item) => item.doanSinhVangMat);
-
-      // Lưu dữ liệu toàn bộ vào state
-      setAllData({ labels, doanSinhCoMat, doanSinhVangMat });
+      const ngaySinhHoat = data.map((item) => item.ngaySinhHoat);  
+      setAllData({ labels, doanSinhCoMat, doanSinhVangMat, ngaySinhHoat });
 
       // Hiển thị tuần 1-10 khi tải trang
       setChartData({
@@ -74,9 +71,10 @@ const FiltersBarChart = () => {
     }
   };
 
+
   useEffect(() => {
     fetchDiemDanhData(year);
-  }, [year]); // Chỉ gọi khi năm thay đổi
+  }, []); 
 
   const handleFilterChange = (event) => {
     const value = event.target.value;
@@ -93,7 +91,6 @@ const FiltersBarChart = () => {
 
     const selectedWeeks = quarterWeeks[value];
 
-    // Cập nhật biểu đồ dựa trên tuần được chọn
     setChartData({
       labels: allData.labels.slice(selectedWeeks.start, selectedWeeks.end),
       datasets: [
@@ -114,6 +111,7 @@ const FiltersBarChart = () => {
       ],
     });
   };
+
 
   const handleYearChange = (event) => {
     setYear(event.target.value);
@@ -173,13 +171,27 @@ const FiltersBarChart = () => {
             tooltip: {
               callbacks: {
                 title: (context) => {
-                  return context[0].label;
+                  const index = context[0].dataIndex;
+                  const week = context[0].label;
+                  const ngaySinhHoat = allData.ngaySinhHoat[index];
+                  return `${week} - Ngày sinh hoạt: ${ngaySinhHoat}`;
                 },
                 label: (context) => {
                   const datasets = context.chart.data.datasets;
                   const label1 = `${datasets[0].label}: ${datasets[0].data[context.dataIndex]}`;
                   const label2 = `${datasets[1].label}: ${datasets[1].data[context.dataIndex]}`;
                   return [label1, label2];
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                callback: function (value, index) {
+                  const label = this.getLabelForValue(value); 
+                  const ngaySinhHoat = allData.ngaySinhHoat[index];  
+                  return `${label}\n(${new Date(ngaySinhHoat).toLocaleDateString('vi-VN')})`; 
                 },
               },
             },
