@@ -260,6 +260,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
         hoTenMe: formData.hoTenMe,
         sdtCha: formData.sdtCha,
         sdtMe: formData.sdtMe,
+        noiSinh: formData.noiSinh,
       };
 
       // console.log('Update data:', updateData);
@@ -339,6 +340,14 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
                   value={formData.phapDanh || ''} onChange={handleInputChange}
                   readOnly={!isEditing} disabled={!isEditing} />
 
+                <label htmlFor="noiSinh">Nơi Sinh</label>
+                <div className="input-group">
+                  <input
+                    id="noiSinh" name="noiSinh" className={`form-control`} type="text"
+                    value={formData.noiSinh || ''} onChange={handleInputChange}
+                    readOnly={!isEditing} disabled={!isEditing} required />
+                </div>
+
                 <label htmlFor="ngaySinh">Ngày Sinh</label>
                 <input name="ngaySinh" className={`form-control ${errors.ngaySinh ? 'is-invalid' : ''}`} type="date"
                   value={formData.ngaySinh} onChange={handleInputChange} required
@@ -355,10 +364,26 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
                   onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} required />
                 {errors.sdt && <div className="invalid-feedback">{errors.sdt}</div>}
 
+                <label htmlFor="hoTenCha">Họ Tên Cha</label>
+                <div className="input-group">
+                  <input
+                    id="hoTenCha" name="hoTenCha" className={`form-control`} type="text"
+                    value={formData.hoTenCha || ''} onChange={handleInputChange}
+                    readOnly={!isEditing} disabled={!isEditing} required />
+                </div>
+
                 <label htmlFor="sdtCha">Số Điện Thoại Cha</label>
                 <input name="sdtCha" className={`form-control ${errors.sdtCha ? 'is-invalid' : ''}`} type="text" value={formData.sdtCha || ""}
                   onChange={handleInputChange} readOnly={!isEditing} disabled={!isEditing} />
                 {errors.sdtCha && <div className="invalid-feedback">{errors.sdtCha}</div>}
+
+                <label htmlFor="hoTenMe">Họ Tên Mẹ</label>
+                <div className="input-group">
+                  <input
+                    id="hoTenMe" name="hoTenMe" className={`form-control`} type="text"
+                    value={formData.hoTenMe || ''} onChange={handleInputChange}
+                    readOnly={!isEditing} disabled={!isEditing} required />
+                </div>
 
                 <label htmlFor="sdtMe">Số Điện Thoại Mẹ</label>
                 <input name="sdtMe" className={`form-control ${errors.sdtMe ? 'is-invalid' : ''}`} type="text" value={formData.sdtMe || ""}
@@ -504,7 +529,7 @@ function UserModal({ show, handleClose, user, handleChangeHuynhTruong }) {
                 {taiKhoan === 'Chưa có tài khoản' && (
                   <Button disabled={!isEditing}
                     variant="primary"
-                    className="mt-3" 
+                    className="mt-3"
                     onClick={handleCreateAccount}
                   >
                     Tạo tài khoản

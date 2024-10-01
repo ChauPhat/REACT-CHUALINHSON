@@ -30,7 +30,7 @@ function UserModal({ show, handleClose, user, handleChangeDoanSinh }) {
     latestNgayKetThucTraiHuanLuyen: user.lichSuTraiHuanLuyenDTOS && user.lichSuTraiHuanLuyenDTOS.length > 0 ? user.lichSuTraiHuanLuyenDTOS.slice(-1)[0].ngayKetThuc : '',
     latestNgayKetThucBacHoc: user.lichSuHocs && user.lichSuHocs.length > 0 ? user.lichSuHocs.slice(-1)[0].ngayKetThuc : '',
     // latestNgayKetThucCap: user.lichSuCapDTOS && user.lichSuCapDTOS.length > 0 ? user.lichSuCapDTOS.slice(-1)[0].ngayKetThuc : '',
-});
+  });
 
   const [errors, setErrors] = useState({});
 
@@ -45,7 +45,7 @@ function UserModal({ show, handleClose, user, handleChangeDoanSinh }) {
           );
           setRole1List(fetchedRoles);
           // console.log(fetchedRoles);
-          
+
         } else {
           console.error('Lỗi khi lấy dữ liệu roles:', rolesResponse.data.message);
         }
@@ -288,6 +288,7 @@ function UserModal({ show, handleClose, user, handleChangeDoanSinh }) {
         hoTenMe: formData.hoTenMe,
         sdtCha: formData.sdtCha,
         sdtMe: formData.sdtMe,
+        noiSinh: formData.noiSinh,
       };
 
       // console.log('Update data:', updateData);
@@ -359,6 +360,14 @@ function UserModal({ show, handleClose, user, handleChangeDoanSinh }) {
                 <input name="phapDanh" className="form-control" type="text"
                   value={formData.phapDanh || ''} onChange={handleInputChange}
                   readOnly={!isEditing} disabled={!isEditing} />
+
+                <label htmlFor="noiSinh">Nơi Sinh</label>
+                <div className="input-group">
+                  <input
+                    id="noiSinh" name="noiSinh" className={`form-control`} type="text"
+                    value={formData.noiSinh || ''} onChange={handleInputChange}
+                    readOnly={!isEditing} disabled={!isEditing} required />
+                </div>
 
                 <label htmlFor="ngaySinh">Ngày Sinh</label>
                 <input name="ngaySinh" className={`form-control ${errors.ngaySinh ? 'is-invalid' : ''}`} type="date"
