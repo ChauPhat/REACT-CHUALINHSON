@@ -3,6 +3,9 @@ import { Modal, Button } from 'react-bootstrap';
 import {
   CRow, CContainer,
   CCol, CFormSelect,
+  CTabs, CTabList,
+  CTabContent, CTabPanel,
+  CTab
 } from '@coreui/react'
 // import './UserModal.css';
 import Swal from 'sweetalert2';
@@ -16,6 +19,7 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
   const [email, setEmail] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [registered, setRegistered] = useState('');
+  const [noiSinh, setNoiSinh] = useState('');
   const [phone, setPhone] = useState('');
   const [hoTenCha, sethoTenCha] = useState('');
   const [sdtCha, setSdtCha] = useState('');
@@ -37,6 +41,7 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
   const [traiHuanLuyenList, setTraiHuanLuyenList] = useState([]);
   const [traiHuanLuyenId, setTraiHuanLuyenId] = useState(0);
   const [ngayKetThucTraiHuanLuyen, setNgayKetThucTraiHuanLuyen] = useState('');
+  const [activeItemKey, setActiveItemKey] = useState('thongTin');
 
   useEffect(() => {
     setRegistered(new Date().toISOString().split('T')[0]);
@@ -115,6 +120,15 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
     fetchTraiHuanLuyen();
   }, []);
 
+  useEffect(() => {
+    if (Object.keys(errors).length === 1 && errors.role) {
+      setActiveItemKey('chucVu');
+      document.getElementById('tabChucVu').click();
+    } else {
+      setActiveItemKey('thongTin');
+    }
+  }, [errors]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +150,9 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
         break;
       case 'birthDate':
         setBirthDate(value);
+        break;
+      case 'noiSinh':
+        setNoiSinh(value);
         break;
       case 'registered':
         setRegistered(value);
@@ -257,8 +274,9 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
       hoTen: name,
       ngaySinh: birthDate,
       sdt: phone,
-      hoTenCha:hoTenCha,
-      hoTenMe:hoTenMe,
+      noiSinh: noiSinh,
+      hoTenCha: hoTenCha,
+      hoTenMe: hoTenMe,
       sdtCha: sdtCha,
       sdtMe: sdtMe,
       email: email,
@@ -358,17 +376,20 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
       setTraiHuanLuyenList([]);
       setTraiHuanLuyenId(0);
       setNgayKetThucTraiHuanLuyen('');
+      setNoiSinh('');
+      setActiveItemKey('thongTin');
       handleClose();
     } catch (error) {
       // console.log(error);
       // Handle error when adding Bac Hoc
       // const errorMessage = error.response?.data?.message || 'Thêm thất bại 111111.';
-      if(error){
-      Swal.fire({
-        title: 'Thông báo từ hệ thống!',
-        text: 'Thêm Đoàn Sinh Lỗi',
-        icon: 'error',
-      });}
+      if (error) {
+        Swal.fire({
+          title: 'Thông báo từ hệ thống!',
+          text: 'Thêm Đoàn Sinh Lỗi',
+          icon: 'error',
+        });
+      }
     }
   };
 
@@ -378,220 +399,217 @@ function InsertModal({ show, handleClose, onAddDoanSinh }) {
         <Modal.Title className="modal-title">Thông Tin Đoàn Sinh</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="avatar-container">
-          <img
-            src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
-            alt="Avatar" className="user-avatar"
-          />
-          <input
-            type="file" style={{ display: 'block', marginTop: '10px' }} ref={fileInputRef}
-            onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control"
-          />
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="name">Họ Và Tên</label>
-          <div className="input-group">
-            <input
-              id="name" name="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-              type="text" value={name} onChange={handleInputChange} required />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-          </div>
+        <CTabs activeItemKey={activeItemKey}>
+          <CTabList variant="tabs">
+            <CTab itemKey="thongTin">Thông tin</CTab>
+            <CTab itemKey="chucVu" id='tabChucVu'>Chức vụ</CTab>
+          </CTabList>
 
+          <CTabContent>
 
-          <label htmlFor="role">Chức Vụ</label>
-          <CContainer className="px-1">
-            <CRow>
-              <CCol>
+            <CTabPanel className={`p-3`} itemKey="thongTin">
+
+              <div className="avatar-container">
+                <img
+                  src={selectedFile ? URL.createObjectURL(selectedFile) : 'path/to/default/avatar.png'}
+                  alt="Avatar" className="user-avatar"
+                />
+                <input
+                  type="file" style={{ display: 'block', marginTop: '10px' }} ref={fileInputRef}
+                  onChange={handleFileChange} accept=".jpg,.jpeg,.png" className="form-control"
+                />
+              </div>
+
+              <div className="form-group">
+
+                <label htmlFor="name">Họ Và Tên</label>
+                <div className="input-group">
+                  <input
+                    id="name" name="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                    type="text" value={name} onChange={handleInputChange} required />
+                  {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                </div>
+
+                <label htmlFor="phapdanh">Pháp Danh</label>
+                <input
+                  name="phapdanh" className="form-control"
+                  type="text" value={phapdanh}
+                  onChange={handleInputChange}
+                />
+
+                <label htmlFor="email">Email</label>
+                <input
+                  name="email" className="form-control"
+                  type="email" value={email}
+                  onChange={handleInputChange}
+                />
+
+                <label htmlFor="noiSinh">Nơi Sinh</label>
+                <input
+                  name="noiSinh" className="form-control"
+                  type="noiSinh" value={noiSinh}
+                  onChange={handleInputChange}
+                />
+
+                <label htmlFor="birthDate">Ngày Sinh</label>
+                <input
+                  id="birthDate" name="birthDate" className={`form-control ${errors.birthDate ? 'is-invalid' : ''}`}
+                  type="date" value={birthDate} onChange={handleInputChange} required
+                />
+                {errors.birthDate && <div className="invalid-feedback">{errors.birthDate}</div>}
+
+                <label htmlFor="registered">Ngày Gia Nhập</label>
+                <input
+                  name="registered" className="form-control"
+                  type="date" value={registered}
+                  onChange={handleInputChange}
+                />
+
+                <label htmlFor="phone">Số Điện Thoại</label>
+                <input
+                  id="phone" name="phone" className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+                  type="text" value={phone} onChange={handleInputChange} required
+                />
+                {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+
+                <label htmlFor="hoTenCha">Họ Và Tên Cha</label>
+                <div className="input-group">
+                  <input
+                    id="hoTenCha" name="hoTenCha" className={`form-control`}
+                    type="text" value={hoTenCha} onChange={handleInputChange} required />
+                </div>
+
+                <label htmlFor="sdtCha">Số Điện Thoại Cha</label>
+                <input
+                  id="sdtCha" name="sdtCha" className={`form-control ${errors.sdtCha ? 'is-invalid' : ''}`}
+                  type="text" value={sdtCha} onChange={handleInputChange} required
+                />
+                {errors.sdtCha && <div className="invalid-feedback">{errors.sdtCha}</div>}
+
+                <label htmlFor="hoTenMe">Họ Và Tên Cha</label>
+                <div className="input-group">
+                  <input
+                    id="hoTenMe" name="hoTenMe" className={`form-control`}
+                    type="text" value={hoTenMe} onChange={handleInputChange} required />
+                </div>
+
+                <label htmlFor="sdtMe">Số Điện Thoại Mẹ</label>
+                <input
+                  id="sdtMe" name="sdtMe" className={`form-control ${errors.sdtMe ? 'is-invalid' : ''}`}
+                  type="text" value={sdtMe} onChange={handleInputChange} required
+                />
+                {errors.sdtMe && <div className="invalid-feedback">{errors.sdtMe}</div>}
+
+                <label>Giới Tính</label>
+                <div className="radio-group">
+                  <label className="radio-inline">
+                    <input type="radio" name="gender"
+                      value="Male" checked={gender === 'Male'}
+                      onChange={handleInputChange} required
+                    />
+                    Nam
+                  </label>
+                  <label className="radio-inline">
+                    <input
+                      type="radio" name="gender"
+                      value="Female" checked={gender === 'Female'}
+                      onChange={handleInputChange} required
+                    />
+                    Nữ
+                  </label>
+                </div>
+                {errors.gender && <div className="invalid-feedback">{errors.gender}</div>}
+
+                <label htmlFor="address">Địa Chỉ</label>
+                <textarea
+                  name="address" className="form-control"
+                  rows="3" value={address} onChange={handleInputChange}
+                ></textarea>
+
+              </div>
+
+            </CTabPanel>
+
+            <CTabPanel className={`p-3`} itemKey="chucVu">
+
+              <div className="form-group">
+
+                <label htmlFor="role">Chức Vụ</label>
+                <CContainer className="px-1">
+                  <CRow>
+                    <CCol>
+                      <CFormSelect
+                        name="role1" aria-label="Chức Vụ 1"
+                        value={role1} onChange={handleInputChange}
+                        className={`${errors.role ? 'is-invalid' : ''}`}
+                      >
+                        <option value="">Chọn chức vụ 1</option>
+                        {rolesWithDoanId.map((role) => (
+                          <option key={role.roleId} value={role.roleId}>
+                            {role.roleName}
+                          </option>
+                        ))}
+                      </CFormSelect>
+                    </CCol>
+
+                  </CRow>
+                  {errors.role && <div className="invalid-feedback d-block">{errors.role}</div>}
+                </CContainer>
+
+                <label htmlFor="bacHoc">Bậc Học</label>
                 <CFormSelect
-                  name="role1" aria-label="Chức Vụ 1"
-                  value={role1} onChange={handleInputChange}
-                  className={`${errors.role ? 'is-invalid' : ''}`}
+                  name="bacHoc"
+                  aria-label="Chọn bậc học"
+                  value={bacHoc} // Correctly assign the state value here
+                  onChange={handleInputChange} // Handle change correctly
                 >
-                  <option value="">Chọn chức vụ 1</option>
-                  {rolesWithDoanId.map((role) => (
-                    <option key={role.roleId} value={role.roleId}>
-                      {role.roleName}
+                  <option value="">Chọn bậc học</option>
+                  {bacHocList.map((bacHoc) => (
+                    <option key={bacHoc.bacHocId} value={bacHoc.bacHocId}>
+                      {bacHoc.tenBacHoc}
                     </option>
                   ))}
                 </CFormSelect>
-              </CCol>
-              {/* <CCol>
+
+                <label htmlFor="ngayKetThucBacHoc">Ngày Kết Thúc Bậc Học</label>
+                <input
+                  id="ngayKetThucBacHoc" name="ngayKetThucBacHoc" className={`form-control ${errors.ngayKetThucBacHoc ? 'is-invalid' : ''}`}
+                  type="date" value={ngayKetThucBacHoc} onChange={handleInputChange} required disabled={bacHoc === 0 || bacHoc === ""}
+
+                />
+                {errors.ngayKetThucBacHoc && <div className="invalid-feedback">{errors.ngayKetThucBacHoc}</div>}
+
+                <label htmlFor="traiHuanLuyen">Trại Huấn Luyện</label>
                 <CFormSelect
-                  name="role2" aria-label="Chức Vụ 2"
-                  value={role2} onChange={handleInputChange}
-                  className={`${errors.role ? 'is-invalid' : ''}`}
+                  name="traiHuanLuyen"
+                  aria-label="Chọn trại huấn luyện"
+                  value={traiHuanLuyenId} // Correctly assign the state value here
+                  onChange={handleInputChange} // Handle change correctly
                 >
-                  <option value="">Chọn chức vụ 2</option>
-                  {rolesWithoutDoanId.map((role) => (
-                    <option key={role.roleId} value={role.roleId}>
-                      {role.roleName}
+                  <option value="">Chọn trại huấn luyện</option>
+                  {traiHuanLuyenList.map((trai) => (
+                    <option key={trai.traiHuanLuyenId} value={trai.traiHuanLuyenId}>
+                      {trai.tenTraiHuanLuyen}
                     </option>
                   ))}
                 </CFormSelect>
-              </CCol> */}
-            </CRow>
-            {errors.role && <div className="invalid-feedback d-block">{errors.role}</div>}
-          </CContainer>
 
+                <label htmlFor="ngayKetThucTraiHuanLuyen">Ngày Kết Thúc Cấp</label>
+                <input
+                  id="ngayKetThucTraiHuanLuyen" name="ngayKetThucTraiHuanLuyen" className={`form-control ${errors.ngayKetThucTraiHuanLuyen ? 'is-invalid' : ''}`}
+                  type="date" value={ngayKetThucTraiHuanLuyen} onChange={handleInputChange} required disabled={traiHuanLuyenId === 0 || traiHuanLuyenId === ""}
+                />
+                {errors.ngayKetThucTraiHuanLuyen && <div className="invalid-feedback">{errors.ngayKetThucTraiHuanLuyen}</div>}
 
-          <label htmlFor="phapdanh">Pháp Danh</label>
-          <input
-            name="phapdanh" className="form-control"
-            type="text" value={phapdanh}
-            onChange={handleInputChange}
-          />
+              </div>
 
+            </CTabPanel>
 
-          <label htmlFor="bacHoc">Bậc Học</label>
-          <CFormSelect
-            name="bacHoc"
-            aria-label="Chọn bậc học"
-            value={bacHoc} // Correctly assign the state value here
-            onChange={handleInputChange} // Handle change correctly
-          >
-            <option value="">Chọn bậc học</option>
-            {bacHocList.map((bacHoc) => (
-              <option key={bacHoc.bacHocId} value={bacHoc.bacHocId}>
-                {bacHoc.tenBacHoc}
-              </option>
-            ))}
-          </CFormSelect>
+          </CTabContent>
 
-          <label htmlFor="ngayKetThucBacHoc">Ngày Kết Thúc Bậc Học</label>
-          <input
-            id="ngayKetThucBacHoc" name="ngayKetThucBacHoc" className={`form-control ${errors.ngayKetThucBacHoc ? 'is-invalid' : ''}`}
-            type="date" value={ngayKetThucBacHoc} onChange={handleInputChange} required disabled={bacHoc === 0 || bacHoc === ""}
+        </CTabs>
 
-          />
-          {errors.ngayKetThucBacHoc && <div className="invalid-feedback">{errors.ngayKetThucBacHoc}</div>}
-
-          {/* <label htmlFor="cap">Cấp</label>
-          <CFormSelect
-            name="cap"
-            aria-label="Chọn cấp"
-            value={capId} // Correctly assign the state value here
-            onChange={handleInputChange} // Handle change correctly
-          >
-            <option value="">Chọn cấp</option>
-            {capList.map((cap) => (
-              <option key={cap.capId} value={cap.capId}>
-                {cap.capName}
-              </option>
-            ))}
-          </CFormSelect>
-
-          <label htmlFor="ngayKetThucCap">Ngày Kết Thúc Cấp</label>
-          <input
-            id="ngayKetThucCap" name="ngayKetThucCap" className={`form-control ${errors.ngayKetThucCap ? 'is-invalid' : ''}`}
-            type="date" value={ngayKetThucCap} onChange={handleInputChange} required disabled={capId === 0 || capId === ""}
-          />
-          {errors.ngayKetThucCap && <div className="invalid-feedback">{errors.ngayKetThucCap}</div>} */}
-
-          <label htmlFor="traiHuanLuyen">Trại Huấn Luyện</label>
-          <CFormSelect
-            name="traiHuanLuyen"
-            aria-label="Chọn trại huấn luyện"
-            value={traiHuanLuyenId} // Correctly assign the state value here
-            onChange={handleInputChange} // Handle change correctly
-          >
-            <option value="">Chọn trại huấn luyện</option>
-            {traiHuanLuyenList.map((trai) => (
-              <option key={trai.traiHuanLuyenId} value={trai.traiHuanLuyenId}>
-                {trai.tenTraiHuanLuyen}
-              </option>
-            ))}
-          </CFormSelect>
-
-          <label htmlFor="ngayKetThucTraiHuanLuyen">Ngày Kết Thúc Cấp</label>
-          <input
-            id="ngayKetThucTraiHuanLuyen" name="ngayKetThucTraiHuanLuyen" className={`form-control ${errors.ngayKetThucTraiHuanLuyen ? 'is-invalid' : ''}`}
-            type="date" value={ngayKetThucTraiHuanLuyen} onChange={handleInputChange} required disabled={traiHuanLuyenId === 0 || traiHuanLuyenId === ""}
-          />
-          {errors.ngayKetThucTraiHuanLuyen && <div className="invalid-feedback">{errors.ngayKetThucTraiHuanLuyen}</div>}
-
-          <label htmlFor="email">Email</label>
-          <input
-            name="email" className="form-control"
-            type="email" value={email}
-            onChange={handleInputChange}
-          />
-
-          <label htmlFor="birthDate">Ngày Sinh</label>
-          <input
-            id="birthDate" name="birthDate" className={`form-control ${errors.birthDate ? 'is-invalid' : ''}`}
-            type="date" value={birthDate} onChange={handleInputChange} required
-          />
-          {errors.birthDate && <div className="invalid-feedback">{errors.birthDate}</div>}
-
-          <label htmlFor="registered">Ngày Gia Nhập</label>
-          <input
-            name="registered" className="form-control"
-            type="date" value={registered}
-            onChange={handleInputChange}
-          />
-
-          <label htmlFor="phone">Số Điện Thoại</label>
-          <input
-            id="phone" name="phone" className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-            type="text" value={phone} onChange={handleInputChange} required
-          />
-          {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
-
-          <label htmlFor="hoTenCha">Họ Và Tên Cha</label>
-          <div className="input-group">
-            <input
-              id="hoTenCha" name="hoTenCha" className={`form-control`}
-              type="text" value={hoTenCha} onChange={handleInputChange} required />
-          </div>
-
-          <label htmlFor="sdtCha">Số Điện Thoại Cha</label>
-          <input
-            id="sdtCha" name="sdtCha" className={`form-control ${errors.sdtCha ? 'is-invalid' : ''}`}
-            type="text" value={sdtCha} onChange={handleInputChange} required
-          />
-          {errors.sdtCha && <div className="invalid-feedback">{errors.sdtCha}</div>}
-
-          <label htmlFor="hoTenMe">Họ Và Tên Cha</label>
-          <div className="input-group">
-            <input
-              id="hoTenMe" name="hoTenMe" className={`form-control`}
-              type="text" value={hoTenMe} onChange={handleInputChange} required />
-          </div>
-
-          <label htmlFor="sdtMe">Số Điện Thoại Mẹ</label>
-          <input
-            id="sdtMe" name="sdtMe" className={`form-control ${errors.sdtMe ? 'is-invalid' : ''}`}
-            type="text" value={sdtMe} onChange={handleInputChange} required
-          />
-          {errors.sdtMe && <div className="invalid-feedback">{errors.sdtMe}</div>}
-
-          <label>Giới Tính</label>
-          <div className="radio-group">
-            <label className="radio-inline">
-              <input type="radio" name="gender"
-                value="Male" checked={gender === 'Male'}
-                onChange={handleInputChange} required
-              />
-              Nam
-            </label>
-            <label className="radio-inline">
-              <input
-                type="radio" name="gender"
-                value="Female" checked={gender === 'Female'}
-                onChange={handleInputChange} required
-              />
-              Nữ
-            </label>
-          </div>
-          {errors.gender && <div className="invalid-feedback">{errors.gender}</div>}
-
-          <label htmlFor="address">Địa Chỉ</label>
-          <textarea
-            name="address" className="form-control"
-            rows="3" value={address} onChange={handleInputChange}
-          ></textarea>
-        </div>
       </Modal.Body>
       <Modal.Footer>
         <div className="footer-container">

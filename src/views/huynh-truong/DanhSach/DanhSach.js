@@ -76,6 +76,7 @@ const DSHuynhTruong = () => {
           hoTenMe: item.hoTenMe,
           hoTenNguoiTruyenGioi: item.hoTenNguoiTruyenGioi,
           ngayQuyY: item.ngayQuyY,
+          noiSinh: item.noiSinh,
           sdtCha: item.sdtCha,
           sdtMe: item.sdtMe,
           ngayPhatNguyen: item.ngayPhatNguyen,
